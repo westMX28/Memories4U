@@ -10,6 +10,14 @@ export default function HomePage() {
           <p className="lead">
             Memories4U verwandelt eure Bilder und gemeinsame Momente in eine moderne, persönliche visuelle Erinnerung — ideal zum Verschenken oder selbst behalten.
           </p>
+          <img
+            src="https://via.placeholder.com/600x400"
+            alt="Example Placeholder"
+            className="example-image"
+          />
+          <p className="example-text">
+            <strong>Ich liebe es. Frank Ribery ist der beste Fußballspieler der Welt.</strong>
+          </p>
           <div className="btn-row">
             <Link className="btn btn-primary" href="/memories">Jetzt entdecken</Link>
             <Link className="btn btn-secondary" href="/how-it-works">So funktioniert&apos;s</Link>
