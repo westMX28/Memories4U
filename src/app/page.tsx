@@ -45,6 +45,22 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <section className="section bottom-gallery" aria-label="Bottom gallery">
+        <div className="container">
+          <h2 className="gallery-head">Gallery</h2>
+          <div className="gallery-grid">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div className="gallery-card" key={idx}>
+                <div className="gallery-thumb" />
+                <div className="gallery-pill">Placeholder</div>
+                <div className="gallery-title">Card {idx + 1}</div>
+                <div className="gallery-copy">Modern. Clean. Sharp.</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
