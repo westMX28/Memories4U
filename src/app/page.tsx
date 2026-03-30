@@ -59,6 +59,10 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+
+          <div style={{ marginTop: 24, fontWeight: 800, color: '#ff2d55' }}>
+            GALERIE_TEST_6_CARDS_VISIBLE
+          </div>
         </div>
       </section>
     </main>
