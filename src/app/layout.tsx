@@ -1,24 +1,25 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
+import { Manrope, Prata } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 
-const displayFont = Cormorant_Garamond({
+const displayFont = Prata({
   subsets: ['latin'],
   variable: '--font-display',
-  weight: ['500', '600', '700'],
+  weight: ['400'],
 });
 
-const bodyFont = DM_Sans({
+const bodyFont = Manrope({
   subsets: ['latin'],
   variable: '--font-body',
-  weight: ['400', '500', '700'],
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
-  title: 'Memories4U | Geburtstagsmomente als digitale Story',
-  description: 'Persoenliche Geburtstags-Stories aus euren Erinnerungen. Schnell bestellt, digital verschenkt, emotional aufbereitet.',
+  title: 'Memories4U | Persoenliche Geburtstagsueberraschungen aus euren Fotos',
+  description:
+    'Aus Fotos und einem kurzen Moment entsteht eine digitale Geburtstags-Story, die persoenlich wirkt, schnell bestellt ist und direkt verschenkt werden kann.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

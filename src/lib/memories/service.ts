@@ -3,9 +3,11 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { getMemoriesConfig } from '@/lib/memories/config';
 import { HttpError } from '@/lib/memories/errors';
 import { getJob, createJob, requireJob, updateJob } from '@/lib/memories/store';
-import { isMakeConfigured, notifyMake } from '@/lib/memories/make-client';
+import { isMakeConfigured } from '@/lib/memories/make-client';
+import { assertStripeConfigured, getStripeClient } from '@/lib/memories/stripe';
 
 import type {
+  CheckoutSessionResponse,
   CreateMemoryJobInput,
   DeliveryCommand,
   MakeUpdateEvent,
@@ -32,6 +34,34 @@ function assertNonEmptyString(value: unknown, field: string) {
   return value.trim();
 }
 
+function assertEmail(value: unknown, field: string) {
+  const email = assertNonEmptyString(value, field);
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailPattern.test(email)) {
+    throw new HttpError(400, `${field} must be a valid email address.`);
+  }
+
+  return email;
+}
+
+function assertHttpUrl(value: unknown, field: string) {
+  const candidate = assertNonEmptyString(value, field);
+
+  let parsed: URL;
+  try {
+    parsed = new URL(candidate);
+  } catch {
+    throw new HttpError(400, `${field} must be a valid URL.`);
+  }
+
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new HttpError(400, `${field} must use http or https.`);
+  }
+
+  return parsed.toString();
+}
+
 function assertSourceImages(images: unknown): SourceImage[] {
   if (!Array.isArray(images) || images.length === 0) {
     throw new HttpError(400, 'sourceImages must contain at least one image.');
@@ -44,7 +74,7 @@ function assertSourceImages(images: unknown): SourceImage[] {
 
     const candidate = image as Record<string, unknown>;
     return {
-      url: assertNonEmptyString(candidate.url, `sourceImages[${index}].url`),
+      url: assertHttpUrl(candidate.url, `sourceImages[${index}].url`),
       ...(typeof candidate.label === 'string' && candidate.label.trim()
         ? { label: candidate.label.trim() }
         : {}),
@@ -64,7 +94,7 @@ export function parseCreateMemoryJobInput(input: unknown): CreateMemoryJobInput 
   const record = assertRecord(input, 'body');
 
   return {
-    email: assertNonEmptyString(record.email, 'email'),
+    email: assertEmail(record.email, 'email'),
     customerName:
       typeof record.customerName === 'string' && record.customerName.trim()
         ? record.customerName.trim()
@@ -117,7 +147,7 @@ export function parseMediaCommand(input: unknown): MediaCommand {
       provider: record.provider,
       asset: {
         provider: record.provider,
-        url: assertNonEmptyString(asset.url, 'asset.url'),
+        url: assertHttpUrl(asset.url, 'asset.url'),
         publicId: typeof asset.publicId === 'string' ? asset.publicId : undefined,
         format: typeof asset.format === 'string' ? asset.format : undefined,
         width: typeof asset.width === 'number' ? asset.width : undefined,
@@ -215,6 +245,18 @@ function jobToStatusResponse(job: MemoryJob): MemoryStatusResponse {
   };
 }
 
+function assertJobUnlocked(job: MemoryJob, action: string) {
+  if (!job.unlocked) {
+    throw new HttpError(409, `Job must be unlocked before ${action}.`);
+  }
+}
+
+function assertStatusIn(job: MemoryJob, allowed: MemoryJob['status'][], action: string) {
+  if (!allowed.includes(job.status)) {
+    throw new HttpError(409, `Cannot ${action} while job is ${job.status}.`);
+  }
+}
+
 async function verifyAccess(jobId: string, accessToken?: string) {
   const job = await requireJob(jobId);
   if (!accessToken || accessToken !== job.accessToken) {
@@ -222,18 +264,6 @@ async function verifyAccess(jobId: string, accessToken?: string) {
   }
 
   return job;
-}
-
-function makePayloadFromJob(job: MemoryJob) {
-  return {
-    jobId: job.id,
-    email: job.email,
-    customerName: job.customerName,
-    storyPrompt: job.storyPrompt,
-    sourceImages: job.sourceImages,
-    paymentReference: job.paymentReference,
-    metadata: job.metadata,
-  };
 }
 
 export async function createMemoryJobRecord(input: CreateMemoryJobInput) {
@@ -254,26 +284,13 @@ export async function createMemoryJobRecord(input: CreateMemoryJobInput) {
     updatedAt: timestamp,
   };
 
-  await createJob(job);
-
-  let warning: string | undefined;
-  if (isMakeConfigured()) {
-    try {
-      await notifyMake({
-        action: 'create',
-        ...makePayloadFromJob(job),
-      });
-    } catch (error) {
-      warning = error instanceof Error ? error.message : 'Make create dispatch failed.';
-    }
-  }
+  const created = await createJob(job);
 
   return {
-    jobId: job.id,
-    accessToken: job.accessToken,
-    status: job.status,
-    statusUrl: `${appUrl.replace(/\/$/, '')}/api/memories/${job.id}/status?accessToken=${job.accessToken}`,
-    warning,
+    jobId: created.id,
+    accessToken: created.accessToken,
+    status: created.status,
+    statusUrl: `${appUrl.replace(/\/$/, '')}/api/memories/${created.id}/status?accessToken=${created.accessToken}`,
   };
 }
 
@@ -287,41 +304,44 @@ export async function unlockMemoryJob(jobId: string, input: UnlockJobInput, acce
     await verifyAccess(jobId, accessToken);
   }
 
-  const updated = await updateJob(jobId, (job) => ({
-    ...job,
-    unlocked: true,
-    paymentReference: input.paymentReference,
-    status: isMakeConfigured() ? 'queued' : 'unlocked',
-    lastError: undefined,
-    updatedAt: nowIso(),
-  }));
+  await requireJob(jobId);
 
-  if (isMakeConfigured()) {
-    try {
-      await notifyMake({
-        action: 'unlock',
-        ...makePayloadFromJob(updated),
-      });
-    } catch (error) {
-      return updateJob(jobId, (job) => ({
+  const updated = await updateJob(jobId, (job) => ({
+    ...(() => {
+      if (job.unlocked) {
+        return {
+          ...job,
+          paymentReference: job.paymentReference || input.paymentReference,
+          paymentProvider: job.paymentProvider || input.provider || 'manual',
+          updatedAt: nowIso(),
+        };
+      }
+
+      if (job.status !== 'created') {
+        throw new HttpError(409, `Cannot unlock job while it is ${job.status}.`);
+      }
+
+      return {
         ...job,
-        status: 'unlocked',
-        lastError: error instanceof Error ? error.message : 'Make unlock dispatch failed.',
+        unlocked: true,
+        paymentReference: input.paymentReference,
+        paymentProvider: input.provider || 'manual',
+        status: isMakeConfigured() ? 'queued' : 'unlocked',
+        lastError: undefined,
         updatedAt: nowIso(),
-      })).then(jobToStatusResponse);
-    }
-  }
+      };
+    })(),
+  }));
 
   return jobToStatusResponse(updated);
 }
 
 export async function applyMediaCommand(jobId: string, command: MediaCommand) {
   const updated = await updateJob(jobId, (job) => {
-    if (!job.unlocked && command.command === 'request_generation') {
-      throw new HttpError(409, 'Job must be unlocked before generation starts.');
-    }
-
     if (command.command === 'request_generation') {
+      assertJobUnlocked(job, 'generation starts');
+      assertStatusIn(job, ['unlocked', 'failed'], 'queue generation');
+
       return {
         ...job,
         status: 'queued',
@@ -331,6 +351,9 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
     }
 
     if (command.command === 'mark_processing') {
+      assertJobUnlocked(job, 'processing starts');
+      assertStatusIn(job, ['queued', 'processing'], 'mark job as processing');
+
       return {
         ...job,
         status: 'processing',
@@ -340,6 +363,9 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
     }
 
     if (command.command === 'mark_preview_ready') {
+      assertJobUnlocked(job, 'preview delivery');
+      assertStatusIn(job, ['queued', 'processing', 'preview_ready'], 'mark preview ready');
+
       return {
         ...job,
         status: 'preview_ready',
@@ -350,6 +376,9 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
     }
 
     if (command.command === 'mark_completed') {
+      assertJobUnlocked(job, 'completion');
+      assertStatusIn(job, ['queued', 'processing', 'preview_ready', 'completed'], 'mark completed');
+
       return {
         ...job,
         status: 'completed',
@@ -359,6 +388,9 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
       };
     }
 
+    assertJobUnlocked(job, 'failure updates');
+    assertStatusIn(job, ['queued', 'processing', 'preview_ready', 'failed'], 'mark failed');
+
     return {
       ...job,
       status: 'failed',
@@ -367,37 +399,28 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
     };
   });
 
-  if (command.command === 'request_generation' && command.provider === 'make' && isMakeConfigured()) {
-    try {
-      await notifyMake({
-        action: 'generate',
-        ...makePayloadFromJob(updated),
-      });
-    } catch (error) {
-      return updateJob(jobId, (job) => ({
-        ...job,
-        status: 'unlocked',
-        lastError: error instanceof Error ? error.message : 'Make generation dispatch failed.',
-        updatedAt: nowIso(),
-      })).then(jobToStatusResponse);
-    }
-  }
-
   return jobToStatusResponse(updated);
 }
 
 export async function recordDelivery(jobId: string, command: DeliveryCommand) {
   const updated = await updateJob(jobId, (job) => ({
-    ...job,
-    status: 'delivered',
-    delivery: {
-      channel: command.channel,
-      provider: command.provider,
-      recipient: command.recipient,
-      deliveryId: command.deliveryId,
-      deliveredAt: nowIso(),
-    },
-    updatedAt: nowIso(),
+    ...(() => {
+      assertJobUnlocked(job, 'delivery');
+      assertStatusIn(job, ['completed', 'delivered'], 'record delivery');
+
+      return {
+        ...job,
+        status: 'delivered',
+        delivery: {
+          channel: command.channel,
+          provider: command.provider,
+          recipient: command.recipient,
+          deliveryId: command.deliveryId,
+          deliveredAt: nowIso(),
+        },
+        updatedAt: nowIso(),
+      };
+    })(),
   }));
 
   return jobToStatusResponse(updated);
@@ -449,4 +472,89 @@ export async function getJobForInternalUse(jobId: string) {
 
 export async function hasJob(jobId: string) {
   return Boolean(await getJob(jobId));
+}
+
+export async function createCheckoutSession(
+  jobId: string,
+  accessToken?: string,
+): Promise<CheckoutSessionResponse> {
+  assertStripeConfigured();
+
+  const job = await verifyAccess(jobId, accessToken);
+  if (job.unlocked) {
+    throw new HttpError(409, 'Job is already paid and unlocked.');
+  }
+
+  if (job.status !== 'created') {
+    throw new HttpError(409, `Cannot start checkout while job is ${job.status}.`);
+  }
+
+  const stripe = getStripeClient();
+  const { appUrl, stripePriceId } = getMemoriesConfig();
+  const baseUrl = appUrl.replace(/\/$/, '');
+  const statusUrl = new URL('/status', baseUrl);
+  statusUrl.searchParams.set('jobId', job.id);
+  statusUrl.searchParams.set('accessToken', job.accessToken);
+  statusUrl.searchParams.set('checkout', 'cancelled');
+
+  const successUrl = new URL('/success', baseUrl);
+  successUrl.searchParams.set('jobId', job.id);
+  successUrl.searchParams.set('accessToken', job.accessToken);
+  successUrl.searchParams.set('email', job.email);
+  successUrl.searchParams.set('checkout', 'success');
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    success_url: successUrl.toString(),
+    cancel_url: statusUrl.toString(),
+    line_items: [
+      {
+        price: stripePriceId,
+        quantity: 1,
+      },
+    ],
+    customer_email: job.email,
+    client_reference_id: job.id,
+    metadata: {
+      jobId: job.id,
+    },
+  });
+
+  if (!session.url) {
+    throw new HttpError(502, 'Stripe checkout session did not include a redirect URL.');
+  }
+
+  return {
+    checkoutUrl: session.url,
+    sessionId: session.id,
+  };
+}
+
+export async function finalizeStripeCheckout(
+  session: {
+    id: string;
+    payment_status?: string | null;
+    payment_intent?: string | { id?: string | null } | null;
+    metadata?: Record<string, string> | null;
+  },
+) {
+  const jobId = session.metadata?.jobId;
+
+  if (!jobId) {
+    throw new HttpError(400, 'Stripe checkout session metadata.jobId is required.');
+  }
+
+  if (session.payment_status && session.payment_status !== 'paid') {
+    return null;
+  }
+
+  const paymentReference =
+    typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : session.payment_intent?.id || session.id;
+
+  return unlockMemoryJob(jobId, {
+    paymentReference,
+    provider: 'stripe',
+  });
 }

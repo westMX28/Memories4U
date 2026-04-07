@@ -43,6 +43,7 @@ export type MemoryJob = {
   status: MemoryStatus;
   unlocked: boolean;
   paymentReference?: string;
+  paymentProvider?: 'stripe' | 'manual';
   previewAsset?: MemoryAsset;
   finalAsset?: MemoryAsset;
   delivery?: DeliveryRecord;
@@ -75,6 +76,11 @@ export type MemoryStatusResponse = {
 export type UnlockJobInput = {
   paymentReference: string;
   provider?: 'stripe' | 'manual';
+};
+
+export type CheckoutSessionResponse = {
+  checkoutUrl: string;
+  sessionId: string;
 };
 
 export type MediaCommand =

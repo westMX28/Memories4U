@@ -1,16 +1,19 @@
+import { Badge } from '@/components/ui/badge';
+
 export function Footer() {
   return (
     <footer className="footer">
       <div className="container footer-grid">
         <div>
+          <Badge className="mb-4">white + light blue pass</Badge>
           <div className="footer-title">Memories4U</div>
           <p className="footer-copy">
-            Digitale Geburtstags-Stories fuer Menschen, die kein beliebiges Geschenk verschicken wollen.
+            Fuer Geburtstage, bei denen ein normales Geschenk zu beliebig waere: aus euren Fotos, einem kurzen Moment und viel Gefuehl gebaut.
           </p>
         </div>
         <div className="footer-meta">
-          <span>Frontend-MVP fuer Tally, Stripe, Make und E-Mail-Auslieferung.</span>
-          <span>Aktuelle Statusseite zeigt noch Platzhalter statt Live-Tracking.</span>
+          <span>Persoenlich statt generisch. Digital statt last-minute Stress. Schnell genug fuer enge Deadlines.</span>
+          <span>Start, Bestellung und Status sind bewusst einfach gehalten, damit der Anlass im Vordergrund bleibt.</span>
         </div>
       </div>
     </footer>

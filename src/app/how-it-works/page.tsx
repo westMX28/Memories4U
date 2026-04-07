@@ -1,25 +1,28 @@
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 const steps = [
   {
     step: '01',
-    title: 'Fotos auswaehlen',
-    copy: 'Du laedst die Bilder hoch, auf denen die beteiligten Personen klar erkennbar sind. Das ist der Rohstoff fuer die Story.',
+    title: 'Du waehlst ein oder zwei starke Bilder',
+    copy: 'Keine Galerie, kein Upload-Marathon. Es reichen die Fotos, die den Menschen oder den gemeinsamen Moment sofort treffen.',
   },
   {
     step: '02',
-    title: 'Gemeinsamen Moment beschreiben',
-    copy: 'Ein kurzer Satz zu Stimmung, Ort oder Erinnerung reicht. Der MVP braucht keine lange Historie, sondern einen klaren emotionalen Anker.',
+    title: 'Du beschreibst kurz, worauf es emotional ankommt',
+    copy: 'Ein Satz zu Stimmung, Erinnerung oder Anlass hilft uns mehr als eine lange Anleitung.',
   },
   {
     step: '03',
-    title: 'Checkout abschliessen',
-    copy: 'Die Bezahlung laeuft ueber den bestehenden Flow. Danach startet die Verarbeitung im Hintergrund ohne weitere manuelle Schritte im Frontend.',
+    title: 'Du schliesst die Bestellung direkt ab',
+    copy: 'Nach dem Briefing geht es ohne Umweg in die Bezahlung, damit der Auftrag sicher angelegt ist.',
   },
   {
     step: '04',
-    title: 'Digital erhalten und verschenken',
-    copy: 'Das Ergebnis wird per E-Mail ausgeliefert und kann direkt weitergeschickt oder in eine Geburtstagsnachricht eingebettet werden.',
+    title: 'Du verfolgst den Auftrag bis zur Auslieferung',
+    copy: 'Status, Vorschau und finale Bereitstellung bleiben ueber denselben Link wieder erreichbar.',
   },
 ];
 
@@ -28,10 +31,10 @@ export default function HowItWorksPage() {
     <main className="section page-shell">
       <div className="container">
         <div className="section-heading">
-          <div className="eyebrow">so funktioniert&apos;s</div>
-          <h1 className="h2">Der Flow ist klein gehalten, damit der Anlass im Vordergrund bleibt.</h1>
+          <Badge className="w-fit">so funktioniert&apos;s</Badge>
+          <h1 className="h2">Von der Erinnerung bis zur Geburtstagsueberraschung in vier klaren Schritten.</h1>
           <p className="lead">
-            Diese Route erklaert den aktuellen MVP ehrlich: schneller Intake, bestehende Automationen im Hintergrund, digitale Lieferung am Ende.
+            Memories4U ist absichtlich kein grosser Konfigurator. Der Ablauf ist so gebaut, dass du schnell starten und spaeter trotzdem alles wiederfinden kannst.
           </p>
         </div>
 
@@ -48,28 +51,32 @@ export default function HowItWorksPage() {
         </div>
 
         <div className="grid grid-2 section-top">
-          <div className="card">
-            <div className="eyebrow">was der flow heute nicht verspricht</div>
-            <ul className="feature-list">
-              <li>Kein Live-Preview vor dem Checkout</li>
-              <li>Keine selbstbediente Bearbeitung nach dem Absenden</li>
-              <li>Kein verifiziertes Live-Tracking im Frontend</li>
-            </ul>
-          </div>
-          <div className="card">
-            <div className="eyebrow">trotzdem klar genug fuer launch</div>
-            <p className="copy">
-              Die Seiten setzen Erwartungshaltung sauber und lassen den bestehenden Maschinenraum unangetastet. Genau das macht den Slice schnell lieferbar.
-            </p>
-            <div className="btn-row">
-              <Link className="btn btn-primary" href="/memories">
-                Zum Produkt
-              </Link>
-              <Link className="btn btn-secondary" href="/status">
-                Statusseite ansehen
-              </Link>
-            </div>
-          </div>
+          <Card className="border-white/90 bg-white/78">
+            <CardContent className="p-6">
+              <div className="eyebrow">was du wissen solltest</div>
+              <ul className="feature-list">
+                <li>Kein Live-Editor vor dem Checkout</li>
+                <li>Das Briefing soll schnell gehen und nicht erschlagen</li>
+                <li>Der aktuelle Stand bleibt spaeter jederzeit abrufbar</li>
+              </ul>
+            </CardContent>
+          </Card>
+          <Card className="border-white/90 bg-white/78">
+            <CardContent className="p-6">
+              <div className="eyebrow">wenn du bereit bist</div>
+              <p className="copy">
+                Wenn der Anlass klar ist und du die passenden Bilder hast, ist der Rest nur noch ein kurzer Auftrag.
+              </p>
+              <div className="btn-row">
+                <Button asChild>
+                  <Link href="/memories">Jetzt starten</Link>
+                </Button>
+                <Button asChild variant="secondary">
+                  <Link href="/status">Bestehenden Status oeffnen</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>
