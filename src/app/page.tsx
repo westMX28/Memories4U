@@ -114,7 +114,7 @@ export default function HomePage() {
               </div>
               <div className="mt-6 inline-flex w-fit items-center gap-3 rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-[0_12px_30px_rgba(148,163,184,0.14)] backdrop-blur-sm">
                 <span className="inline-flex h-2.5 w-2.5 rounded-full bg-sky-400" aria-hidden="true" />
-                Tailwind und shadcn/ui sind jetzt im Frontend aktiv verdrahtet.
+                In wenigen Minuten gestartet, persoenlich genug zum echten Verschenken.
               </div>
             </div>
 
