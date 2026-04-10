@@ -16,7 +16,13 @@ export function jsonOk(body: unknown, init?: ResponseInit) {
 
 export function jsonError(error: unknown) {
   if (error instanceof HttpError) {
-    return NextResponse.json({ error: error.message }, { status: error.status });
+    return NextResponse.json(
+      {
+        error: error.message,
+        ...(error.code ? { code: error.code } : {}),
+      },
+      { status: error.status },
+    );
   }
 
   console.error(error);

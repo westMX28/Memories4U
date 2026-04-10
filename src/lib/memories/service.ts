@@ -1,7 +1,8 @@
-import { randomBytes, randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
 import { getMemoriesConfig } from '@/lib/memories/config';
 import { HttpError } from '@/lib/memories/errors';
+import { stageSourceImageUpload } from '@/lib/memories/source-image-staging';
 import { getJob, createJob, requireJob, updateJob } from '@/lib/memories/store';
 import { isMakeConfigured } from '@/lib/memories/make-client';
 import { assertStripeConfigured, getStripeClient } from '@/lib/memories/stripe';
@@ -9,12 +10,14 @@ import { assertStripeConfigured, getStripeClient } from '@/lib/memories/stripe';
 import type {
   CheckoutSessionResponse,
   CreateMemoryJobInput,
+  CreateMemoryJobResponse,
   DeliveryCommand,
   MakeUpdateEvent,
   MediaCommand,
   MemoryJob,
   MemoryStatusResponse,
   SourceImage,
+  SupportedSourceImageMimeType,
   UnlockJobInput,
 } from '@/lib/memories/contracts';
 
@@ -62,10 +65,26 @@ function assertHttpUrl(value: unknown, field: string) {
   return parsed.toString();
 }
 
-function assertSourceImages(images: unknown): SourceImage[] {
-  if (!Array.isArray(images) || images.length === 0) {
+function optionalTrimmedString(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function assertSourceImageCount(images: unknown[]) {
+  if (images.length === 0) {
     throw new HttpError(400, 'sourceImages must contain at least one image.');
   }
+
+  if (images.length > 2) {
+    throw new HttpError(400, 'sourceImages accepts at most two images.');
+  }
+}
+
+function assertSourceImages(images: unknown): SourceImage[] {
+  if (!Array.isArray(images)) {
+    throw new HttpError(400, 'sourceImages must contain at least one image.');
+  }
+
+  assertSourceImageCount(images);
 
   return images.map((image, index) => {
     if (!image || typeof image !== 'object') {
@@ -74,9 +93,10 @@ function assertSourceImages(images: unknown): SourceImage[] {
 
     const candidate = image as Record<string, unknown>;
     return {
+      storage: 'remote_url',
       url: assertHttpUrl(candidate.url, `sourceImages[${index}].url`),
-      ...(typeof candidate.label === 'string' && candidate.label.trim()
-        ? { label: candidate.label.trim() }
+      ...(optionalTrimmedString(candidate.label)
+        ? { label: optionalTrimmedString(candidate.label) }
         : {}),
     };
   });
@@ -90,25 +110,146 @@ function assertRecord(value: unknown, field: string) {
   return value as Record<string, unknown>;
 }
 
+function getFormField(formData: FormData, name: string) {
+  const value = formData.get(name);
+  return typeof value === 'string' ? value : undefined;
+}
+
+function getOptionalFormField(formData: FormData, name: string) {
+  return optionalTrimmedString(getFormField(formData, name));
+}
+
+function getOptionalFormFile(formData: FormData, names: string[]) {
+  for (const name of names) {
+    const value = formData.get(name);
+    if (value instanceof File) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function parseMetadataRecord(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const normalized = Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([, entry]) => typeof entry === 'string' && entry.trim())
+      .map(([key, entry]) => [key, String(entry).trim()]),
+  );
+
+  return Object.keys(normalized).length > 0 ? normalized : undefined;
+}
+
+function parseFormMetadata(formData: FormData) {
+  const metadataField = getOptionalFormField(formData, 'metadata');
+  const occasion = getOptionalFormField(formData, 'occasion');
+  const metadata = metadataField
+    ? (() => {
+        try {
+          return parseMetadataRecord(JSON.parse(metadataField));
+        } catch {
+          throw new HttpError(400, 'metadata must be valid JSON when provided.');
+        }
+      })()
+    : undefined;
+
+  if (!occasion) {
+    return metadata;
+  }
+
+  return {
+    ...(metadata || {}),
+    occasion,
+  };
+}
+
+function normalizeUploadedMimeType(
+  mimeType: string,
+  field: string,
+): SupportedSourceImageMimeType {
+  if (mimeType === 'image/png' || mimeType === 'image/jpeg') {
+    return mimeType;
+  }
+
+  throw new HttpError(400, `${field} must be a PNG or JPG image.`);
+}
+
+function assertSupportedUploadExtension(filename: string, field: string) {
+  const normalized = filename.trim().toLowerCase();
+  if (normalized.endsWith('.png') || normalized.endsWith('.jpg') || normalized.endsWith('.jpeg')) {
+    return;
+  }
+
+  throw new HttpError(400, `${field} must use a .png, .jpg, or .jpeg filename.`);
+}
+
+async function fileToSourceImage(
+  file: File,
+  field: string,
+  label: string,
+): Promise<SourceImage> {
+  const { maxSourceImageBytes } = getMemoriesConfig();
+
+  if (!file.size) {
+    throw new HttpError(400, `${field} is required.`);
+  }
+
+  if (file.size > maxSourceImageBytes) {
+    throw new HttpError(
+      413,
+      `${field} exceeds the ${Math.max(1, Math.floor(maxSourceImageBytes / 1_000_000))}MB upload limit for v1.`,
+    );
+  }
+
+  const filename = file.name.trim() || `${field}.upload`;
+  const mimeType = normalizeUploadedMimeType(file.type, field);
+  assertSupportedUploadExtension(filename, field);
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const normalizedFile = new File([buffer], filename, { type: mimeType });
+  const staged = await stageSourceImageUpload(normalizedFile, mimeType, field, label);
+
+  return {
+    ...staged,
+    sha256: createHash('sha256').update(buffer).digest('hex'),
+  };
+}
+
 export function parseCreateMemoryJobInput(input: unknown): CreateMemoryJobInput {
   const record = assertRecord(input, 'body');
 
   return {
     email: assertEmail(record.email, 'email'),
-    customerName:
-      typeof record.customerName === 'string' && record.customerName.trim()
-        ? record.customerName.trim()
-        : undefined,
+    customerName: optionalTrimmedString(record.customerName),
     storyPrompt: assertNonEmptyString(record.storyPrompt, 'storyPrompt'),
     sourceImages: assertSourceImages(record.sourceImages),
-    metadata:
-      record.metadata && typeof record.metadata === 'object' && !Array.isArray(record.metadata)
-        ? Object.fromEntries(
-            Object.entries(record.metadata as Record<string, unknown>)
-              .filter(([, value]) => typeof value === 'string' && value.trim())
-              .map(([key, value]) => [key, String(value).trim()]),
-          )
-        : undefined,
+    metadata: parseMetadataRecord(record.metadata),
+  };
+}
+
+export async function parseCreateMemoryJobFormData(formData: FormData): Promise<CreateMemoryJobInput> {
+  const image1 = getOptionalFormFile(formData, ['image1', 'sourceImage1', 'file1']);
+  const image2 = getOptionalFormFile(formData, ['image2', 'sourceImage2', 'file2']);
+
+  if (!image1) {
+    throw new HttpError(400, 'image1 is required.');
+  }
+
+  const sourceImages = [await fileToSourceImage(image1, 'image1', 'customer')];
+  if (image2) {
+    sourceImages.push(await fileToSourceImage(image2, 'image2', 'recipient'));
+  }
+
+  return {
+    email: assertEmail(getFormField(formData, 'email'), 'email'),
+    customerName: getOptionalFormField(formData, 'customerName'),
+    storyPrompt: assertNonEmptyString(getFormField(formData, 'storyPrompt'), 'storyPrompt'),
+    sourceImages,
+    metadata: parseFormMetadata(formData),
   };
 }
 
@@ -267,7 +408,7 @@ async function verifyAccess(jobId: string, accessToken?: string) {
 }
 
 export async function createMemoryJobRecord(input: CreateMemoryJobInput) {
-  const { appUrl, cloudinaryCloudName } = getMemoriesConfig();
+  const { cloudinaryCloudName } = getMemoriesConfig();
   const timestamp = nowIso();
   const job: MemoryJob = {
     id: randomUUID(),
@@ -290,7 +431,18 @@ export async function createMemoryJobRecord(input: CreateMemoryJobInput) {
     jobId: created.id,
     accessToken: created.accessToken,
     status: created.status,
-    statusUrl: `${appUrl.replace(/\/$/, '')}/api/memories/${created.id}/status?accessToken=${created.accessToken}`,
+    sourceImages: created.sourceImages,
+  };
+}
+
+export function toCreateMemoryJobResponse(
+  job: Awaited<ReturnType<typeof createMemoryJobRecord>>,
+  baseUrl: string,
+): CreateMemoryJobResponse {
+  const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
+  return {
+    ...job,
+    statusUrl: `${normalizedBaseUrl}/api/memories/${job.jobId}/status?accessToken=${job.accessToken}`,
   };
 }
 
@@ -299,11 +451,7 @@ export async function getMemoryJobStatus(jobId: string, accessToken?: string) {
   return jobToStatusResponse(job);
 }
 
-export async function unlockMemoryJob(jobId: string, input: UnlockJobInput, accessToken?: string) {
-  if (accessToken) {
-    await verifyAccess(jobId, accessToken);
-  }
-
+export async function unlockMemoryJob(jobId: string, input: UnlockJobInput) {
   await requireJob(jobId);
 
   const updated = await updateJob(jobId, (job) => ({
@@ -477,6 +625,7 @@ export async function hasJob(jobId: string) {
 export async function createCheckoutSession(
   jobId: string,
   accessToken?: string,
+  baseUrlOverride?: string,
 ): Promise<CheckoutSessionResponse> {
   assertStripeConfigured();
 
@@ -491,7 +640,7 @@ export async function createCheckoutSession(
 
   const stripe = getStripeClient();
   const { appUrl, stripePriceId } = getMemoriesConfig();
-  const baseUrl = appUrl.replace(/\/$/, '');
+  const baseUrl = (baseUrlOverride || appUrl).replace(/\/$/, '');
   const statusUrl = new URL('/status', baseUrl);
   statusUrl.searchParams.set('jobId', job.id);
   statusUrl.searchParams.set('accessToken', job.accessToken);

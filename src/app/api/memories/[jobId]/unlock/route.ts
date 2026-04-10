@@ -5,30 +5,20 @@ import { parseUnlockJobInput, unlockMemoryJob } from '@/lib/memories/service';
 
 export const runtime = 'nodejs';
 
-function hasInternalAuth(request: Request) {
-  return Boolean(
-    request.headers.get('authorization') || request.headers.get('x-memories-internal-secret'),
-  );
-}
-
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ jobId: string }> },
 ) {
   try {
     const { jobId } = await params;
-    const accessToken = request.headers.get('x-memories-access-token') || undefined;
-
-    if (hasInternalAuth(request)) {
-      assertInternalRequest(request);
-    } else {
-      if (!accessToken) {
-        throw new HttpError(401, 'Internal auth or x-memories-access-token is required.');
-      }
+    if (!request.headers.get('authorization') && !request.headers.get('x-memories-internal-secret')) {
+      throw new HttpError(401, 'Internal authorization is required for payment confirmation.');
     }
 
+    assertInternalRequest(request);
+
     const body = await readJson<unknown>(request);
-    return jsonOk(await unlockMemoryJob(jobId, parseUnlockJobInput(body), accessToken));
+    return jsonOk(await unlockMemoryJob(jobId, parseUnlockJobInput(body)));
   } catch (error) {
     return jsonError(error);
   }

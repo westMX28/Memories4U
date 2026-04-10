@@ -1,7 +1,15 @@
 import { getMemoriesConfig } from '@/lib/memories/config';
 import { HttpError } from '@/lib/memories/errors';
 
-import type { DeliveryRecord, MemoryAsset, MemoryJob, MemoryStatus } from '@/lib/memories/contracts';
+import { memoryStatuses, supportedSourceImageMimeTypes } from '@/lib/memories/contracts';
+
+import type {
+  DeliveryRecord,
+  MemoryAsset,
+  MemoryJob,
+  MemoryStatus,
+  SupportedSourceImageMimeType,
+} from '@/lib/memories/contracts';
 
 type MakeAction = 'create' | 'status' | 'unlock' | 'update';
 
@@ -13,6 +21,18 @@ type MemoryJobRow = {
   storyPrompt: string;
   sourceImage1Url?: string;
   sourceImage2Url?: string;
+  sourceImage1DataUrl?: string;
+  sourceImage2DataUrl?: string;
+  sourceImage1MimeType?: SupportedSourceImageMimeType;
+  sourceImage2MimeType?: SupportedSourceImageMimeType;
+  sourceImage1Filename?: string;
+  sourceImage2Filename?: string;
+  sourceImage1Label?: string;
+  sourceImage2Label?: string;
+  sourceImage1SizeBytes?: number;
+  sourceImage2SizeBytes?: number;
+  sourceImage1Sha256?: string;
+  sourceImage2Sha256?: string;
   status: MemoryStatus;
   paymentState?: string;
   paymentReference?: string;
@@ -61,6 +81,59 @@ function asOptionalString(value: unknown) {
   return typeof value === 'string' && value.trim() ? value : undefined;
 }
 
+function asHttpUrl(value: unknown, field: string) {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new HttpError(502, `Make response did not include a valid ${field}.`);
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new HttpError(502, `Make response did not include a valid ${field}.`);
+  }
+
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new HttpError(502, `Make response did not include a valid ${field}.`);
+  }
+
+  return parsed.toString();
+}
+
+function asMemoryStatus(value: unknown): MemoryStatus {
+  if (typeof value !== 'string' || !memoryStatuses.includes(value as MemoryStatus)) {
+    throw new HttpError(502, 'Make response did not include a valid job status.');
+  }
+
+  return value as MemoryStatus;
+}
+
+function asIsoTimestamp(value: unknown, field: string) {
+  if (typeof value !== 'string' || !value.trim() || Number.isNaN(Date.parse(value))) {
+    throw new HttpError(502, `Make response did not include a valid ${field}.`);
+  }
+
+  return value;
+}
+
+function asOptionalSupportedMimeType(
+  value: unknown,
+  field: string,
+): SupportedSourceImageMimeType | undefined {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+
+  if (
+    typeof value !== 'string' ||
+    !supportedSourceImageMimeTypes.includes(value as SupportedSourceImageMimeType)
+  ) {
+    throw new HttpError(502, `Make response did not include a valid ${field}.`);
+  }
+
+  return value as SupportedSourceImageMimeType;
+}
+
 function asMemoryAsset(value: unknown): MemoryAsset | undefined {
   if (!isRecord(value) || typeof value.url !== 'string') {
     return undefined;
@@ -73,7 +146,7 @@ function asMemoryAsset(value: unknown): MemoryAsset | undefined {
 
   return {
     provider,
-    url: value.url,
+    url: asHttpUrl(value.url, 'asset.url'),
     publicId: asOptionalString(value.publicId),
     format: asOptionalString(value.format),
     width: typeof value.width === 'number' ? value.width : undefined,
@@ -91,10 +164,7 @@ function asDeliveryRecord(value: unknown): DeliveryRecord | undefined {
     provider: value.provider === 'make' || value.provider === 'manual' ? value.provider : 'make',
     recipient: value.recipient,
     deliveryId: asOptionalString(value.deliveryId),
-    deliveredAt:
-      typeof value.deliveredAt === 'string' && value.deliveredAt
-        ? value.deliveredAt
-        : new Date().toISOString(),
+    deliveredAt: asIsoTimestamp(value.deliveredAt, 'delivery.deliveredAt'),
   };
 }
 
@@ -129,7 +199,19 @@ function extractRow(payload: unknown): MemoryJobRow {
     storyPrompt: raw.storyPrompt,
     sourceImage1Url: asOptionalString(raw.sourceImage1Url),
     sourceImage2Url: asOptionalString(raw.sourceImage2Url),
-    status: raw.status as MemoryStatus,
+    sourceImage1DataUrl: asOptionalString(raw.sourceImage1DataUrl),
+    sourceImage2DataUrl: asOptionalString(raw.sourceImage2DataUrl),
+    sourceImage1MimeType: asOptionalSupportedMimeType(raw.sourceImage1MimeType, 'sourceImage1MimeType'),
+    sourceImage2MimeType: asOptionalSupportedMimeType(raw.sourceImage2MimeType, 'sourceImage2MimeType'),
+    sourceImage1Filename: asOptionalString(raw.sourceImage1Filename),
+    sourceImage2Filename: asOptionalString(raw.sourceImage2Filename),
+    sourceImage1Label: asOptionalString(raw.sourceImage1Label),
+    sourceImage2Label: asOptionalString(raw.sourceImage2Label),
+    sourceImage1SizeBytes: typeof raw.sourceImage1SizeBytes === 'number' ? raw.sourceImage1SizeBytes : undefined,
+    sourceImage2SizeBytes: typeof raw.sourceImage2SizeBytes === 'number' ? raw.sourceImage2SizeBytes : undefined,
+    sourceImage1Sha256: asOptionalString(raw.sourceImage1Sha256),
+    sourceImage2Sha256: asOptionalString(raw.sourceImage2Sha256),
+    status: asMemoryStatus(raw.status),
     paymentState: asOptionalString(raw.paymentState),
     paymentReference: asOptionalString(raw.paymentReference),
     paymentProvider: raw.paymentProvider === 'stripe' || raw.paymentProvider === 'manual' ? raw.paymentProvider : undefined,
@@ -137,8 +219,8 @@ function extractRow(payload: unknown): MemoryJobRow {
     finalAssetUrl: asOptionalString(raw.finalAssetUrl),
     deliveryEmail: asOptionalString(raw.deliveryEmail),
     lastError: asOptionalString(raw.lastError),
-    createdAt: raw.createdAt,
-    updatedAt: raw.updatedAt,
+    createdAt: asIsoTimestamp(raw.createdAt, 'createdAt'),
+    updatedAt: asIsoTimestamp(raw.updatedAt, 'updatedAt'),
     previewAsset: asMemoryAsset(raw.previewAsset),
     finalAsset: asMemoryAsset(raw.finalAsset),
     delivery: asDeliveryRecord(raw.delivery),
@@ -153,14 +235,29 @@ function extractRow(payload: unknown): MemoryJobRow {
 }
 
 function jobToRow(job: MemoryJob): MemoryJobRow {
+  const sourceImage1 = job.sourceImages[0];
+  const sourceImage2 = job.sourceImages[1];
+
   return {
     jobId: job.id,
     accessToken: job.accessToken,
     email: job.email,
     customerName: job.customerName,
     storyPrompt: job.storyPrompt,
-    sourceImage1Url: job.sourceImages[0]?.url,
-    sourceImage2Url: job.sourceImages[1]?.url,
+    sourceImage1Url: sourceImage1?.url,
+    sourceImage2Url: sourceImage2?.url,
+    sourceImage1DataUrl: sourceImage1?.dataUrl,
+    sourceImage2DataUrl: sourceImage2?.dataUrl,
+    sourceImage1MimeType: sourceImage1?.mimeType,
+    sourceImage2MimeType: sourceImage2?.mimeType,
+    sourceImage1Filename: sourceImage1?.filename,
+    sourceImage2Filename: sourceImage2?.filename,
+    sourceImage1Label: sourceImage1?.label,
+    sourceImage2Label: sourceImage2?.label,
+    sourceImage1SizeBytes: sourceImage1?.sizeBytes,
+    sourceImage2SizeBytes: sourceImage2?.sizeBytes,
+    sourceImage1Sha256: sourceImage1?.sha256,
+    sourceImage2Sha256: sourceImage2?.sha256,
     status: job.status,
     paymentState: job.unlocked ? 'paid' : 'pending',
     paymentReference: job.paymentReference,
@@ -178,6 +275,29 @@ function jobToRow(job: MemoryJob): MemoryJobRow {
   };
 }
 
+function rowSourceImageToContract(
+  row: MemoryJobRow,
+  index: 1 | 2,
+): MemoryJob['sourceImages'][number] | undefined {
+  const url = index === 1 ? row.sourceImage1Url : row.sourceImage2Url;
+  const dataUrl = index === 1 ? row.sourceImage1DataUrl : row.sourceImage2DataUrl;
+
+  if (!url && !dataUrl) {
+    return undefined;
+  }
+
+  return {
+    storage: dataUrl ? 'inline_data_url' : 'remote_url',
+    url,
+    dataUrl,
+    mimeType: index === 1 ? row.sourceImage1MimeType : row.sourceImage2MimeType,
+    filename: index === 1 ? row.sourceImage1Filename : row.sourceImage2Filename,
+    label: index === 1 ? row.sourceImage1Label : row.sourceImage2Label,
+    sizeBytes: index === 1 ? row.sourceImage1SizeBytes : row.sourceImage2SizeBytes,
+    sha256: index === 1 ? row.sourceImage1Sha256 : row.sourceImage2Sha256,
+  };
+}
+
 export function rowToJob(row: MemoryJobRow): MemoryJob {
   return {
     id: row.jobId,
@@ -185,9 +305,9 @@ export function rowToJob(row: MemoryJobRow): MemoryJob {
     email: row.email,
     customerName: row.customerName,
     storyPrompt: row.storyPrompt,
-    sourceImages: [row.sourceImage1Url, row.sourceImage2Url]
-      .filter((value): value is string => typeof value === 'string' && value.length > 0)
-      .map((url) => ({ url })),
+    sourceImages: [rowSourceImageToContract(row, 1), rowSourceImageToContract(row, 2)].filter(
+      (value): value is NonNullable<typeof value> => Boolean(value),
+    ),
     status: row.status,
     unlocked: row.paymentState === 'paid' || row.status !== 'created',
     paymentReference: row.paymentReference,
@@ -283,10 +403,18 @@ async function callMake(request: MakeRequest) {
     }
 
     if (response.status === 204) {
+      if (request.action !== 'status') {
+        throw new HttpError(502, `Make webhook did not return a canonical row for ${request.action}.`);
+      }
+
       return null;
     }
 
     const payload = await parseMakeResponse(response);
+    if (payload === null && request.action !== 'status') {
+      throw new HttpError(502, `Make webhook did not return a canonical row for ${request.action}.`);
+    }
+
     if (request.action === 'status' && (payload === null || isEmptyObject(payload))) {
       return null;
     }

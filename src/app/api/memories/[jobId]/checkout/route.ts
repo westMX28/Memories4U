@@ -1,4 +1,5 @@
 import { HttpError } from '@/lib/memories/errors';
+import { resolvePublicAppUrl } from '@/lib/memories/public-flow';
 import { createCheckoutSession } from '@/lib/memories/service';
 import { jsonError, jsonOk } from '@/lib/memories/http';
 
@@ -16,7 +17,9 @@ export async function POST(
       throw new HttpError(401, 'x-memories-access-token is required.');
     }
 
-    return jsonOk(await createCheckoutSession(jobId, accessToken), { status: 201 });
+    return jsonOk(await createCheckoutSession(jobId, accessToken, resolvePublicAppUrl(request)), {
+      status: 201,
+    });
   } catch (error) {
     return jsonError(error);
   }

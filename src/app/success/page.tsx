@@ -9,6 +9,7 @@ export default async function SuccessPage({
   searchParams: Promise<{ jobId?: string; accessToken?: string; email?: string; checkout?: string }>;
 }) {
   const params = await searchParams;
+  const paymentConfirmed = params.checkout === 'success';
   const statusHref =
     params.jobId && params.accessToken
       ? `/status?jobId=${encodeURIComponent(params.jobId)}&accessToken=${encodeURIComponent(params.accessToken)}`
@@ -20,21 +21,26 @@ export default async function SuccessPage({
         <Card className="success-shell border-white/90 bg-white/82">
           <CardContent className="p-8 text-center sm:p-10">
             <Badge className="success-badge mx-auto w-fit">
-              {params.checkout === 'success' ? 'Bezahlung bestaetigt' : 'Auftrag erfolgreich angelegt'}
+              {paymentConfirmed ? 'Bezahlung bestaetigt' : 'Auftrag gespeichert'}
             </Badge>
-            <h1 className="h2">Dein Auftrag ist gesichert.</h1>
+            <h1 className="h2">
+              {paymentConfirmed ? 'Dein Auftrag ist bestaetigt und sicher gespeichert.' : 'Dein Auftrag ist gespeichert.'}
+            </h1>
             <p className="lead">
-              Dein Briefing ist gespeichert. Von hier aus kannst du jederzeit zum Status wechseln und nachsehen, wie weit die Story ist.
+              {paymentConfirmed
+                ? 'Dein Briefing und deine Zahlung sind eingegangen. Die Erfolgsseite bestaetigt nur den Auftrag. Fuer jeden weiteren Fortschritt wechselst du von hier aus in den Status.'
+                : 'Dein Briefing ist gespeichert. Wechsle zum Status, um die Bestellung spaeter wieder aufzurufen oder eine offene Zahlung fortzusetzen.'}
             </p>
-            {params.jobId ? (
+            <div className="success-ribbon" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            {params.email ? (
               <div className="success-meta">
                 <div>
-                  <strong>Bestellnummer</strong>
-                  <span>{params.jobId}</span>
-                </div>
-                <div>
                   <strong>E-Mail fuer die Zustellung</strong>
-                  <span>{params.email || 'nicht uebergeben'}</span>
+                  <span>{params.email}</span>
                 </div>
               </div>
             ) : null}
@@ -42,19 +48,29 @@ export default async function SuccessPage({
               <Card className="border-white/90 bg-white/76">
                 <CardContent className="p-6">
                   <h3>Was schon erledigt ist</h3>
-                  <p className="copy">Dein Auftrag wurde angelegt und ist direkt mit der Statusseite verbunden.</p>
+                  <p className="copy">
+                    {paymentConfirmed
+                      ? 'Dein Auftrag ist bezahlt, bestaetigt und direkt mit der Statusseite verbunden.'
+                      : 'Dein Auftrag wurde angelegt und bleibt ueber die Statusseite wieder auffindbar.'}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/90 bg-white/76">
                 <CardContent className="p-6">
                   <h3>Was als Naechstes passiert</h3>
-                  <p className="copy">Nach der Bezahlung laeuft die Bearbeitung weiter, bis deine Story fuer die Auslieferung bereit ist.</p>
+                  <p className="copy">
+                    {paymentConfirmed
+                      ? 'Als Naechstes folgen Freigabe, Bearbeitung und spaeter die Zustellung per E-Mail. Diese Seite selbst ist noch keine Lieferbestaetigung.'
+                      : 'Sobald die Zahlung bestaetigt ist, startet die Bearbeitung und endet mit der finalen Zustellung per E-Mail.'}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/90 bg-white/76">
                 <CardContent className="p-6">
                   <h3>Was du spaeter wiederfindest</h3>
-                  <p className="copy">Du kannst denselben Auftrag spaeter erneut oeffnen, Status abrufen und eine offene Zahlung neu starten.</p>
+                  <p className="copy">
+                    Auf demselben Statuspfad kannst du Fortschritt abrufen, eine offene Zahlung neu starten oder die finale Story oeffnen, sobald sie bereit ist.
+                  </p>
                 </CardContent>
               </Card>
             </div>

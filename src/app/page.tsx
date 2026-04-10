@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
 const heroSignals = [
   { value: 'fast', label: 'in wenigen Minuten bestellt' },
@@ -33,8 +34,8 @@ const occasions = [
 const processSteps = [
   {
     label: '01',
-    title: 'Du schickst Fotos und einen Moment',
-    copy: 'Ein oder zwei Bild-Links, eine E-Mail und ein kurzer Satz reichen fuer den Start.',
+    title: 'Du schickst Bilder und einen Moment',
+    copy: 'Ein oder zwei Bilder als PNG oder JPG, eine E-Mail und ein kurzer Satz reichen fuer den Start.',
   },
   {
     label: '02',
@@ -44,7 +45,7 @@ const processSteps = [
   {
     label: '03',
     title: 'Du verfolgst den Fortschritt ohne Nachfragen',
-    copy: 'Status, Vorschau und finale Auslieferung bleiben ueber denselben Auftrag erreichbar.',
+    copy: 'Status, Bearbeitung und finale Auslieferung bleiben ueber denselben Auftrag erreichbar.',
   },
 ];
 
@@ -69,6 +70,10 @@ const faqItems = [
     answer: 'Nein. Ein starkes Bild reicht fuer den Start, ein zweites kann den Moment noch klarer machen.',
   },
   {
+    question: 'Kann ich Dateien direkt als png oder jpg hochladen?',
+    answer: 'Ja. V1 akzeptiert direkte PNG-, JPG- und JPEG-Dateien. Das erste Bild ist Pflicht, ein zweites ist optional.',
+  },
+  {
     question: 'Muss ich vorher schon genau wissen, wie die Story aussehen soll?',
     answer: 'Nein. Beschreibe lieber das Gefuehl, den Anlass oder einen gemeinsamen Moment. Genau dafuer ist das Briefing gedacht.',
   },
@@ -79,6 +84,8 @@ const faqItems = [
 ];
 
 export default function HomePage() {
+  const orderingAvailable = isMemoriesOrderingAvailable();
+
   return (
     <main>
       <section className="hero hero-home">
@@ -86,9 +93,9 @@ export default function HomePage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.94fr)] lg:items-stretch">
             <div className="grid content-center py-8">
               <Badge className="w-fit">digitale geburtstagsueberraschung</Badge>
-              <h1 className="h1">Aus euren Fotos wird ein Geburtstagsgeschenk mit Gefuehl.</h1>
+              <h1 className="h1">Aus euren Bildern wird ein Geburtstagsgeschenk mit Gefuehl.</h1>
               <p className="lead">
-                Memories4U verwandelt Erinnerungen in eine digitale Story, die persoenlich wirkt, schnell bestellt ist und sich sofort weiter verschenken laesst.
+                Memories4U verwandelt Erinnerungen in eine digitale Story, die persoenlich wirkt, schnell bestellt ist und sich sofort weiter verschenken laesst. Fuer den Start reichen ein oder zwei Bilder als direkter Upload.
               </p>
               <div className="mt-6 flex flex-wrap gap-3" aria-label="Produktcharakter">
                 {heroSignals.map((item) => (
@@ -102,19 +109,29 @@ export default function HomePage() {
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild size="lg">
-                  <Link href="/memories">Geburtstags-Story starten</Link>
+                  <Link href={orderingAvailable ? '/memories' : '/status'}>
+                    {orderingAvailable ? 'Geburtstags-Story starten' : 'Bestehenden Auftrag ansehen'}
+                  </Link>
                 </Button>
                 <Button asChild variant="secondary" size="lg">
-                  <Link href="/how-it-works">So funktioniert es</Link>
+                  <Link href={orderingAvailable ? '/how-it-works' : '/memories'}>
+                    {orderingAvailable ? 'So funktioniert es' : 'Bestellpause ansehen'}
+                  </Link>
                 </Button>
               </div>
               <div className="mt-6 max-w-[42ch] rounded-[26px] border border-sky-100 bg-white/70 px-5 py-4 text-[15px] leading-7 text-slate-600 shadow-[0_18px_40px_rgba(148,163,184,0.14)]">
                 <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">gedacht fuer</span>
                 Wenn du etwas verschenken willst, das naeher wirkt als ein Standardprodukt, aber nicht Tage Vorbereitung braucht.
               </div>
-              <div className="mt-6 inline-flex w-fit items-center gap-3 rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-[0_12px_30px_rgba(148,163,184,0.14)] backdrop-blur-sm">
+              {!orderingAvailable ? (
+                <div className="mt-4 max-w-[44ch] rounded-[26px] border border-amber-200 bg-amber-50/90 px-5 py-4 text-[15px] leading-7 text-amber-950 shadow-[0_18px_40px_rgba(217,119,6,0.12)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">bestellstatus</span>
+                  Neue Bestellungen sind aktuell pausiert, bis die Bezahlung in dieser Umgebung wieder live ist. Bestehende Auftraege lassen sich weiterhin ueber die Statusseite verfolgen.
+                </div>
+              ) : null}
+              <div className="brand-note mt-6 inline-flex w-fit items-center gap-3 rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-[0_12px_30px_rgba(148,163,184,0.14)] backdrop-blur-sm">
                 <span className="inline-flex h-2.5 w-2.5 rounded-full bg-sky-400" aria-hidden="true" />
-                In wenigen Minuten gestartet, persoenlich genug zum echten Verschenken.
+                Eine ruhige, hochwertige Geschenkstrecke statt ueberladener Konfiguratorlogik.
               </div>
             </div>
 
@@ -139,7 +156,7 @@ export default function HomePage() {
               <Card className="absolute right-6 top-[228px] z-10 w-[240px] border-white/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(223,239,255,0.9))]">
                 <CardContent className="grid gap-3 p-6">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">was du schickst</span>
-                  <strong>1 bis 2 Fotos</strong>
+                  <strong>1 bis 2 Bilder als Upload</strong>
                   <strong>1 kurzer Erinnerungsmoment</strong>
                   <strong>1 E-Mail fuer die Zustellung</strong>
                 </CardContent>
@@ -204,7 +221,9 @@ export default function HomePage() {
                   <h3>Wenn der Geburtstag naeher rueckt, sollte der Start nicht bremsen.</h3>
                 </div>
                 <Button asChild variant="secondary">
-                  <Link href="/memories">Jetzt Briefing ausfuellen</Link>
+                  <Link href={orderingAvailable ? '/memories' : '/status'}>
+                    {orderingAvailable ? 'Jetzt Briefing ausfuellen' : 'Zum Auftragsstatus'}
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

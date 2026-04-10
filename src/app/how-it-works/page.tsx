@@ -6,8 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 const steps = [
   {
     step: '01',
-    title: 'Du waehlst ein oder zwei starke Bilder',
-    copy: 'Keine Galerie, kein Upload-Marathon. Es reichen die Fotos, die den Menschen oder den gemeinsamen Moment sofort treffen.',
+    title: 'Du teilst ein oder zwei starke Bilder',
+    copy: 'Lade deine Bilder direkt als PNG, JPG oder JPEG hoch. Ein Bild ist Pflicht, ein zweites ist optional.',
   },
   {
     step: '02',
@@ -22,7 +22,7 @@ const steps = [
   {
     step: '04',
     title: 'Du verfolgst den Auftrag bis zur Auslieferung',
-    copy: 'Status, Vorschau und finale Bereitstellung bleiben ueber denselben Link wieder erreichbar.',
+    copy: 'Status, Bearbeitung und finale Bereitstellung bleiben ueber denselben Link wieder erreichbar.',
   },
 ];
 
@@ -30,12 +30,25 @@ export default function HowItWorksPage() {
   return (
     <main className="section page-shell">
       <div className="container">
-        <div className="section-heading">
-          <Badge className="w-fit">so funktioniert&apos;s</Badge>
-          <h1 className="h2">Von der Erinnerung bis zur Geburtstagsueberraschung in vier klaren Schritten.</h1>
-          <p className="lead">
-            Memories4U ist absichtlich kein grosser Konfigurator. Der Ablauf ist so gebaut, dass du schnell starten und spaeter trotzdem alles wiederfinden kannst.
-          </p>
+        <div className="page-hero page-hero-compact">
+          <div className="page-hero-grid">
+            <div className="section-heading">
+              <Badge className="w-fit">so funktioniert&apos;s</Badge>
+              <h1 className="h2">Von der Erinnerung bis zur Geburtstagsueberraschung in vier klaren Schritten.</h1>
+              <p className="lead">
+                Memories4U ist absichtlich kein grosser Konfigurator. Der Ablauf ist so gebaut, dass du schnell starten und spaeter trotzdem alles wiederfinden kannst.
+              </p>
+            </div>
+            <Card className="page-side-card border-white/90 bg-white/78">
+              <CardContent className="p-6">
+                <div className="eyebrow">warum das so gebaut ist</div>
+                <h3>Die Strecke fuehrt bewusst schnell von Erinnerung zu Auftrag.</h3>
+                <p className="copy">
+                  Jede Stufe reduziert Reibung: klare Inputs, direkte Bezahlung, spaeter dieselbe private Statusspur statt neuer Logik.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="timeline">
@@ -55,6 +68,7 @@ export default function HowItWorksPage() {
             <CardContent className="p-6">
               <div className="eyebrow">was du wissen solltest</div>
               <ul className="feature-list">
+                <li>V1 akzeptiert direkte PNG-, JPG- und JPEG-Uploads</li>
                 <li>Kein Live-Editor vor dem Checkout</li>
                 <li>Das Briefing soll schnell gehen und nicht erschlagen</li>
                 <li>Der aktuelle Stand bleibt spaeter jederzeit abrufbar</li>

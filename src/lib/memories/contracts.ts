@@ -10,9 +10,20 @@ export const memoryStatuses = [
 ] as const;
 
 export type MemoryStatus = (typeof memoryStatuses)[number];
+export const sourceImageStorageTypes = ['remote_url', 'inline_data_url'] as const;
+export const supportedSourceImageMimeTypes = ['image/png', 'image/jpeg'] as const;
+
+export type SourceImageStorage = (typeof sourceImageStorageTypes)[number];
+export type SupportedSourceImageMimeType = (typeof supportedSourceImageMimeTypes)[number];
 
 export type SourceImage = {
-  url: string;
+  storage: SourceImageStorage;
+  url?: string;
+  dataUrl?: string;
+  mimeType?: SupportedSourceImageMimeType;
+  filename?: string;
+  sizeBytes?: number;
+  sha256?: string;
   label?: string;
 };
 
@@ -81,6 +92,19 @@ export type UnlockJobInput = {
 export type CheckoutSessionResponse = {
   checkoutUrl: string;
   sessionId: string;
+};
+
+export type CreateMemoryJobResponse = {
+  jobId: string;
+  accessToken: string;
+  status: MemoryStatus;
+  statusUrl: string;
+  sourceImages: SourceImage[];
+};
+
+export type ErrorResponse = {
+  error: string;
+  code?: string;
 };
 
 export type MediaCommand =

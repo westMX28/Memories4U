@@ -5,15 +5,37 @@ import { HttpError } from '@/lib/memories/errors';
 
 let stripeClient: Stripe | null = null;
 
-export function assertStripeConfigured() {
+export function getStripeConfigurationStatus() {
   const { stripeSecretKey, stripePriceId } = getMemoriesConfig();
 
   if (!stripeSecretKey) {
-    throw new HttpError(503, 'STRIPE_SECRET_KEY or STRIPE_API_KEY is not configured.');
+    return {
+      available: false as const,
+      reason: 'STRIPE_SECRET_KEY or STRIPE_API_KEY is not configured.',
+    };
   }
 
   if (!stripePriceId) {
-    throw new HttpError(503, 'STRIPE_PRICE_ID is not configured.');
+    return {
+      available: false as const,
+      reason: 'STRIPE_PRICE_ID is not configured.',
+    };
+  }
+
+  return {
+    available: true as const,
+  };
+}
+
+export function assertStripeConfigured() {
+  const status = getStripeConfigurationStatus();
+
+  if (!status.available) {
+    throw new HttpError(
+      503,
+      'Payment checkout is unavailable in this environment.',
+      'PAYMENT_UNAVAILABLE',
+    );
   }
 }
 

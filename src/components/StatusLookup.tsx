@@ -14,39 +14,55 @@ import {
 
 const statusCopy: Record<
   MemoryStatusResponse['status'],
-  { title: string; detail: string }
+  { badge: string; title: string; detail: string; nextStep: string }
 > = {
   created: {
-    title: 'Bestellung eingegangen',
-    detail: 'Alles ist gespeichert und wartet nur noch auf den naechsten Schritt.',
+    badge: 'zahlung offen',
+    title: 'Dein Auftrag ist gespeichert, aber noch nicht bezahlt.',
+    detail: 'Die Bearbeitung startet erst, sobald die Zahlung erfolgreich abgeschlossen wurde.',
+    nextStep: 'Wenn du die Bestellung fortsetzen willst, oeffne den Checkout erneut.',
   },
   unlocked: {
-    title: 'Bezahlt und freigegeben',
-    detail: 'Deine Story darf jetzt in die eigentliche Gestaltung gehen.',
+    badge: 'bezahlt',
+    title: 'Die Zahlung ist bestaetigt.',
+    detail: 'Dein Auftrag ist freigegeben und wird jetzt fuer die Bearbeitung vorbereitet.',
+    nextStep: 'Im Moment musst du nichts tun.',
   },
   queued: {
-    title: 'In Vorbereitung',
-    detail: 'Deine Bestellung ist eingeplant und kommt als Naechstes an die Reihe.',
+    badge: 'eingeplant',
+    title: 'Dein Auftrag ist in der Warteschlange.',
+    detail: 'Wir haben alles, was wir brauchen, und nehmen deine Story als Naechstes in die Bearbeitung.',
+    nextStep: 'Du musst aktuell nichts nachreichen.',
   },
   processing: {
-    title: 'In Gestaltung',
-    detail: 'Wir setzen den Moment gerade in deine Story um.',
+    badge: 'in bearbeitung',
+    title: 'Deine Story wird gerade erstellt.',
+    detail: 'Die persoenliche Ausarbeitung laeuft. Sobald sie fertig ist, aktualisiert sich diese Seite automatisch.',
+    nextStep: 'Im Moment musst du nichts tun.',
   },
   preview_ready: {
-    title: 'Fast fertig',
-    detail: 'Es gibt bereits eine Vorschau und die finale Version ist nicht mehr weit.',
+    badge: 'endspurt',
+    title: 'Deine Story ist im finalen Check.',
+    detail: 'Die Bearbeitung ist fast abgeschlossen und wir bereiten die finale Version fuer die Zustellung vor.',
+    nextStep: 'Du musst aktuell nichts tun.',
   },
   completed: {
-    title: 'Bereit zur Zustellung',
-    detail: 'Die finale Version ist fertig und wartet nur noch auf die Auslieferung.',
+    badge: 'fertig',
+    title: 'Die finale Story ist fertig.',
+    detail: 'Die Zustellung ist als naechster Schritt vorgesehen. Wenn dein Link bereits aktiv ist, kannst du die finale Version hier oeffnen.',
+    nextStep: 'Pruefe spaeter noch einmal den Zustellstatus, falls noch keine E-Mail angekommen ist.',
   },
   delivered: {
-    title: 'Verschickt',
-    detail: 'Deine Story wurde an die hinterlegte E-Mail gesendet.',
+    badge: 'zugestellt',
+    title: 'Deine Story wurde zugestellt.',
+    detail: 'Die finale Version wurde an die hinterlegte E-Mail gesendet.',
+    nextStep: 'Wenn du sie dort nicht findest, pruefe Spam oder oeffne die finale Version hier erneut.',
   },
   failed: {
-    title: 'Wir schauen noch einmal drauf',
-    detail: 'Etwas ist nicht sauber durchgelaufen. Wir muessen die Story noch einmal pruefen.',
+    badge: 'verzoegert',
+    title: 'Die Bearbeitung ist gerade unterbrochen.',
+    detail: 'Etwas ist in der Verarbeitung fehlgeschlagen. Wir muessen die Story erneut anstossen oder pruefen.',
+    nextStep: 'Im Moment musst du nichts neu bestellen. Wenn der Status laenger stehen bleibt, melde dich mit deinem privaten Statuslink.',
   },
 };
 
@@ -67,6 +83,18 @@ function isMemoryStatusResponse(value: unknown): value is MemoryStatusResponse {
     typeof candidate.unlocked === 'boolean' &&
     typeof candidate.updatedAt === 'string'
   );
+}
+
+function formatRecentJobLabel(job: RecentMemoryJob) {
+  if (job.email) {
+    return job.email;
+  }
+
+  return `Zuletzt aktualisiert ${new Date(job.updatedAt).toLocaleString('de-DE')}`;
+}
+
+function getStoredJobEmail(jobId: string) {
+  return readRecentJobs().find((job) => job.jobId === jobId)?.email;
 }
 
 export function StatusLookup({
@@ -109,6 +137,7 @@ export function StatusLookup({
     storeRecentJob({
       jobId: data.jobId,
       accessToken: nextAccessToken,
+      email: getStoredJobEmail(data.jobId),
       status: data.status,
       updatedAt: data.updatedAt,
     });
@@ -218,7 +247,7 @@ export function StatusLookup({
 
             <div className="form-grid">
               <label className="field">
-                <span>Bestellnummer</span>
+                <span>Private Auftragsnummer</span>
                 <Input
                   required
                   value={jobId}
@@ -228,7 +257,7 @@ export function StatusLookup({
               </label>
 
               <label className="field">
-                <span>Zugriffscode</span>
+                <span>Privater Zugriffscode</span>
                 <Input
                   type="password"
                   required
@@ -281,7 +310,7 @@ export function StatusLookup({
                 >
                   <div>
                     <strong>{statusCopy[recentJob.status || 'created'].title}</strong>
-                    <p>Bestellnummer {recentJob.jobId}</p>
+                    <p>{formatRecentJobLabel(recentJob)}</p>
                   </div>
                   <span>{new Date(recentJob.updatedAt).toLocaleString('de-DE')}</span>
                 </button>
@@ -295,13 +324,13 @@ export function StatusLookup({
         <Card className="status-detail border-white/90 bg-white/82">
           <CardContent className="p-6 sm:p-8">
             <div className="status-detail-head">
-              <div>
-                <div className="eyebrow">aktueller stand</div>
-                <h3>{activeStatus?.title}</h3>
-                <p className="copy">{activeStatus?.detail}</p>
-              </div>
+                <div>
+                  <div className="eyebrow">aktueller stand</div>
+                  <h3>{activeStatus?.title}</h3>
+                  <p className="copy">{activeStatus?.detail}</p>
+                </div>
               <Badge className="status-badge justify-center rounded-full px-5 py-3 tracking-[0.18em]">
-                {result.status}
+                {activeStatus?.badge}
               </Badge>
             </div>
 
@@ -309,8 +338,8 @@ export function StatusLookup({
               <div className={`status-stage ${result.status === 'created' ? 'status-stage-active' : ''}`}>
                 <span className="status-dot" />
                 <div>
-                  <strong>Bestellung gesichert</strong>
-                  <p>Bestellnummer {result.jobId}</p>
+                  <strong>Auftrag gespeichert</strong>
+                  <p>Dein Briefing liegt vor und kann jederzeit wieder geoeffnet werden.</p>
                 </div>
               </div>
               <div
@@ -318,8 +347,8 @@ export function StatusLookup({
               >
                 <span className="status-dot" />
                 <div>
-                  <strong>Gestaltung freigegeben</strong>
-                  <p>{result.unlocked ? 'Die Bearbeitung darf jetzt starten.' : 'Wir warten noch auf die Freigabe.'}</p>
+                  <strong>Zahlung und Freigabe</strong>
+                  <p>{result.unlocked ? 'Die Zahlung ist bestaetigt und der Auftrag darf weiterlaufen.' : 'Wir warten noch auf eine erfolgreiche Zahlung.'}</p>
                 </div>
               </div>
               <div
@@ -327,8 +356,8 @@ export function StatusLookup({
               >
                 <span className="status-dot" />
                 <div>
-                  <strong>Story fast oder ganz fertig</strong>
-                  <p>{result.finalAsset ? 'Deine finale Version liegt bereits vor.' : result.previewAsset ? 'Es gibt schon eine Vorschau deiner Story.' : 'Hier erscheint spaeter der naechste sichtbare Fortschritt.'}</p>
+                  <strong>Bearbeitung abgeschlossen</strong>
+                  <p>{result.finalAsset ? 'Die finale Version liegt bereits bereit.' : 'Hier erscheint der Abschluss, sobald die Story fertig ist.'}</p>
                 </div>
               </div>
               <div className={`status-stage ${result.status === 'delivered' ? 'status-stage-active' : ''}`}>
@@ -343,13 +372,17 @@ export function StatusLookup({
             <div className="grid grid-2 section-top">
               <Card className="inset-card">
                 <CardContent className="p-6">
-                  <div className="eyebrow">deine story</div>
-                  <p className="copy">
-                    Vorschau: {result.previewAsset?.url || 'noch nicht vorhanden'}
-                  </p>
-                  <p className="copy">
-                    Finale Version: {result.finalAsset?.url || 'noch nicht vorhanden'}
-                  </p>
+                  <div className="eyebrow">naechster schritt</div>
+                  <p className="copy">{activeStatus?.nextStep}</p>
+                  {result.finalAsset ? (
+                    <div className="btn-row">
+                      <Button asChild variant="secondary">
+                        <a href={result.finalAsset.url} target="_blank" rel="noreferrer">
+                          Finale Story oeffnen
+                        </a>
+                      </Button>
+                    </div>
+                  ) : null}
                 </CardContent>
               </Card>
 
@@ -357,7 +390,9 @@ export function StatusLookup({
                 <CardContent className="p-6">
                   <div className="eyebrow">aktuelle info</div>
                   <p className="copy">Zuletzt aktualisiert: {new Date(result.updatedAt).toLocaleString('de-DE')}</p>
-                  <p className="copy">Hinweis: {result.lastError || 'Im Moment gibt es nichts Weiteres fuer dich zu tun.'}</p>
+                  <p className="copy">
+                    Hinweis: {result.lastError || (result.delivery ? `Zustellung an ${result.delivery.recipient}.` : 'Im Moment gibt es nichts Weiteres fuer dich zu tun.')}
+                  </p>
                 </CardContent>
               </Card>
             </div>
