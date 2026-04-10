@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
+import { CheckCircle2, Clock3, CreditCard, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import type { MemoryStatusResponse } from '@/lib/memories/contracts';
 import {
@@ -65,6 +66,29 @@ const statusCopy: Record<
     nextStep: 'Im Moment musst du nichts neu bestellen. Wenn der Status laenger stehen bleibt, melde dich mit deinem privaten Statuslink.',
   },
 };
+
+const statusStages = [
+  {
+    title: 'Auftrag gespeichert',
+    description: 'Dein Briefing liegt vor und kann jederzeit wieder geoeffnet werden.',
+    matches: ['created', 'unlocked', 'queued', 'processing', 'preview_ready', 'completed', 'delivered'],
+  },
+  {
+    title: 'Zahlung und Freigabe',
+    description: 'Die Zahlung bestaetigt den Auftrag und erlaubt die weitere Verarbeitung.',
+    matches: ['unlocked', 'queued', 'processing', 'preview_ready', 'completed', 'delivered'],
+  },
+  {
+    title: 'Bearbeitung',
+    description: 'Die Story wird erstellt und fuer die finale Ausgabe vorbereitet.',
+    matches: ['queued', 'processing', 'preview_ready', 'completed', 'delivered'],
+  },
+  {
+    title: 'Finale Auslieferung',
+    description: 'Sobald das Asset bereit ist, erscheint hier die finale Bereitstellung oder Zustellung.',
+    matches: ['completed', 'delivered'],
+  },
+];
 
 type StatusLookupProps = {
   initialJobId?: string;
@@ -237,14 +261,17 @@ export function StatusLookup({
   return (
     <div className="stack">
       <Card className="border-white/90 bg-white/82">
-        <CardContent className="p-6 sm:p-8">
+        <CardHeader className="space-y-4">
+          <Badge className="w-fit">status lookup</Badge>
+          <div className="space-y-2">
+            <CardTitle className="max-w-[15ch] text-[clamp(2rem,4vw,3rem)]">Return to an existing order in seconds.</CardTitle>
+            <CardDescription className="max-w-[48ch] text-base">
+              A clearer shell around the same contract: job id, access token, status refresh, and checkout recovery when payment is still open.
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
           <form className="intake-form" onSubmit={handleSubmit}>
-            <div className="eyebrow">bestellung finden</div>
-            <h3>Finde deine Bestellung in wenigen Sekunden wieder.</h3>
-            <p className="copy">
-              Nach erfolgreichem Laden aktualisiert sich der Fortschritt automatisch im Hintergrund.
-            </p>
-
             <div className="form-grid">
               <label className="field">
                 <span>Private Auftragsnummer</span>
@@ -287,95 +314,108 @@ export function StatusLookup({
               ) : null}
             </div>
           </form>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[24px] border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700">
+              <ShieldCheck className="mb-3 size-4 text-sky-700" />
+              private identifiers only
+            </div>
+            <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700">
+              <Clock3 className="mb-3 size-4 text-sky-700" />
+              auto-refresh during active processing
+            </div>
+            <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700">
+              <CreditCard className="mb-3 size-4 text-sky-700" />
+              checkout recovery when payment is open
+            </div>
+          </div>
         </CardContent>
       </Card>
 
       {recentJobs.length > 0 ? (
-        <Card className="recent-jobs-card border-white/90 bg-white/78">
-          <CardContent className="p-6">
-            <div className="recent-jobs-head">
-              <div>
-                <div className="eyebrow">letzte bestellungen</div>
-                <h3>Du kannst eine kuerzlich gestartete Bestellung direkt wieder aufrufen.</h3>
-              </div>
-            </div>
-
-            <div className="recent-jobs-list">
-              {recentJobs.map((recentJob) => (
-                <button
-                  key={recentJob.jobId}
-                  className="recent-job"
-                  type="button"
-                  onClick={() => loadRecentJob(recentJob)}
-                >
-                  <div>
-                    <strong>{statusCopy[recentJob.status || 'created'].title}</strong>
-                    <p>{formatRecentJobLabel(recentJob)}</p>
-                  </div>
-                  <span>{new Date(recentJob.updatedAt).toLocaleString('de-DE')}</span>
-                </button>
-              ))}
-            </div>
+        <Card className="recent-jobs-card border-white/90 bg-white/82">
+          <CardHeader>
+            <Badge className="w-fit" variant="secondary">recent orders</Badge>
+            <CardTitle>You can reopen a recent order directly.</CardTitle>
+          </CardHeader>
+          <CardContent className="recent-jobs-list">
+            {recentJobs.map((recentJob) => (
+              <button
+                key={recentJob.jobId}
+                className="recent-job"
+                type="button"
+                onClick={() => loadRecentJob(recentJob)}
+              >
+                <div>
+                  <strong>{statusCopy[recentJob.status || 'created'].title}</strong>
+                  <p>{formatRecentJobLabel(recentJob)}</p>
+                </div>
+                <span>{new Date(recentJob.updatedAt).toLocaleString('de-DE')}</span>
+              </button>
+            ))}
           </CardContent>
         </Card>
       ) : null}
 
       {result ? (
         <Card className="status-detail border-white/90 bg-white/82">
-          <CardContent className="p-6 sm:p-8">
+          <CardContent className="space-y-6 p-6 sm:p-8">
             <div className="status-detail-head">
-                <div>
-                  <div className="eyebrow">aktueller stand</div>
-                  <h3>{activeStatus?.title}</h3>
-                  <p className="copy">{activeStatus?.detail}</p>
-                </div>
+              <div>
+                <div className="eyebrow">aktueller stand</div>
+                <h3>{activeStatus?.title}</h3>
+                <p className="copy">{activeStatus?.detail}</p>
+              </div>
               <Badge className="status-badge justify-center rounded-full px-5 py-3 tracking-[0.18em]">
                 {activeStatus?.badge}
               </Badge>
             </div>
 
-            <div className="status-board">
-              <div className={`status-stage ${result.status === 'created' ? 'status-stage-active' : ''}`}>
-                <span className="status-dot" />
-                <div>
-                  <strong>Auftrag gespeichert</strong>
-                  <p>Dein Briefing liegt vor und kann jederzeit wieder geoeffnet werden.</p>
-                </div>
-              </div>
-              <div
-                className={`status-stage ${['unlocked', 'queued', 'processing', 'preview_ready', 'completed', 'delivered'].includes(result.status) ? 'status-stage-active' : ''}`}
-              >
-                <span className="status-dot" />
-                <div>
-                  <strong>Zahlung und Freigabe</strong>
-                  <p>{result.unlocked ? 'Die Zahlung ist bestaetigt und der Auftrag darf weiterlaufen.' : 'Wir warten noch auf eine erfolgreiche Zahlung.'}</p>
-                </div>
-              </div>
-              <div
-                className={`status-stage ${['preview_ready', 'completed', 'delivered'].includes(result.status) ? 'status-stage-active' : ''}`}
-              >
-                <span className="status-dot" />
-                <div>
-                  <strong>Bearbeitung abgeschlossen</strong>
-                  <p>{result.finalAsset ? 'Die finale Version liegt bereits bereit.' : 'Hier erscheint der Abschluss, sobald die Story fertig ist.'}</p>
-                </div>
-              </div>
-              <div className={`status-stage ${result.status === 'delivered' ? 'status-stage-active' : ''}`}>
-                <span className="status-dot" />
-                <div>
-                  <strong>Auslieferung</strong>
-                  <p>{result.delivery ? `An ${result.delivery.recipient} gesendet.` : 'Noch nicht zugestellt.'}</p>
-                </div>
-              </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {statusStages.map((stage) => {
+                const active = stage.matches.includes(result.status);
+                return (
+                  <div
+                    key={stage.title}
+                    className={`rounded-[26px] border p-5 shadow-[0_16px_38px_rgba(148,163,184,0.12)] ${
+                      active
+                        ? 'border-sky-200 bg-[linear-gradient(180deg,rgba(241,248,255,0.96),rgba(230,241,255,0.92))]'
+                        : 'border-white/90 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className={`mt-1 inline-flex size-8 items-center justify-center rounded-full ${active ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        <CheckCircle2 className="size-4" />
+                      </span>
+                      <div>
+                        <strong className="text-slate-900">{stage.title}</strong>
+                        <p className="mb-0 mt-2 text-sm leading-7 text-slate-600">
+                          {stage.title === 'Zahlung und Freigabe'
+                            ? result.unlocked
+                              ? 'Die Zahlung ist bestaetigt und der Auftrag darf weiterlaufen.'
+                              : 'Wir warten noch auf eine erfolgreiche Zahlung.'
+                            : stage.title === 'Finale Auslieferung'
+                              ? result.delivery
+                                ? `An ${result.delivery.recipient} gesendet.`
+                                : stage.description
+                              : stage.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="grid grid-2 section-top">
+            <div className="grid gap-4 lg:grid-cols-2">
               <Card className="inset-card">
-                <CardContent className="p-6">
-                  <div className="eyebrow">naechster schritt</div>
-                  <p className="copy">{activeStatus?.nextStep}</p>
+                <CardHeader>
+                  <Badge className="w-fit" variant="secondary">next step</Badge>
+                  <CardTitle>{activeStatus?.nextStep}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   {result.finalAsset ? (
-                    <div className="btn-row">
+                    <div className="btn-row mt-0">
                       <Button asChild variant="secondary">
                         <a href={result.finalAsset.url} target="_blank" rel="noreferrer">
                           Finale Story oeffnen
@@ -387,10 +427,13 @@ export function StatusLookup({
               </Card>
 
               <Card className="inset-card">
-                <CardContent className="p-6">
-                  <div className="eyebrow">aktuelle info</div>
-                  <p className="copy">Zuletzt aktualisiert: {new Date(result.updatedAt).toLocaleString('de-DE')}</p>
-                  <p className="copy">
+                <CardHeader>
+                  <Badge className="w-fit" variant="secondary">current info</Badge>
+                  <CardTitle>Zuletzt aktualisiert</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="copy">{new Date(result.updatedAt).toLocaleString('de-DE')}</p>
+                  <p className="copy mb-0">
                     Hinweis: {result.lastError || (result.delivery ? `Zustellung an ${result.delivery.recipient}.` : 'Im Moment gibt es nichts Weiteres fuer dich zu tun.')}
                   </p>
                 </CardContent>

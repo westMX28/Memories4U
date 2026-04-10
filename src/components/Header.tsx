@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { ArrowUpRight, Clock3, Gift, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
 export function Header() {
@@ -9,7 +11,7 @@ export function Header() {
   return (
     <header className="header">
       <div className="container nav">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link href="/" className="brand">
             <span className="brand-mark" aria-hidden="true">
               <span className="brand-mark-core" />
@@ -21,10 +23,9 @@ export function Header() {
               <span className="brand-tagline">birthday stories that feel personal</span>
             </span>
           </Link>
-          <Badge className="hidden xl:inline-flex" variant="secondary">
-            made for meaningful birthdays
-          </Badge>
+          <Badge className="hidden xl:inline-flex" variant="secondary">apple-clean birthday gifting</Badge>
         </div>
+
         <nav className="nav-links">
           <Link href="/">Start</Link>
           <Link href="/memories">
@@ -33,11 +34,24 @@ export function Header() {
           <Link href="/how-it-works">Ablauf</Link>
           <Link href="/status">Status</Link>
         </nav>
-        <Button asChild size="sm" className="nav-cta border-0 px-4">
-          <Link href={orderingAvailable ? '/memories' : '/status'}>
-            {orderingAvailable ? 'Jetzt ueberraschen' : 'Auftrag verfolgen'}
-          </Link>
-        </Button>
+
+        <div className="hidden items-center gap-3 lg:flex">
+          <div className="flex items-center gap-3 rounded-full border border-white/80 bg-white/78 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 shadow-[0_18px_44px_rgba(148,163,184,0.16)]">
+            {orderingAvailable ? <Gift className="size-3.5 text-sky-700" /> : <Clock3 className="size-3.5 text-amber-700" />}
+            <span>{orderingAvailable ? 'finish a gift in minutes' : 'ordering pause'}</span>
+            <Separator orientation="vertical" className="h-4 bg-slate-200/80" />
+            <span className={orderingAvailable ? 'text-sky-800' : 'text-amber-800'}>
+              {orderingAvailable ? 'checkout + status path live' : 'status access still live'}
+            </span>
+          </div>
+
+          <Button asChild size="sm" className="nav-cta border-0 px-4">
+            <Link href={orderingAvailable ? '/memories' : '/status'}>
+              {orderingAvailable ? 'Jetzt ueberraschen' : 'Auftrag verfolgen'}
+              {orderingAvailable ? <Sparkles /> : <ArrowUpRight />}
+            </Link>
+          </Button>
+        </div>
       </div>
     </header>
   );
