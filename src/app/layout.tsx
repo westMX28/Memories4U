@@ -17,9 +17,9 @@ const bodyFont = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'Memories4U | Persoenliche Geburtstagsueberraschungen aus euren Erinnerungen',
+  title: 'Memories4U | Persönliche Geburtstagsüberraschungen aus euren Erinnerungen',
   description:
-    'Aus Bildern und einem kurzen Moment entsteht eine digitale Geburtstags-Story, die persoenlich wirkt, schnell bestellt ist und direkt verschenkt werden kann.',
+    'Aus Bildern und einem kurzen Moment entsteht eine digitale Geburtstags-Story, die persönlich wirkt, schnell bestellt ist und direkt verschenkt werden kann.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -20,10 +20,10 @@ export function Header() {
             </span>
             <span className="brand-copy">
               <span className="brand-name">Memories4U</span>
-              <span className="brand-tagline">birthday stories that feel personal</span>
+              <span className="brand-tagline">persönliche Geburtstagsgeschichten</span>
             </span>
           </Link>
-          <Badge className="hidden xl:inline-flex" variant="secondary">apple-clean birthday gifting</Badge>
+          <Badge className="hidden xl:inline-flex accent-chip" variant="secondary">ruhig, hochwertig, klar</Badge>
         </div>
 
         <nav className="nav-links">
@@ -39,15 +39,16 @@ export function Header() {
           <div className="flex items-center gap-3 rounded-full border border-white/80 bg-white/78 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 shadow-[0_18px_44px_rgba(148,163,184,0.16)]">
             {orderingAvailable ? <Gift className="size-3.5 text-sky-700" /> : <Clock3 className="size-3.5 text-amber-700" />}
             <span>{orderingAvailable ? 'finish a gift in minutes' : 'ordering pause'}</span>
+            <span>{orderingAvailable ? 'Geschenkidee in wenigen Minuten starten' : 'Bestellpause'}</span>
             <Separator orientation="vertical" className="h-4 bg-slate-200/80" />
             <span className={orderingAvailable ? 'text-sky-800' : 'text-amber-800'}>
-              {orderingAvailable ? 'checkout + status path live' : 'status access still live'}
+              {orderingAvailable ? 'Checkout und Status sind verbunden' : 'Status bleibt erreichbar'}
             </span>
           </div>
 
           <Button asChild size="sm" className="nav-cta border-0 px-4">
             <Link href={orderingAvailable ? '/memories' : '/status'}>
-              {orderingAvailable ? 'Jetzt ueberraschen' : 'Auftrag verfolgen'}
+              {orderingAvailable ? 'Jetzt überraschen' : 'Auftrag verfolgen'}
               {orderingAvailable ? <Sparkles /> : <ArrowUpRight />}
             </Link>
           </Button>

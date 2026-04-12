@@ -61,7 +61,7 @@ function formatFileSize(size: number) {
 
 function getUploadValidationMessage(image1: File | null, image2: File | null) {
   if (!image1) {
-    return 'Bitte waehle mindestens ein Bild als PNG oder JPG aus.';
+    return 'Bitte wähle mindestens ein Bild als PNG oder JPG aus.';
   }
 
   for (const [index, file] of [image1, image2].entries()) {
@@ -213,7 +213,7 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
     resetRecoveryState();
 
     if (!orderingAvailable) {
-      setError('Neue Bestellungen sind aktuell pausiert. Bitte versuche es spaeter erneut.');
+      setError('Neue Bestellungen sind aktuell pausiert. Bitte versuche es später erneut.');
       return;
     }
 
@@ -283,7 +283,7 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
           const checkoutMessage =
             checkoutError instanceof Error ? checkoutError.message : 'Checkout request failed.';
           throw new Error(
-            `Der Auftrag wurde gespeichert, aber die Bezahlung konnte nicht gestartet werden. Wechsle jetzt zur Statusseite, um spaeter mit derselben Bestellung weiterzumachen. ${checkoutMessage}`,
+            `Der Auftrag wurde gespeichert, aber die Bezahlung konnte nicht gestartet werden. Wechsle jetzt zur Statusseite, um später mit derselben Bestellung weiterzumachen. ${checkoutMessage}`,
           );
         }
       } catch (submitError) {
@@ -295,25 +295,25 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
   return (
     <Card className="border-white/90 bg-white/82">
       <CardHeader className="space-y-4">
-        <Badge className="w-fit">shadcn form shell</Badge>
+        <Badge className="w-fit accent-chip">dein Briefing</Badge>
         <div className="space-y-2">
-          <CardTitle className="max-w-[16ch] text-[clamp(2rem,4vw,3rem)]">Tell us just enough to make the gift feel personal.</CardTitle>
+          <CardTitle className="max-w-[17ch] text-[clamp(2rem,4vw,3rem)]">Erzähl uns genau so viel, dass sich das Geschenk persönlich anfühlt.</CardTitle>
           <CardDescription className="max-w-[52ch] text-base">
-            The form stays small on purpose: cleaner hierarchy, better spacing, and no extra workflow decisions beyond the current checkout-first flow.
+            Das Formular bleibt bewusst klein: klarere Hierarchie, besserer Rhythmus und keine zusätzlichen Entscheidungen jenseits des aktuellen Checkout-First-Ablaufs.
           </CardDescription>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-[24px] border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700">
             <ImagePlus className="mb-3 size-4 text-sky-700" />
-            bring one or two image files
+            ein oder zwei Bilddateien
           </div>
           <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700">
             <Mail className="mb-3 size-4 text-sky-700" />
-            keep one delivery email
+            eine Zustell-E-Mail
           </div>
-          <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700">
+          <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700 accent-chip">
             <LockKeyhole className="mb-3 size-4 text-sky-700" />
-            reopen the same order later
+            denselben Auftrag später öffnen
           </div>
         </div>
       </CardHeader>
@@ -322,44 +322,44 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
         <form className="intake-form" onSubmit={handleSubmit}>
           <div>
             <div className="eyebrow">dein briefing</div>
-            <h3>Erzaehl uns kurz, wie sich dieser Geburtstag anfuehlen soll.</h3>
+            <h3>Erzähl uns kurz, wie sich dieser Geburtstag anfühlen soll.</h3>
             <p className="copy">
               {orderingAvailable
-                ? 'Wir speichern deine Angaben sofort und leiten dich danach direkt in die Bezahlung. Fuer den Start brauchst du nur deine Bilder als PNG oder JPG, eine E-Mail und einen kurzen Erinnerungsmoment. Den Stand deiner Bestellung kannst du spaeter jederzeit wieder aufrufen.'
-                : 'Neue Bestellungen sind in dieser Umgebung gerade pausiert. Bestehende Auftraege kannst du weiterhin ueber die Statusseite aufrufen.'}
+                ? 'Wir speichern deine Angaben sofort und leiten dich danach direkt in die Bezahlung. Für den Start brauchst du nur deine Bilder als PNG oder JPG, eine E-Mail und einen kurzen Erinnerungsmoment. Den Stand deiner Bestellung kannst du später jederzeit wieder aufrufen.'
+                : 'Neue Bestellungen sind in dieser Umgebung gerade pausiert. Bestehende Aufträge kannst du weiterhin über die Statusseite aufrufen.'}
             </p>
           </div>
 
           {!orderingAvailable ? (
             <div className="rounded-[24px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
-              Die Bestellstrecke bleibt gesperrt, bis die Bezahlung wieder verfuegbar ist. Nutze in der Zwischenzeit die Statusseite fuer bestehende Auftraege.
+              Die Bestellstrecke bleibt gesperrt, bis die Bezahlung wieder verfügbar ist. Nutze in der Zwischenzeit die Statusseite für bestehende Aufträge.
             </div>
           ) : null}
 
           <div className="grid gap-6 rounded-[30px] border border-sky-100/90 bg-[linear-gradient(180deg,rgba(250,253,255,0.96),rgba(240,247,255,0.9))] p-5 sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="mini-kicker">customer details</div>
-                <p className="mb-0 text-sm leading-7 text-slate-600">Enough information to secure the order and keep delivery traceable.</p>
+                <div className="mini-kicker">deine Angaben</div>
+                <p className="mb-0 text-sm leading-7 text-slate-600">Gerade genug Information, um den Auftrag zu sichern und die Zustellung nachvollziehbar zu halten.</p>
               </div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-sky-800">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-sky-800 accent-chip">
                 <Sparkles className="size-3.5" />
-                minimal friction
+                wenig Reibung
               </span>
             </div>
 
             <div className="form-grid">
               <label className="field">
-                <span>Name fuer diesen Anlass</span>
+                <span>Name für diesen Anlass</span>
                 <Input
                   value={form.customerName}
                   onChange={(event) => updateField('customerName', event.target.value)}
-                  placeholder="z. B. Nina fuer Leo"
+                  placeholder="z. B. Nina für Leo"
                 />
               </label>
 
               <label className="field">
-                <span>E-Mail fuer die Zustellung</span>
+                <span>E-Mail für die Zustellung</span>
                 <Input
                   type="email"
                   required
@@ -373,8 +373,8 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
 
           <div className="grid gap-6 rounded-[30px] border border-sky-100/90 bg-white/82 p-5 sm:p-6">
             <div>
-              <div className="mini-kicker">images</div>
-              <p className="mb-0 text-sm leading-7 text-slate-600">PNG and JPG are supported. One image is required, a second image is optional.</p>
+              <div className="mini-kicker">Bilder</div>
+              <p className="mb-0 text-sm leading-7 text-slate-600">PNG und JPG werden unterstützt. Ein Bild ist Pflicht, ein zweites ist optional.</p>
             </div>
 
             <div className="upload-grid">
@@ -397,7 +397,7 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
                     </Button>
                   </div>
                 ) : (
-                  <p className="copy text-sm">Noch kein Bild ausgewaehlt.</p>
+                  <p className="copy text-sm">Noch kein Bild ausgewählt.</p>
                 )}
               </label>
 
@@ -409,7 +409,7 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
                   accept=".png,.jpg,.jpeg,image/png,image/jpeg"
                   onChange={(event) => handleFileSelection('image2', event.target.files?.[0] || null)}
                 />
-                <p className="copy text-sm">Optional fuer eine zweite Perspektive oder den anderen Menschen.</p>
+                <p className="copy text-sm">Optional für eine zweite Perspektive oder den anderen Menschen.</p>
                 {image2File ? (
                   <div className="upload-file-row">
                     <strong className="upload-file-name">
@@ -428,8 +428,8 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
 
           <div className="grid gap-6 rounded-[30px] border border-sky-100/90 bg-white/82 p-5 sm:p-6">
             <div>
-              <div className="mini-kicker">story direction</div>
-              <p className="mb-0 text-sm leading-7 text-slate-600">A small amount of emotional direction is more useful than a complex brief.</p>
+              <div className="mini-kicker">Richtung der Story</div>
+              <p className="mb-0 text-sm leading-7 text-slate-600">Eine kleine emotionale Richtung hilft mehr als ein komplexes Briefing.</p>
             </div>
 
             <label className="field">
@@ -439,12 +439,12 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
                 rows={5}
                 value={form.storyPrompt}
                 onChange={(event) => updateField('storyPrompt', event.target.value)}
-                placeholder="Was sollen wir spuerbar machen?"
+                placeholder="Was sollen wir spürbar machen?"
               />
             </label>
 
             <label className="field">
-              <span>Wofuer ist die Story gedacht?</span>
+              <span>Wofür ist die Story gedacht?</span>
               <Input
                 value={form.occasion}
                 onChange={(event) => updateField('occasion', event.target.value)}
@@ -460,12 +460,12 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
             <div className="rounded-[24px] border border-sky-200 bg-sky-50/85 px-5 py-4 text-sm leading-7 text-slate-700">
               <strong className="block text-slate-900">Dein Auftrag ist bereits gespeichert.</strong>
               <span className="block">
-                Falls der Checkout nicht geladen hat, kannst du dieselbe Bestellung ueber die Statusseite wieder oeffnen und die Bezahlung spaeter fortsetzen.
+                Falls der Checkout nicht geladen hat, kannst du dieselbe Bestellung über die Statusseite wieder öffnen und die Bezahlung später fortsetzen.
               </span>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Button asChild variant="secondary">
                   <Link href={getStatusHref(recoveryState.jobId, recoveryState.accessToken)}>
-                    Status mit diesem Auftrag oeffnen
+                    Status mit diesem Auftrag öffnen
                   </Link>
                 </Button>
               </div>

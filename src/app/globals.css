@@ -17,6 +17,7 @@
   --ring: rgba(96, 174, 252, 0.35);
   --max: 1180px;
   --shadow: 0 28px 80px rgba(69, 112, 166, 0.15);
+  --headline-balance: -0.03em;
 }
 
 * {
@@ -125,25 +126,45 @@ h3,
   max-width: 12ch;
   margin: 18px 0 20px;
   font-size: clamp(3.6rem, 8vw, 6.8rem);
-  line-height: 0.9;
+  line-height: 0.94;
+  letter-spacing: var(--headline-balance);
+  font-weight: 400;
 }
 
 .h2 {
   margin: 0 0 16px;
   font-size: clamp(2.3rem, 5vw, 4rem);
-  line-height: 0.94;
+  line-height: 0.98;
+  letter-spacing: calc(var(--headline-balance) * 0.7);
+  font-weight: 400;
+}
+
+h3 {
+  font-weight: 400;
+  letter-spacing: calc(var(--headline-balance) * 0.45);
 }
 
 .lead {
   max-width: 60ch;
   font-size: clamp(1.05rem, 1.8vw, 1.3rem);
-  line-height: 1.75;
+  line-height: 1.68;
   color: var(--muted);
 }
 
 .copy {
   color: var(--muted);
   line-height: 1.7;
+}
+
+.accent-chip {
+  border-color: color-mix(in srgb, var(--accent-strong) 18%, white);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-strong) 10%, white),
+    color-mix(in srgb, var(--accent) 9%, white)
+  );
+  color: var(--accent-strong);
+  box-shadow: 0 18px 40px rgba(31, 94, 168, 0.12);
 }
 
 .grid {
