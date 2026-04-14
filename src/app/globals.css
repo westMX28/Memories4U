@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #edf6ff;
-  --background-strong: #d9ebff;
-  --foreground: #11233f;
-  --muted: #55708f;
-  --card: rgba(255, 255, 255, 0.8);
-  --card-foreground: #11233f;
-  --line: rgba(123, 161, 207, 0.26);
-  --border: rgba(123, 161, 207, 0.26);
-  --accent: #60aefc;
-  --accent-strong: #1f5ea8;
-  --accent-soft: #dcebff;
-  --accent-quiet: #f4f9ff;
-  --ink-soft: rgba(17, 35, 63, 0.78);
-  --ring: rgba(96, 174, 252, 0.35);
+  --background: #f7f9ff;
+  --background-strong: #eaf2ff;
+  --foreground: #0f2238;
+  --muted: #526277;
+  --card: rgba(255, 255, 255, 0.84);
+  --card-foreground: #0f2238;
+  --line: rgba(128, 155, 189, 0.16);
+  --border: rgba(128, 155, 189, 0.18);
+  --accent: #449cfa;
+  --accent-strong: #0058bc;
+  --accent-soft: #dce9ff;
+  --accent-quiet: #eef4ff;
+  --ink-soft: rgba(15, 34, 56, 0.78);
+  --ring: rgba(68, 156, 250, 0.28);
   --max: 1180px;
-  --shadow: 0 28px 80px rgba(69, 112, 166, 0.15);
-  --headline-balance: -0.03em;
+  --shadow: 0 28px 80px rgba(54, 77, 110, 0.1);
+  --headline-balance: -0.045em;
 }
 
 * {
@@ -33,9 +33,9 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.98), transparent 26%),
-    radial-gradient(circle at top right, rgba(130, 188, 255, 0.18), transparent 30%),
-    radial-gradient(circle at 50% 120%, rgba(177, 220, 255, 0.34), transparent 38%),
-    linear-gradient(180deg, #fbfdff 0%, #eff6ff 45%, #e4f0fd 100%);
+    radial-gradient(circle at top right, rgba(179, 212, 255, 0.3), transparent 32%),
+    radial-gradient(circle at 50% 120%, rgba(214, 231, 255, 0.75), transparent 38%),
+    linear-gradient(180deg, #fcfdff 0%, #f7f9ff 42%, #eef4ff 100%);
   color: var(--foreground);
   font-family: var(--font-body), sans-serif;
 }
@@ -44,11 +44,10 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(149, 177, 209, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(149, 177, 209, 0.08) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent 60%);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent 46%),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.32), transparent 24%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.32), transparent 68%);
   pointer-events: none;
   z-index: -1;
 }
@@ -271,9 +270,8 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(18px);
-  background: rgba(245, 250, 255, 0.76);
+  backdrop-filter: blur(22px);
+  background: linear-gradient(180deg, rgba(247, 249, 255, 0.84), rgba(247, 249, 255, 0.62));
 }
 
 .nav {
@@ -311,10 +309,10 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(123, 161, 207, 0.42);
+  border: 1px solid rgba(128, 155, 189, 0.18);
   border-radius: 16px;
-  background: linear-gradient(155deg, #f8fbff, #cfe5ff);
-  box-shadow: 0 18px 36px rgba(69, 112, 166, 0.16);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.96), #d9e8ff);
+  box-shadow: 0 18px 36px rgba(58, 83, 118, 0.12);
 }
 
 .brand-mark-core {
@@ -329,7 +327,7 @@ h3 {
   position: absolute;
   width: 10px;
   height: 10px;
-  border: 1px solid rgba(123, 161, 207, 0.3);
+  border: 1px solid rgba(128, 155, 189, 0.18);
   border-radius: 999px;
   background: white;
 }
@@ -363,7 +361,7 @@ h3 {
 }
 
 .nav-cta {
-  background: rgba(255, 255, 255, 0.74);
+  background: rgba(255, 255, 255, 0.82);
   white-space: nowrap;
 }
 
@@ -377,7 +375,7 @@ h3 {
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
   gap: 24px;
   padding-top: 24px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(128, 155, 189, 0.14);
 }
 
 .footer-title {

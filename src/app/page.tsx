@@ -3,11 +3,10 @@ import {
   ArrowRight,
   CheckCircle2,
   Gift,
-  Image as ImageIcon,
   LockKeyhole,
   Mail,
   Sparkles,
-  TimerReset,
+  WandSparkles,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,63 +17,71 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Separator } from '@/components/ui/separator';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
-const heroMetrics = [
-  { value: '5 min', label: 'vom Gedanken bis zum Auftrag' },
-  { value: '1-2', label: 'Bilder für den Einstieg' },
-  { value: '1 Link', label: 'für Checkout und Status' },
-];
-
-const promiseCards = [
-  {
-    icon: ImageIcon,
-    title: 'Wenige Inputs, bessere Wirkung',
-    copy: 'Das Produkt fragt nur nach dem Material, das die Erinnerung wirklich trägt: Bilder, Anlass, Ton und Kontakt.',
-  },
-  {
-    icon: Gift,
-    title: 'Ein Geschenk statt eines Projekts',
-    copy: 'Die Strecke fühlt sich eher wie Premium-Service an als wie ein langer Konfigurator.',
-  },
-  {
-    icon: LockKeyhole,
-    title: 'Private Statusspur statt Support-Pingpong',
-    copy: 'Nach dem Checkout bleibt derselbe Auftrag wieder auffindbar, ohne Konto und ohne Umwege.',
-  },
+const reassuranceNotes = [
+  'A slim, private order path from first details through final delivery',
+  'One or two photos and a short memory cue are enough to begin',
+  'Birthday-specific, premium, and intentionally simple from the first screen',
 ];
 
 const flowSteps = [
   {
     step: '01',
-    title: 'Du lädst Bilder hoch',
-    copy: 'Ein starkes Bild reicht. Ein zweites schafft mehr Kontext, ist aber optional.',
+    title: 'Share the memory signals',
+    copy: 'Start with one or two photos, the recipient name, and a short note about the moment or tone you want to capture.',
   },
   {
     step: '02',
-    title: 'Du beschreibst kurz den Moment',
-    copy: 'Kein Roman. Ein Satz zur Stimmung, Beziehung oder Erinnerung ist genug.',
+    title: 'Secure the order',
+    copy: 'The order is created first, then moved into checkout without turning the experience into a long configurator.',
   },
   {
     step: '03',
-    title: 'Checkout und Status bleiben verbunden',
-    copy: 'Der Auftrag wird gesichert, und später landest du wieder auf derselben privaten Spur.',
+    title: 'Return through the same private path',
+    copy: 'If payment is interrupted or you want to check progress later, the same private status link remains your way back.',
   },
+];
+
+const promiseCards = [
+  {
+    icon: Gift,
+    title: 'Birthday-first positioning',
+    copy: 'This is not a generic AI tool. It is a focused birthday gift flow designed to feel warm, premium, and easy to trust.',
+  },
+  {
+    icon: WandSparkles,
+    title: 'Small effort, high emotional return',
+    copy: 'The front-end asks for the minimum emotional inputs needed to start a polished digital story without friction.',
+  },
+  {
+    icon: LockKeyhole,
+    title: 'Private by default',
+    copy: 'Checkout recovery, order progress, and delivery access stay connected through one private route instead of an account system.',
+  },
+];
+
+const featureNotes = [
+  'Editorial composition with generous whitespace and a premium tone',
+  'Clear pricing before the buyer invests effort',
+  'A calm service feel instead of dashboard density or startup clutter',
 ];
 
 const faqItems = [
   {
-    question: 'Brauche ich viele Fotos?',
-    answer: 'Nein. Das Produkt ist bewusst für einen schnellen Einstieg gebaut. Ein gutes Bild reicht für den Start.',
+    question: 'What do I need to start?',
+    answer:
+      'You only need a small set of emotional signals: one or two photos, the recipient details, your email, and a short note about the memory or tone.',
   },
   {
-    question: 'Muss ich vorher schon die genaue Story kennen?',
-    answer: 'Nein. Du gibst Richtung und Emotion vor. Die eigentliche Ausarbeitung passiert nach dem Briefing.',
+    question: 'Do I have to finish everything in one sitting?',
+    answer:
+      'No. The order is tied to a private status path, so if checkout is interrupted you can return to the same order instead of starting over.',
   },
   {
-    question: 'Wie finde ich den Auftrag später wieder?',
-    answer: 'Über deinen privaten Statuspfad. Dort kannst du Fortschritt ansehen oder eine offene Zahlung fortsetzen.',
+    question: 'Is the price visible before I begin?',
+    answer:
+      'Yes. The current starting price is shown on the landing page before you go into the birthday order flow.',
   },
 ];
 
@@ -85,88 +92,98 @@ export default function HomePage() {
     <main className="pb-16">
       <section className="hero hero-home">
         <div className="container">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:items-center">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.03fr)_minmax(360px,0.97fr)] lg:items-center">
             <div className="space-y-7">
-              <Badge className="w-fit accent-chip">ruhiger Geburtstags-Flow</Badge>
+              <Badge className="w-fit accent-chip">Birthday Stories v1</Badge>
               <div className="space-y-5">
-                <h1 className="h1 max-w-[11ch]">Die ruhigste Art, gemeinsame Erinnerungen in ein Geburtstagsgeschenk zu verwandeln.</h1>
-                <p className="lead max-w-[54ch]">
-                  Memories4U hält die Oberfläche leicht, hochwertig und direkt: ein paar echte Signale hochladen, den Auftrag sichern und denselben privaten Weg bis zur Zustellung wiederfinden.
+                <h1 className="h1 max-w-[10.5ch]">
+                  A premium birthday gift, built from the memories that already matter.
+                </h1>
+                <p className="lead max-w-[58ch]">
+                  Memories4U turns a small set of emotional inputs into a polished birthday story
+                  flow. Start with one or two photos, a short cue, and a private path that stays
+                  with the order from checkout to delivery.
                 </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                {heroMetrics.map((item) => (
-                  <Card key={item.label} className="border-white/90 bg-white/82">
-                    <CardContent className="p-5">
-                      <div className="text-2xl font-medium tracking-[-0.03em] text-slate-900">{item.value}</div>
-                      <p className="mb-0 mt-2 text-sm leading-6 text-slate-600">{item.label}</p>
-                    </CardContent>
-                  </Card>
-                ))}
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
                   <Link href={orderingAvailable ? '/memories' : '/status'}>
-                    {orderingAvailable ? 'Geburtstags-Briefing starten' : 'Auftragsstatus öffnen'}
+                    {orderingAvailable ? 'Start a birthday story' : 'Open order status'}
                     <ArrowRight />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/how-it-works">Ablauf ansehen</Link>
+                  <Link href="/how-it-works">See how it works</Link>
                 </Button>
               </div>
 
-              <div className="flex flex-wrap gap-3 text-sm text-slate-600">
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/82 px-4 py-2 shadow-[0_14px_34px_rgba(148,163,184,0.12)] accent-chip">
-                  <Sparkles className="size-4 text-sky-700" />
-                  hochwertig ohne aufgeblasenen Funnel
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/82 px-4 py-2 shadow-[0_14px_34px_rgba(148,163,184,0.12)]">
-                  <TimerReset className="size-4 text-sky-700" />
-                  gemacht für echte Last-Minute-Momente
-                </span>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {featureNotes.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[24px] bg-white/76 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_20px_40px_rgba(66,94,138,0.08)]"
+                  >
+                    <CheckCircle2 className="mb-3 size-4 text-sky-700" />
+                    {item}
+                  </div>
+                ))}
               </div>
             </div>
 
-            <Card className="relative overflow-hidden border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(223,239,255,0.92))] p-2 shadow-[0_40px_120px_rgba(100,149,207,0.22)]">
-              <div className="absolute inset-x-8 top-0 h-32 rounded-full bg-sky-200/30 blur-3xl" />
+            <Card className="relative overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(228,240,255,0.92))] p-2 shadow-[0_40px_120px_rgba(76,114,168,0.18)]">
+              <div className="absolute inset-x-10 top-2 h-36 rounded-full bg-sky-200/35 blur-3xl" />
               <CardContent className="relative grid gap-6 p-6 sm:p-8">
-                <div className="flex items-center justify-between gap-4">
-                  <Badge variant="secondary" className="accent-chip">Vorschau auf die Story</Badge>
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">weiß / eisblau / tiefes Blau</span>
+                <div className="flex items-start justify-between gap-4">
+                  <Badge variant="secondary" className="accent-chip">Starting at 299</Badge>
+                  <div className="text-right text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    calm editorial surface
+                  </div>
                 </div>
 
-                <div className="rounded-[30px] border border-sky-100 bg-[linear-gradient(145deg,#ffffff,#eff7ff)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-                  <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-sky-800">für Sara, 31</p>
-                  <h2 className="font-[family-name:var(--font-display)] text-[clamp(2rem,4vw,3rem)] leading-[1.02] text-slate-900">
-                    Alles Gute zum Geburtstag an den Menschen, der selbst gewöhnliche Tage bewahrenswert macht.
+                <div className="rounded-[34px] bg-[linear-gradient(160deg,#ffffff,rgba(241,247,255,0.98))] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]">
+                  <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-sky-800">
+                    Sample birthday treatment
+                  </p>
+                  <h2 className="font-[family-name:var(--font-display)] text-[clamp(2.15rem,4vw,3.45rem)] leading-[0.98] text-slate-950">
+                    For Lena, the person who made ordinary afternoons feel like part of the story.
                   </h2>
-                  <p className="mb-0 mt-4 max-w-[34ch] text-base leading-7 text-slate-600">
-                    Entsteht aus euren Bildern, einem klaren Erinnerungsmoment und einem Ton, der sich nach euch anfühlt.
+                  <p className="mb-0 mt-5 max-w-[34ch] text-base leading-7 text-slate-600">
+                    A premium digital birthday piece shaped around your photos, your tone, and a
+                    memory cue that still feels personal when time is short.
                   </p>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Card className="border-white/90 bg-white/82">
-                    <CardContent className="p-5">
-                      <div className="mini-kicker">was hineingeht</div>
-                      <ul className="list mt-3">
-                        <li>1 bis 2 Bild-Uploads</li>
-                        <li>Empfängername und Zustell-E-Mail</li>
-                        <li>ein kurzer, emotional hilfreicher Hinweis</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-sky-200/80 bg-[linear-gradient(180deg,rgba(240,247,255,0.96),rgba(225,239,255,0.9))]">
-                    <CardContent className="p-5">
-                      <div className="mini-kicker">warum es funktioniert</div>
-                      <p className="mb-0 text-sm leading-7 text-slate-700">
-                        Die Seite lässt alles weg, was bremst, und behält nur die Signale, die Vertrauen, Klarheit und Tempo aufbauen.
-                      </p>
-                    </CardContent>
-                  </Card>
+                <div className="grid gap-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+                  <div className="rounded-[28px] bg-[rgba(255,255,255,0.8)] p-5 shadow-[0_16px_38px_rgba(91,123,170,0.1)]">
+                    <div className="mini-kicker">what the buyer sees first</div>
+                    <div className="mt-4 grid gap-3">
+                      {reassuranceNotes.map((item) => (
+                        <div key={item} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
+                          <span className="mt-2 size-2 rounded-full bg-sky-600" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[28px] bg-slate-950 px-5 py-6 text-white shadow-[0_22px_50px_rgba(15,23,42,0.2)]">
+                    <div className="text-sm uppercase tracking-[0.18em] text-sky-200">
+                      current price
+                    </div>
+                    <div className="mt-3 flex items-end gap-2">
+                      <span className="font-[family-name:var(--font-display)] text-6xl leading-none">
+                        299
+                      </span>
+                      <span className="pb-2 text-sm uppercase tracking-[0.18em] text-slate-300">
+                        one-time
+                      </span>
+                    </div>
+                    <p className="mb-0 mt-4 text-sm leading-7 text-slate-200">
+                      Visible before the order begins, so the product feels premium and honest
+                      instead of gated behind extra steps.
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -177,7 +194,7 @@ export default function HomePage() {
       <section className="section section-tight">
         <div className="container grid gap-5 lg:grid-cols-3">
           {promiseCards.map(({ icon: Icon, title, copy }) => (
-            <Card key={title} className="border-white/90 bg-white/82">
+            <Card key={title} className="border-white/80 bg-white/74 shadow-[0_18px_38px_rgba(78,112,161,0.08)]">
               <CardHeader className="space-y-4">
                 <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   <Icon className="size-5" />
@@ -194,19 +211,29 @@ export default function HomePage() {
 
       <section className="section">
         <div className="container">
-          <Card className="overflow-hidden border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(235,245,255,0.88))]">
-            <CardContent className="grid gap-8 p-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:p-8">
+          <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(236,244,255,0.92))] shadow-[0_32px_100px_rgba(79,109,158,0.12)]">
+            <CardContent className="grid gap-8 p-6 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:p-8">
               <div className="space-y-4">
-                <Badge className="w-fit accent-chip" variant="secondary">der Geschenkweg</Badge>
-                <h2 className="h2 max-w-[13ch]">Kurz genug, um es jetzt abzuschließen. Wertig genug, um bewusst zu wirken.</h2>
+                <Badge className="w-fit accent-chip" variant="secondary">How it works</Badge>
+                <h2 className="h2 max-w-[11ch]">
+                  A clear path for people who want the gift to feel thoughtful, not rushed.
+                </h2>
                 <p className="lead max-w-[40ch]">
-                  Das ist die wirkungsvollste Phase des Redesigns: stärkere Hierarchie, klarere Informationsdichte und sichtbar mehr Vertrauen, ohne neue Komplexität in den Ablauf zu bringen.
+                  The structure stays simple on purpose: emotional signal first, checkout next,
+                  private status throughout.
                 </p>
               </div>
 
               <div className="grid gap-4">
                 {flowSteps.map((item, index) => (
-                  <Card key={item.step} className={index === 1 ? 'border-sky-200/80 bg-white/88' : 'border-white/90 bg-white/82'}>
+                  <Card
+                    key={item.step}
+                    className={
+                      index === 1
+                        ? 'border-sky-200/70 bg-white/88 shadow-[0_18px_40px_rgba(85,117,166,0.08)]'
+                        : 'border-white/80 bg-white/74'
+                    }
+                  >
                     <CardContent className="flex gap-4 p-5 sm:p-6">
                       <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] text-sm font-semibold text-white">
                         {item.step}
@@ -225,48 +252,125 @@ export default function HomePage() {
       </section>
 
       <section className="section">
-        <div className="container grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-          <Card className="border-white/90 bg-white/82">
-            <CardHeader>
-              <Badge className="w-fit accent-chip" variant="secondary">Vertrauen und Erwartung</Badge>
-              <CardTitle className="max-w-[14ch] text-[clamp(2rem,4vw,3rem)]">Genau dann ruhig, wenn die schenkende Person es eilig hat.</CardTitle>
-              <CardDescription className="max-w-[44ch] text-base">
-                Das visuelle System bleibt überwiegend hell und nutzt dunkles Blau gezielt, damit das Produkt hochwertig und modern wirkt, ohne kühl oder technisch zu erscheinen.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[26px] border border-sky-100 bg-sky-50/70 p-5">
-                  <div className="mini-kicker">vor der Zahlung</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">Klare Erwartung, direkter Upload und eine einfache emotionale Richtung.</p>
-                </div>
-                <div className="rounded-[26px] border border-sky-100 bg-white p-5">
-                  <div className="mini-kicker">nach der Zahlung</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">Private Statusspur, weniger Rückfragen und ein sauberer Weg bis zur finalen Zustellung.</p>
-                </div>
+        <div className="container grid gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
+            <CardContent className="space-y-6 p-6 lg:p-8">
+              <div className="space-y-3">
+                <Badge className="w-fit accent-chip" variant="secondary">Product preview</Badge>
+                <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
+                  The page should suggest craft before the buyer sees any production detail.
+                </CardTitle>
+                <CardDescription className="max-w-[46ch] text-base">
+                  This section is intentionally teaser-like. It signals quality, composition, and
+                  warmth without pretending the live app already includes a pre-purchase preview
+                  workflow.
+                </CardDescription>
               </div>
-              <Separator className="bg-sky-100/80" />
-              <div className="flex flex-wrap gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm text-white">
-                  <CheckCircle2 className="size-4 text-sky-300" />
-                  klarere Hierarchie
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm text-white">
-                  <CheckCircle2 className="size-4 text-sky-300" />
-                  ruhigeres Layout
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm text-white">
-                  <CheckCircle2 className="size-4 text-sky-300" />
-                  natürlichere Sprache
-                </span>
+
+              <div className="rounded-[32px] bg-white/82 p-6 shadow-[0_18px_42px_rgba(86,115,160,0.1)]">
+                <div className="grid gap-5">
+                  <div className="rounded-[28px] bg-[linear-gradient(145deg,#fefefe,#edf5ff)] p-6">
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Editorial composition
+                    </div>
+                    <p className="mb-0 mt-4 font-[family-name:var(--font-display)] text-[clamp(2rem,4vw,3rem)] leading-[1.02] text-slate-950">
+                      “A birthday piece shaped around the moments that already feel like home.”
+                    </p>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-[24px] bg-sky-50/80 p-5">
+                      <div className="mini-kicker">tone</div>
+                      <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
+                        Editorial, emotionally warm, and premium rather than loud or novelty-led.
+                      </p>
+                    </div>
+                    <div className="rounded-[24px] bg-white p-5">
+                      <div className="mini-kicker">buyer expectation</div>
+                      <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
+                        A thin path to purchase with enough visual quality to justify a premium
+                        birthday gift decision.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-white/90 bg-white/82">
+          <Card className="border-white/80 bg-white/74 shadow-[0_24px_64px_rgba(86,117,166,0.08)]">
+            <CardHeader>
+              <Badge className="w-fit accent-chip">What this page promises</Badge>
+              <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
+                Strong claims only where the current product actually supports them.
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="rounded-[26px] bg-sky-50/75 p-5">
+                <div className="mini-kicker">included now</div>
+                <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
+                  Birthday-specific positioning, visible price, slim briefing, checkout handoff,
+                  and a private status path that stays with the order.
+                </p>
+              </div>
+              <div className="rounded-[26px] bg-white p-5">
+                <div className="mini-kicker">not implied here</div>
+                <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
+                  No live preview promise, no assisted writing promise, no timing guarantee, and no
+                  account-based workflow that the product does not actually implement.
+                </p>
+              </div>
+              <div className="rounded-[30px] bg-slate-950 px-5 py-6 text-white">
+                <div className="flex items-start gap-3">
+                  <Mail className="mt-1 size-5 text-sky-300" />
+                  <p className="mb-0 text-sm leading-7 text-slate-200">
+                    The product language stays service-like and calm so the buyer understands the
+                    path quickly without feeling pushed into generic software UX.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <Card className="border-white/80 bg-white/74 shadow-[0_24px_70px_rgba(86,117,166,0.08)]">
+            <CardHeader>
+              <Badge className="w-fit accent-chip" variant="secondary">Pricing</Badge>
+              <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
+                Clear enough to trust before the order starts.
+              </CardTitle>
+              <CardDescription className="max-w-[44ch] text-base">
+                This slice keeps pricing explicit on the landing page instead of revealing it later
+                in the flow.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-[34px] bg-[linear-gradient(135deg,rgba(15,23,42,0.97),rgba(20,64,124,0.94))] p-6 text-white shadow-[0_28px_60px_rgba(15,23,42,0.16)]">
+                <div className="text-sm uppercase tracking-[0.2em] text-sky-200">
+                  Birthday story gift
+                </div>
+                <div className="mt-4 flex flex-wrap items-end gap-3">
+                  <span className="font-[family-name:var(--font-display)] text-[clamp(4rem,8vw,5.8rem)] leading-none">
+                    299
+                  </span>
+                  <span className="pb-3 text-sm uppercase tracking-[0.18em] text-slate-300">
+                    starting price
+                  </span>
+                </div>
+                <p className="mb-0 mt-5 max-w-[38ch] text-sm leading-7 text-slate-200">
+                  The buyer sees the price before committing time, which fits the premium positioning
+                  better than a hidden or deferred reveal.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-white/80 bg-white/74 shadow-[0_24px_70px_rgba(86,117,166,0.08)]">
             <CardHeader>
               <Badge className="w-fit accent-chip">FAQ</Badge>
-              <CardTitle>Fragen, die den Checkout nicht aufhalten sollten.</CardTitle>
+              <CardTitle>Questions that should not slow down the gift decision.</CardTitle>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
@@ -284,26 +388,30 @@ export default function HomePage() {
 
       <section className="section pt-0">
         <div className="container">
-          <Card className="border-white/90 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(22,78,138,0.94))] text-white">
+          <Card className="border-white/80 bg-[linear-gradient(135deg,rgba(14,23,39,0.97),rgba(21,83,145,0.95))] text-white shadow-[0_32px_80px_rgba(15,23,42,0.16)]">
             <CardContent className="flex flex-col gap-5 p-6 lg:flex-row lg:items-center lg:justify-between lg:p-8">
               <div className="space-y-2">
-                <Badge className="w-fit border-white/15 bg-white/10 text-white" variant="dark">wenn der Anlass schon nah ist</Badge>
+                <Badge className="w-fit border-white/15 bg-white/10 text-white" variant="dark">
+                  One clear next step
+                </Badge>
                 <h2 className="font-[family-name:var(--font-display)] text-[clamp(2rem,4vw,3rem)] leading-[1.02]">
-                  Lass das Geschenk aufmerksam wirken, auch wenn der Zeitpunkt knapp ist.
+                  Start the birthday gift while the memory still feels close.
                 </h2>
                 <p className="max-w-[44ch] text-base leading-7 text-slate-200">
-                  Nimm den kürzesten Weg, der sich trotzdem hochwertig anfühlt: Briefing starten, Auftrag sichern und den Rest über die Statusseite begleiten.
+                  The product should feel like a premium service with a short runway: begin the
+                  order, move into checkout, and return through the same private path when needed.
                 </p>
               </div>
+
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
                   <Link href={orderingAvailable ? '/memories' : '/status'}>
-                    {orderingAvailable ? 'Jetzt starten' : 'Status öffnen'}
-                    <Mail />
+                    {orderingAvailable ? 'Begin the gift' : 'Open private status'}
+                    <Sparkles />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/how-it-works">4-Schritte-Ablauf ansehen</Link>
+                  <Link href="/how-it-works">Review the flow</Link>
                 </Button>
               </div>
             </CardContent>
