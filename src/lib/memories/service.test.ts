@@ -507,7 +507,7 @@ function installSupabaseMock(options?: { minimalMutationResponses?: boolean }) {
   const generationJobs = new Map<string, Record<string, unknown>>();
   const generatedAssets = new Map<string, Array<Record<string, unknown>>>();
   const eventLog: Array<Record<string, unknown>> = [];
-  const generationCalls: Array<Record<string, unknown>> = [];
+  const generationCalls: Array<{ url: string; body: Record<string, unknown> }> = [];
 
   global.fetch = async (input, init) => {
     const url = new URL(String(input));
@@ -580,9 +580,13 @@ function installSupabaseMock(options?: { minimalMutationResponses?: boolean }) {
       }
     }
 
-    if (url.href === 'https://example.com/make/generate') {
+    if (
+      url.href === 'https://example.com/make/generate' ||
+      url.href === 'https://example.com/make/generic' ||
+      url.href === 'https://example.com/make/write'
+    ) {
       const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-      generationCalls.push(body);
+      generationCalls.push({ url: url.href, body });
       return new Response(JSON.stringify({ accepted: true }), {
         headers: { 'content-type': 'application/json' },
       });
@@ -620,8 +624,9 @@ test('uses Supabase as the canonical store and Make only for generation handoff'
   assert.equal(unlocked.status, 'queued');
   assert.equal(unlocked.unlocked, true);
   assert.equal(mock.generationCalls.length, 1);
-  assert.equal(mock.generationCalls[0]?.jobId, created.jobId);
-  assert.equal(mock.generationCalls[0]?.status, 'queued');
+  assert.equal(mock.generationCalls[0]?.url, 'https://example.com/make/generate');
+  assert.equal(mock.generationCalls[0]?.body.jobId, created.jobId);
+  assert.equal(mock.generationCalls[0]?.body.status, 'queued');
 
   const preview = await applyMediaCommand(created.jobId, {
     command: 'mark_preview_ready',
@@ -652,6 +657,31 @@ test('uses Supabase as the canonical store and Make only for generation handoff'
   assert.equal(mock.generationJobs.get(created.jobId)?.status, 'delivered');
   assert.equal(mock.generatedAssets.get(created.jobId)?.length, 2);
   assert.ok(mock.eventLog.length >= 4);
+});
+
+test('prefers the write-specific Make webhook for unlock handoff when both aliases are configured', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+  delete process.env.MEMORIES_MAKE_WEBHOOK_URL;
+  delete process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL;
+  process.env.MAKE_WEBHOOK_URL = 'https://example.com/make/generic';
+  process.env.MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
+
+  const mock = installSupabaseMock();
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A warm birthday memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  const unlocked = await unlockMemoryJob(created.jobId, { paymentReference: 'pay_remote_456' });
+
+  assert.equal(unlocked.status, 'queued');
+  assert.equal(mock.generationCalls.length, 1);
+  assert.equal(mock.generationCalls[0]?.url, 'https://example.com/make/write');
+  assert.equal(mock.generationCalls[0]?.body.jobId, created.jobId);
+  assert.equal(mock.generationCalls[0]?.body.status, 'queued');
 });
 
 test('accepts empty-body 201 responses from Supabase return=minimal mutations', async () => {

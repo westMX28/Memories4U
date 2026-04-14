@@ -52,15 +52,20 @@ function buildGenerationWebhookPayload(job: MemoryJob): GenerationWebhookPayload
   };
 }
 
+function getGenerationWebhookUrl() {
+  const { makeWriteWebhookUrl, makeWebhookUrl } = getMemoriesConfig();
+  return makeWriteWebhookUrl || makeWebhookUrl;
+}
+
 export function isMakeConfigured() {
-  const { makeWebhookUrl } = getMemoriesConfig();
-  return Boolean(makeWebhookUrl);
+  return Boolean(getGenerationWebhookUrl());
 }
 
 export async function dispatchGenerationHandoff(job: MemoryJob) {
-  const { makeWebhookUrl, makeApiKey, makeTimeoutMs } = getMemoriesConfig();
+  const { makeApiKey, makeTimeoutMs } = getMemoriesConfig();
+  const generationWebhookUrl = getGenerationWebhookUrl();
 
-  if (!makeWebhookUrl) {
+  if (!generationWebhookUrl) {
     return;
   }
 
@@ -68,7 +73,7 @@ export async function dispatchGenerationHandoff(job: MemoryJob) {
   const timeout = setTimeout(() => controller.abort(), makeTimeoutMs);
 
   try {
-    const response = await fetch(makeWebhookUrl, {
+    const response = await fetch(generationWebhookUrl, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
