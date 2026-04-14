@@ -4,12 +4,10 @@ import path from 'node:path';
 import { getMemoriesConfig } from '@/lib/memories/config';
 import { HttpError } from '@/lib/memories/errors';
 import {
-  createRemoteJob,
-  getRemoteJob,
-  isMakeConfigured,
-  unlockRemoteJob,
-  updateRemoteJob,
-} from '@/lib/memories/make-client';
+  getSupabaseJob,
+  isSupabaseConfigured,
+  upsertSupabaseJob,
+} from '@/lib/memories/supabase-store';
 
 import type { MemoryJob } from '@/lib/memories/contracts';
 
@@ -63,8 +61,8 @@ async function queueWrite<T>(operation: () => Promise<T>) {
 }
 
 export async function createJob(job: MemoryJob) {
-  if (isMakeConfigured()) {
-    return createRemoteJob(job);
+  if (isSupabaseConfigured()) {
+    return upsertSupabaseJob(job);
   }
 
   return queueWrite(async () => {
@@ -76,12 +74,24 @@ export async function createJob(job: MemoryJob) {
 }
 
 export async function getJob(jobId: string) {
-  if (isMakeConfigured()) {
-    return getRemoteJob(jobId);
+  if (isSupabaseConfigured()) {
+    return getSupabaseJob(jobId);
   }
 
   const store = await readStore();
   return store.jobs[jobId];
+}
+
+export async function findJobByClientRequestId(email: string, clientRequestId: string) {
+  if (isSupabaseConfigured()) {
+    const { findSupabaseJobByClientRequestId } = await import('@/lib/memories/supabase-store');
+    return findSupabaseJobByClientRequestId(email, clientRequestId);
+  }
+
+  const store = await readStore();
+  return Object.values(store.jobs).find(
+    (job) => job.email === email && job.clientRequestId === clientRequestId,
+  );
 }
 
 export async function requireJob(jobId: string) {
@@ -94,22 +104,15 @@ export async function requireJob(jobId: string) {
 }
 
 export async function updateJob(jobId: string, updater: (job: MemoryJob) => MemoryJob) {
-  if (isMakeConfigured()) {
-    const existing = await getRemoteJob(jobId);
+  if (isSupabaseConfigured()) {
+    const existing = await getSupabaseJob(jobId);
 
     if (!existing) {
       throw new HttpError(404, `Memory job ${jobId} was not found.`);
     }
 
     const updated = updater(existing);
-
-    if (!existing.unlocked && updated.unlocked) {
-      return (
-        (await unlockRemoteJob(updated, updated.paymentReference || '', updated.updatedAt)) || updated
-      );
-    }
-
-    return (await updateRemoteJob(jobId, updated)) || updated;
+    return upsertSupabaseJob(updated);
   }
 
   return queueWrite(async () => {

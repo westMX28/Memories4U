@@ -2,9 +2,9 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
 import { getMemoriesConfig } from '@/lib/memories/config';
 import { HttpError } from '@/lib/memories/errors';
-import { stageSourceImageUpload } from '@/lib/memories/source-image-staging';
-import { getJob, createJob, requireJob, updateJob } from '@/lib/memories/store';
-import { isMakeConfigured } from '@/lib/memories/make-client';
+import { dispatchGenerationHandoff, isMakeConfigured } from '@/lib/memories/make-client';
+import { resolveCloudinaryJobFolder, stageSourceImageUpload } from '@/lib/memories/source-image-staging';
+import { findJobByClientRequestId, getJob, createJob, requireJob, updateJob } from '@/lib/memories/store';
 import { assertStripeConfigured, getStripeClient } from '@/lib/memories/stripe';
 
 import type {
@@ -16,6 +16,8 @@ import type {
   MediaCommand,
   MemoryJob,
   MemoryStatusResponse,
+  OperatorOrderState,
+  OperatorOrderStatusResponse,
   SourceImage,
   SupportedSourceImageMimeType,
   UnlockJobInput,
@@ -119,6 +121,10 @@ function getOptionalFormField(formData: FormData, name: string) {
   return optionalTrimmedString(getFormField(formData, name));
 }
 
+function getOptionalClientRequestId(value: unknown) {
+  return optionalTrimmedString(value);
+}
+
 function getOptionalFormFile(formData: FormData, names: string[]) {
   for (const name of names) {
     const value = formData.get(name);
@@ -191,6 +197,7 @@ async function fileToSourceImage(
   file: File,
   field: string,
   label: string,
+  jobId: string,
 ): Promise<SourceImage> {
   const { maxSourceImageBytes } = getMemoriesConfig();
 
@@ -211,7 +218,7 @@ async function fileToSourceImage(
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const normalizedFile = new File([buffer], filename, { type: mimeType });
-  const staged = await stageSourceImageUpload(normalizedFile, mimeType, field, label);
+  const staged = await stageSourceImageUpload(normalizedFile, mimeType, field, label, jobId);
 
   return {
     ...staged,
@@ -221,17 +228,40 @@ async function fileToSourceImage(
 
 export function parseCreateMemoryJobInput(input: unknown): CreateMemoryJobInput {
   const record = assertRecord(input, 'body');
+  const metadata = (() => {
+    const parsed = parseMetadataRecord(record.metadata);
+    const occasion = optionalTrimmedString(record.occasion);
+
+    if (!occasion) {
+      return parsed;
+    }
+
+    return {
+      ...(parsed || {}),
+      occasion,
+    };
+  })();
 
   return {
     email: assertEmail(record.email, 'email'),
+    clientRequestId:
+      getOptionalClientRequestId(record.clientRequestId) || getOptionalClientRequestId(metadata?.clientRequestId),
     customerName: optionalTrimmedString(record.customerName),
     storyPrompt: assertNonEmptyString(record.storyPrompt, 'storyPrompt'),
     sourceImages: assertSourceImages(record.sourceImages),
-    metadata: parseMetadataRecord(record.metadata),
+    metadata,
   };
 }
 
-export async function parseCreateMemoryJobFormData(formData: FormData): Promise<CreateMemoryJobInput> {
+export function createMemoryJobId() {
+  return randomUUID();
+}
+
+export async function parseCreateMemoryJobFormData(
+  formData: FormData,
+  jobId = createMemoryJobId(),
+): Promise<CreateMemoryJobInput> {
+  const metadata = parseFormMetadata(formData);
   const image1 = getOptionalFormFile(formData, ['image1', 'sourceImage1', 'file1']);
   const image2 = getOptionalFormFile(formData, ['image2', 'sourceImage2', 'file2']);
 
@@ -239,17 +269,35 @@ export async function parseCreateMemoryJobFormData(formData: FormData): Promise<
     throw new HttpError(400, 'image1 is required.');
   }
 
-  const sourceImages = [await fileToSourceImage(image1, 'image1', 'customer')];
+  const sourceImages = [await fileToSourceImage(image1, 'image1', 'customer', jobId)];
   if (image2) {
-    sourceImages.push(await fileToSourceImage(image2, 'image2', 'recipient'));
+    sourceImages.push(await fileToSourceImage(image2, 'image2', 'recipient', jobId));
   }
 
   return {
     email: assertEmail(getFormField(formData, 'email'), 'email'),
+    clientRequestId:
+      getOptionalFormField(formData, 'clientRequestId') || getOptionalClientRequestId(metadata?.clientRequestId),
     customerName: getOptionalFormField(formData, 'customerName'),
     storyPrompt: assertNonEmptyString(getFormField(formData, 'storyPrompt'), 'storyPrompt'),
     sourceImages,
-    metadata: parseFormMetadata(formData),
+    metadata,
+  };
+}
+
+export function getCreateMemoryJobIdempotencyKeyFromFormData(formData: FormData) {
+  const emailValue = getFormField(formData, 'email');
+  const metadata = parseFormMetadata(formData);
+  const clientRequestId =
+    getOptionalFormField(formData, 'clientRequestId') || getOptionalClientRequestId(metadata?.clientRequestId);
+
+  if (!emailValue || !clientRequestId) {
+    return undefined;
+  }
+
+  return {
+    email: assertEmail(emailValue, 'email'),
+    clientRequestId,
   };
 }
 
@@ -386,6 +434,85 @@ function jobToStatusResponse(job: MemoryJob): MemoryStatusResponse {
   };
 }
 
+function deriveOperatorOrderState(job: MemoryJob): OperatorOrderState {
+  if (job.status === 'failed') {
+    return 'needs_attention';
+  }
+
+  if (job.status === 'delivered') {
+    return 'delivered';
+  }
+
+  if (job.status === 'completed') {
+    return 'ready';
+  }
+
+  if (job.unlocked) {
+    if (job.status === 'unlocked') {
+      return 'paid';
+    }
+
+    return 'in_progress';
+  }
+
+  return 'payment_pending';
+}
+
+function jobToOperatorOrderStatus(job: MemoryJob): OperatorOrderStatusResponse {
+  return {
+    summary: {
+      orderId: job.id,
+      jobId: job.id,
+      createdAt: job.createdAt,
+      updatedAt: job.updatedAt,
+      customerEmail: job.email,
+      orderState: deriveOperatorOrderState(job),
+    },
+    payment: {
+      status: job.unlocked ? 'paid' : 'pending',
+      provider: job.paymentProvider,
+      reference: job.paymentReference,
+    },
+    generation: {
+      status: job.status,
+      unlocked: job.unlocked,
+      lastError: job.lastError,
+    },
+    assets: {
+      preview: {
+        present: Boolean(job.previewAsset),
+        asset: job.previewAsset,
+      },
+      final: {
+        present: Boolean(job.finalAsset),
+        asset: job.finalAsset,
+      },
+    },
+    delivery: {
+      delivered: Boolean(job.delivery),
+      provider: job.delivery?.provider,
+      recipient: job.delivery?.recipient,
+      deliveryId: job.delivery?.deliveryId,
+      deliveredAt: job.delivery?.deliveredAt,
+    },
+    history: {
+      mode: 'current_state_only',
+      note: 'No event timeline is persisted yet. This payload only exposes current-state timestamps and references present on the canonical order.',
+      timestamps: {
+        createdAt: job.createdAt,
+        updatedAt: job.updatedAt,
+        deliveredAt: job.delivery?.deliveredAt,
+      },
+      references: {
+        paymentReference: job.paymentReference,
+        previewAssetUrl: job.previewAsset?.url,
+        finalAssetUrl: job.finalAsset?.url,
+        deliveryId: job.delivery?.deliveryId,
+      },
+    },
+  };
+}
+
 function assertJobUnlocked(job: MemoryJob, action: string) {
   if (!job.unlocked) {
     throw new HttpError(409, `Job must be unlocked before ${action}.`);
@@ -407,16 +534,62 @@ async function verifyAccess(jobId: string, accessToken?: string) {
   return job;
 }
 
-export async function createMemoryJobRecord(input: CreateMemoryJobInput) {
+function normalizeCloudinaryAssetPublicId(cloudinaryFolder: string | undefined, publicId: string | undefined) {
+  if (!cloudinaryFolder || !publicId) {
+    return publicId;
+  }
+
+  const normalizedPublicId = publicId.replace(/^\/+/, '');
+  if (normalizedPublicId.startsWith(`${cloudinaryFolder}/`)) {
+    return normalizedPublicId;
+  }
+
+  if (normalizedPublicId.includes('/')) {
+    return normalizedPublicId;
+  }
+
+  return `${cloudinaryFolder}/${normalizedPublicId}`;
+}
+
+export async function getExistingMemoryJobForCreateInput(input: {
+  email: string;
+  clientRequestId: string;
+}) {
+  const existing = await findJobByClientRequestId(input.email, input.clientRequestId);
+  if (!existing) {
+    return undefined;
+  }
+
+  return {
+    jobId: existing.id,
+    accessToken: existing.accessToken,
+    status: existing.status,
+    sourceImages: existing.sourceImages,
+  };
+}
+
+export async function createMemoryJobRecord(input: CreateMemoryJobInput, jobId = createMemoryJobId()) {
   const { cloudinaryCloudName } = getMemoriesConfig();
+  if (input.clientRequestId) {
+    const existing = await getExistingMemoryJobForCreateInput({
+      email: input.email,
+      clientRequestId: input.clientRequestId,
+    });
+    if (existing) {
+      return existing;
+    }
+  }
+
   const timestamp = nowIso();
   const job: MemoryJob = {
-    id: randomUUID(),
+    id: jobId,
     accessToken: randomToken(),
     email: input.email,
+    clientRequestId: input.clientRequestId,
     customerName: input.customerName,
     storyPrompt: input.storyPrompt,
     sourceImages: input.sourceImages,
+    cloudinaryFolder: resolveCloudinaryJobFolder(jobId),
     status: 'created',
     unlocked: false,
     metadata: input.metadata,
@@ -425,7 +598,23 @@ export async function createMemoryJobRecord(input: CreateMemoryJobInput) {
     updatedAt: timestamp,
   };
 
-  const created = await createJob(job);
+  let created: Awaited<ReturnType<typeof createJob>>;
+  try {
+    created = await createJob(job);
+  } catch (error) {
+    if (input.clientRequestId && error instanceof HttpError && error.status === 409) {
+      const existing = await getExistingMemoryJobForCreateInput({
+        email: input.email,
+        clientRequestId: input.clientRequestId,
+      });
+
+      if (existing) {
+        return existing;
+      }
+    }
+
+    throw error;
+  }
 
   return {
     jobId: created.id,
@@ -451,8 +640,13 @@ export async function getMemoryJobStatus(jobId: string, accessToken?: string) {
   return jobToStatusResponse(job);
 }
 
+export async function getOperatorOrderStatus(jobId: string) {
+  const job = await requireJob(jobId);
+  return jobToOperatorOrderStatus(job);
+}
+
 export async function unlockMemoryJob(jobId: string, input: UnlockJobInput) {
-  await requireJob(jobId);
+  const existing = await requireJob(jobId);
 
   const updated = await updateJob(jobId, (job) => ({
     ...(() => {
@@ -481,11 +675,26 @@ export async function unlockMemoryJob(jobId: string, input: UnlockJobInput) {
     })(),
   }));
 
+  if (!existing.unlocked && updated.unlocked && isMakeConfigured()) {
+    await dispatchGenerationHandoff(updated);
+  }
+
   return jobToStatusResponse(updated);
 }
 
 export async function applyMediaCommand(jobId: string, command: MediaCommand) {
   const updated = await updateJob(jobId, (job) => {
+    const assetWithFolder =
+      'asset' in command
+        ? {
+            ...command.asset,
+            publicId:
+              command.asset.provider === 'cloudinary'
+                ? normalizeCloudinaryAssetPublicId(job.cloudinaryFolder, command.asset.publicId)
+                : command.asset.publicId,
+          }
+        : undefined;
+
     if (command.command === 'request_generation') {
       assertJobUnlocked(job, 'generation starts');
       assertStatusIn(job, ['unlocked', 'failed'], 'queue generation');
@@ -517,7 +726,7 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
       return {
         ...job,
         status: 'preview_ready',
-        previewAsset: command.asset,
+        previewAsset: assetWithFolder,
         lastError: undefined,
         updatedAt: nowIso(),
       };
@@ -530,7 +739,7 @@ export async function applyMediaCommand(jobId: string, command: MediaCommand) {
       return {
         ...job,
         status: 'completed',
-        finalAsset: command.asset,
+        finalAsset: assetWithFolder,
         lastError: undefined,
         updatedAt: nowIso(),
       };
@@ -555,6 +764,9 @@ export async function recordDelivery(jobId: string, command: DeliveryCommand) {
     ...(() => {
       assertJobUnlocked(job, 'delivery');
       assertStatusIn(job, ['completed', 'delivered'], 'record delivery');
+      if (!job.finalAsset) {
+        throw new HttpError(409, 'Cannot record delivery before finalAsset exists on the canonical job.');
+      }
 
       return {
         ...job,
@@ -684,13 +896,17 @@ export async function finalizeStripeCheckout(
     id: string;
     payment_status?: string | null;
     payment_intent?: string | { id?: string | null } | null;
+    client_reference_id?: string | null;
     metadata?: Record<string, string> | null;
   },
 ) {
-  const jobId = session.metadata?.jobId;
+  const jobId = session.metadata?.jobId || session.client_reference_id;
 
   if (!jobId) {
-    throw new HttpError(400, 'Stripe checkout session metadata.jobId is required.');
+    throw new HttpError(
+      400,
+      'Stripe checkout session metadata.jobId or client_reference_id is required.',
+    );
   }
 
   if (session.payment_status && session.payment_status !== 'paid') {

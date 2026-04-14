@@ -48,9 +48,11 @@ export type MemoryJob = {
   id: string;
   accessToken: string;
   email: string;
+  clientRequestId?: string;
   customerName?: string;
   storyPrompt: string;
   sourceImages: SourceImage[];
+  cloudinaryFolder?: string;
   status: MemoryStatus;
   unlocked: boolean;
   paymentReference?: string;
@@ -67,6 +69,7 @@ export type MemoryJob = {
 
 export type CreateMemoryJobInput = {
   email: string;
+  clientRequestId?: string;
   customerName?: string;
   storyPrompt: string;
   sourceImages: SourceImage[];
@@ -82,6 +85,69 @@ export type MemoryStatusResponse = {
   delivery?: DeliveryRecord;
   lastError?: string;
   updatedAt: string;
+};
+
+export type OperatorOrderState =
+  | 'payment_pending'
+  | 'paid'
+  | 'in_progress'
+  | 'ready'
+  | 'delivered'
+  | 'needs_attention';
+
+export type OperatorPaymentStatus = 'pending' | 'paid';
+
+export type OperatorOrderStatusResponse = {
+  summary: {
+    orderId: string;
+    jobId: string;
+    createdAt: string;
+    updatedAt: string;
+    customerEmail: string;
+    orderState: OperatorOrderState;
+  };
+  payment: {
+    status: OperatorPaymentStatus;
+    provider?: 'stripe' | 'manual';
+    reference?: string;
+  };
+  generation: {
+    status: MemoryStatus;
+    unlocked: boolean;
+    lastError?: string;
+  };
+  assets: {
+    preview: {
+      present: boolean;
+      asset?: MemoryAsset;
+    };
+    final: {
+      present: boolean;
+      asset?: MemoryAsset;
+    };
+  };
+  delivery: {
+    delivered: boolean;
+    provider?: 'make' | 'manual';
+    recipient?: string;
+    deliveryId?: string;
+    deliveredAt?: string;
+  };
+  history: {
+    mode: 'current_state_only';
+    note: string;
+    timestamps: {
+      createdAt: string;
+      updatedAt: string;
+      deliveredAt?: string;
+    };
+    references: {
+      paymentReference?: string;
+      previewAssetUrl?: string;
+      finalAssetUrl?: string;
+      deliveryId?: string;
+    };
+  };
 };
 
 export type UnlockJobInput = {

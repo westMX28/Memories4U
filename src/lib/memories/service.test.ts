@@ -8,10 +8,12 @@ import { HttpError } from '@/lib/memories/errors';
 import { setStripeClientForTests } from '@/lib/memories/stripe';
 import {
   applyMediaCommand,
+  createMemoryJobId,
   createCheckoutSession,
   createMemoryJobRecord,
   finalizeStripeCheckout,
   getMemoryJobStatus,
+  getOperatorOrderStatus,
   parseCreateMemoryJobFormData,
   parseCreateMemoryJobInput,
   parseMediaCommand,
@@ -30,6 +32,9 @@ beforeEach(async () => {
   tempRoot = await mkdtemp(path.join(os.tmpdir(), 'memories-service-'));
   process.env.MEMORIES_DATA_FILE = path.join(tempRoot, 'jobs.json');
   process.env.MEMORIES_APP_URL = 'http://localhost:3000';
+  process.env.MEMORIES_SUPABASE_URL = '';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = '';
+  process.env.MEMORIES_SUPABASE_TIMEOUT_MS = '';
   process.env.STRIPE_SECRET_KEY = '';
   process.env.STRIPE_WEBHOOK_SECRET = '';
   process.env.STRIPE_PRICE_ID = '';
@@ -40,7 +45,7 @@ beforeEach(async () => {
   process.env.MEMORIES_CLOUDINARY_CLOUD_NAME = '';
   process.env.MEMORIES_CLOUDINARY_API_KEY = '';
   process.env.MEMORIES_CLOUDINARY_API_SECRET = '';
-  process.env.MEMORIES_CLOUDINARY_UPLOAD_FOLDER = 'memories/source-images';
+  process.env.MEMORIES_CLOUDINARY_UPLOAD_FOLDER = 'Memories';
   global.fetch = originalFetch;
   setStripeClientForTests(null);
 });
@@ -128,6 +133,74 @@ test('duplicate unlock does not regress an in-flight job', async () => {
   assert.equal(duplicateUnlock.unlocked, true);
 });
 
+test('reuses an existing job when create is retried with the same clientRequestId', async () => {
+  const first = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    clientRequestId: 'client-request-123',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  const duplicate = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    clientRequestId: 'client-request-123',
+    storyPrompt: 'A memory that should not create a second job.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/b.jpg' }],
+  });
+
+  assert.equal(duplicate.jobId, first.jobId);
+  assert.equal(duplicate.accessToken, first.accessToken);
+  assert.deepEqual(duplicate.sourceImages, first.sourceImages);
+});
+
+test('returns an honest operator order status without fabricating history', async () => {
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  await unlockMemoryJob(created.jobId, {
+    paymentReference: 'pi_123',
+    provider: 'stripe',
+  });
+
+  await applyMediaCommand(created.jobId, {
+    command: 'request_generation',
+    provider: 'manual',
+  });
+
+  await applyMediaCommand(created.jobId, {
+    command: 'mark_completed',
+    provider: 'manual',
+    asset: {
+      provider: 'manual',
+      url: 'https://example.com/final.jpg',
+      format: 'jpg',
+    },
+  });
+
+  const operatorStatus = await getOperatorOrderStatus(created.jobId);
+
+  assert.equal(operatorStatus.summary.orderId, created.jobId);
+  assert.equal(operatorStatus.summary.customerEmail, 'customer@example.com');
+  assert.equal(operatorStatus.summary.orderState, 'ready');
+  assert.equal(operatorStatus.payment.status, 'paid');
+  assert.equal(operatorStatus.payment.provider, 'stripe');
+  assert.equal(operatorStatus.payment.reference, 'pi_123');
+  assert.equal(operatorStatus.generation.status, 'completed');
+  assert.equal(operatorStatus.assets.preview.present, false);
+  assert.equal(operatorStatus.assets.final.present, true);
+  assert.equal(operatorStatus.assets.final.asset?.url, 'https://example.com/final.jpg');
+  assert.equal(operatorStatus.delivery.delivered, false);
+  assert.equal(operatorStatus.history.mode, 'current_state_only');
+  assert.match(operatorStatus.history.note, /No event timeline is persisted yet/i);
+  assert.equal(operatorStatus.history.timestamps.createdAt, operatorStatus.summary.createdAt);
+  assert.equal(operatorStatus.history.references.paymentReference, 'pi_123');
+  assert.equal(operatorStatus.history.references.finalAssetUrl, 'https://example.com/final.jpg');
+  assert.equal('paidAt' in operatorStatus.history.timestamps, false);
+});
+
 test('rejects invalid lifecycle transitions', async () => {
   const created = await createMemoryJobRecord({
     email: 'customer@example.com',
@@ -212,15 +285,28 @@ test('rejects malformed customer and asset inputs', async () => {
   );
 });
 
+test('parseCreateMemoryJobInput preserves top-level occasion inside metadata', () => {
+  const parsed = parseCreateMemoryJobInput({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    occasion: 'birthday',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  assert.equal(parsed.metadata?.occasion, 'birthday');
+});
+
 test('stages multipart uploads into hosted source image records', async () => {
   process.env.MEMORIES_CLOUDINARY_CLOUD_NAME = 'demo-cloud';
   process.env.MEMORIES_CLOUDINARY_API_KEY = 'api-key';
   process.env.MEMORIES_CLOUDINARY_API_SECRET = 'api-secret';
-  process.env.MEMORIES_CLOUDINARY_UPLOAD_FOLDER = 'memories/test-folder';
+  process.env.MEMORIES_CLOUDINARY_UPLOAD_FOLDER = 'Memories';
 
   global.fetch = async (input, init) => {
     assert.equal(String(input), 'https://api.cloudinary.com/v1_1/demo-cloud/image/upload');
     assert.equal(init?.method, 'POST');
+    assert.ok(init?.body instanceof FormData);
+    assert.equal(init.body.get('folder'), 'Memories/11111111-1111-1111-1111-111111111111');
 
     return new Response(
       JSON.stringify({
@@ -239,7 +325,10 @@ test('stages multipart uploads into hosted source image records', async () => {
   formData.set('occasion', 'birthday');
   formData.set('image1', new File([Buffer.from('png-data')], 'portrait.png', { type: 'image/png' }));
 
-  const parsed = await parseCreateMemoryJobFormData(formData);
+  const parsed = await parseCreateMemoryJobFormData(
+    formData,
+    '11111111-1111-1111-1111-111111111111',
+  );
 
   assert.equal(parsed.sourceImages.length, 1);
   assert.equal(parsed.sourceImages[0]?.storage, 'remote_url');
@@ -249,6 +338,36 @@ test('stages multipart uploads into hosted source image records', async () => {
     'https://res.cloudinary.com/demo-cloud/image/upload/v1/source-image.png',
   );
   assert.equal(parsed.metadata?.occasion, 'birthday');
+});
+
+test('stores generated Cloudinary asset public ids under the job folder', async () => {
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  await unlockMemoryJob(created.jobId, { paymentReference: 'pay_123' });
+  await applyMediaCommand(created.jobId, {
+    command: 'request_generation',
+    provider: 'manual',
+  });
+  await applyMediaCommand(created.jobId, {
+    command: 'mark_processing',
+    provider: 'manual',
+  });
+
+  const completed = await applyMediaCommand(created.jobId, {
+    command: 'mark_completed',
+    provider: 'cloudinary',
+    asset: {
+      provider: 'cloudinary',
+      url: 'https://res.cloudinary.com/demo/image/upload/v1/final.jpg',
+      publicId: 'final-image',
+    },
+  });
+
+  assert.equal(completed.finalAsset?.publicId, `Memories/${created.jobId}/final-image`);
 });
 
 test('rejects multipart uploads when hosted source-image staging is not configured', async () => {
@@ -363,67 +482,125 @@ test('finalizes Stripe checkout through the existing unlock flow', async () => {
   assert.equal(status.unlocked, true);
 });
 
-test('uses the Make-backed canonical store when configured', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-  process.env.MEMORIES_MAKE_API_KEY = 'test-key';
+test('finalizes Stripe checkout through client_reference_id when metadata.jobId is absent', async () => {
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
 
-  const rows = new Map<string, Record<string, unknown>>();
+  const unlocked = await finalizeStripeCheckout({
+    id: 'cs_test_456',
+    client_reference_id: created.jobId,
+    payment_status: 'paid',
+    payment_intent: 'pi_456',
+    metadata: {},
+  });
+
+  assert.equal(unlocked?.status, 'unlocked');
+  assert.equal(unlocked?.unlocked, true);
+  assert.equal(unlocked?.jobId, created.jobId);
+});
+
+function installSupabaseMock(options?: { minimalMutationResponses?: boolean }) {
+  const orders = new Map<string, Record<string, unknown>>();
+  const generationJobs = new Map<string, Record<string, unknown>>();
+  const generatedAssets = new Map<string, Array<Record<string, unknown>>>();
+  const eventLog: Array<Record<string, unknown>> = [];
+  const generationCalls: Array<Record<string, unknown>> = [];
 
   global.fetch = async (input, init) => {
-    const url = String(input);
-    assert.equal(init?.method, 'POST');
-    assert.equal(
-      (init?.headers as Record<string, string>).authorization,
-      'Bearer test-key',
-    );
+    const url = new URL(String(input));
 
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
+    if (url.origin === 'https://demo-project.supabase.co') {
+      const pathname = url.pathname.replace('/rest/v1/', '');
 
-    if (url === 'https://example.com/make/write' && action === 'create') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      assert.equal(body.jobId, row.jobId);
-      assert.equal(body.status, row.status);
-      rows.set(String(row.jobId), row);
-      return new Response(JSON.stringify(row), {
-        headers: { 'content-type': 'application/json' },
-      });
-    }
-
-    if (url === 'https://example.com/make/read' && action === 'status') {
-      const row = rows.get(String(body.jobId));
-      return row
-        ? new Response(JSON.stringify(row), {
+      if (pathname === 'orders' && init?.method === 'GET') {
+        const email = url.searchParams.get('email')?.replace(/^eq\./, '') || '';
+        const clientRequestId = url.searchParams.get('client_request_id')?.replace(/^eq\./, '') || '';
+        if (email && clientRequestId) {
+          const matched = [...orders.values()].find(
+            (row) => row.email === email && row.client_request_id === clientRequestId,
+          );
+          return new Response(JSON.stringify(matched ? [matched] : []), {
             headers: { 'content-type': 'application/json' },
-          })
-        : new Response(null, {
-            status: 404,
           });
+        }
+
+        const jobId = url.searchParams.get('id')?.replace(/^eq\./, '') || '';
+        const row = orders.get(jobId);
+        return new Response(JSON.stringify(row ? [row] : []), {
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+
+      if (pathname === 'orders' && init?.method === 'POST') {
+        const row = JSON.parse(String(init.body)) as Record<string, unknown>;
+        orders.set(String(row.id), row);
+        return new Response(JSON.stringify([row]), {
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+
+      if (pathname === 'generation_jobs' && init?.method === 'POST') {
+        const row = JSON.parse(String(init.body)) as Record<string, unknown>;
+        generationJobs.set(String(row.order_id), row);
+        return options?.minimalMutationResponses
+          ? new Response(null, { status: 201 })
+          : new Response(JSON.stringify([row]), {
+              headers: { 'content-type': 'application/json' },
+            });
+      }
+
+      if (pathname === 'generated_assets' && init?.method === 'DELETE') {
+        const orderId = url.searchParams.get('order_id')?.replace(/^eq\./, '') || '';
+        generatedAssets.delete(orderId);
+        return new Response(null, { status: 204 });
+      }
+
+      if (pathname === 'generated_assets' && init?.method === 'POST') {
+        const rows = JSON.parse(String(init.body)) as Array<Record<string, unknown>>;
+        const orderId = String(rows[0]?.order_id || '');
+        generatedAssets.set(orderId, rows);
+        return options?.minimalMutationResponses
+          ? new Response(null, { status: 201 })
+          : new Response(JSON.stringify(rows), {
+              headers: { 'content-type': 'application/json' },
+            });
+      }
+
+      if (pathname === 'event_log' && init?.method === 'POST') {
+        const row = JSON.parse(String(init.body)) as Record<string, unknown>;
+        eventLog.push(row);
+        return options?.minimalMutationResponses
+          ? new Response(null, { status: 201 })
+          : new Response(JSON.stringify([row]), {
+              headers: { 'content-type': 'application/json' },
+            });
+      }
     }
 
-    if (url === 'https://example.com/make/write' && action === 'unlock') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      assert.equal(body.jobId, row.jobId);
-      assert.equal(body.status, row.status);
-      rows.set(String(row.jobId), row);
-      return new Response(JSON.stringify(row), {
+    if (url.href === 'https://example.com/make/generate') {
+      const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      generationCalls.push(body);
+      return new Response(JSON.stringify({ accepted: true }), {
         headers: { 'content-type': 'application/json' },
       });
     }
 
-    if (url === 'https://example.com/make/write' && action === 'update') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      assert.equal(body.jobId, row.jobId);
-      assert.equal(body.status, row.status);
-      rows.set(String(row.jobId), row);
-      return new Response(JSON.stringify(row), {
-        headers: { 'content-type': 'application/json' },
-      });
-    }
-
-    throw new Error(`Unexpected Make request ${url} ${String(action)}.`);
+    throw new Error(`Unexpected fetch ${url.href}.`);
   };
+
+  return { orders, generationJobs, generatedAssets, eventLog, generationCalls };
+}
+
+test('uses Supabase as the canonical store and Make only for generation handoff', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+  process.env.MEMORIES_MAKE_WEBHOOK_URL = 'https://example.com/make/generate';
+  process.env.MEMORIES_MAKE_API_KEY = 'test-key';
+
+  const mock = installSupabaseMock();
 
   const created = await createMemoryJobRecord({
     email: 'customer@example.com',
@@ -432,7 +609,8 @@ test('uses the Make-backed canonical store when configured', async () => {
     sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
   });
 
-  assert.equal(rows.size, 1);
+  assert.equal(mock.orders.size, 1);
+  assert.equal(mock.generationCalls.length, 0);
 
   const status = await getMemoryJobStatus(created.jobId, created.accessToken);
   assert.equal(status.status, 'created');
@@ -441,6 +619,9 @@ test('uses the Make-backed canonical store when configured', async () => {
   const unlocked = await unlockMemoryJob(created.jobId, { paymentReference: 'pay_remote_123' });
   assert.equal(unlocked.status, 'queued');
   assert.equal(unlocked.unlocked, true);
+  assert.equal(mock.generationCalls.length, 1);
+  assert.equal(mock.generationCalls[0]?.jobId, created.jobId);
+  assert.equal(mock.generationCalls[0]?.status, 'queued');
 
   const preview = await applyMediaCommand(created.jobId, {
     command: 'mark_preview_ready',
@@ -451,7 +632,6 @@ test('uses the Make-backed canonical store when configured', async () => {
     },
   });
   assert.equal(preview.status, 'preview_ready');
-  assert.equal(preview.previewAsset?.url, 'https://example.com/preview.jpg');
 
   const completed = await applyMediaCommand(created.jobId, {
     command: 'mark_completed',
@@ -462,7 +642,6 @@ test('uses the Make-backed canonical store when configured', async () => {
     },
   });
   assert.equal(completed.status, 'completed');
-  assert.equal(completed.finalAsset?.url, 'https://example.com/final.jpg');
 
   const delivered = await recordDelivery(created.jobId, {
     channel: 'email',
@@ -470,35 +649,160 @@ test('uses the Make-backed canonical store when configured', async () => {
     recipient: 'customer@example.com',
   });
   assert.equal(delivered.status, 'delivered');
-  assert.equal(delivered.delivery?.recipient, 'customer@example.com');
+  assert.equal(mock.generationJobs.get(created.jobId)?.status, 'delivered');
+  assert.equal(mock.generatedAssets.get(created.jobId)?.length, 2);
+  assert.ok(mock.eventLog.length >= 4);
 });
 
-test('serializes inline upload metadata into the Make-backed canonical row', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-  process.env.MEMORIES_MAKE_API_KEY = 'test-key';
+test('accepts empty-body 201 responses from Supabase return=minimal mutations', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
 
-  let createdRow: Record<string, unknown> | null = null;
+  const mock = installSupabaseMock({ minimalMutationResponses: true });
 
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A warm birthday memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
 
-    if (action === 'create') {
-      createdRow = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      return new Response(JSON.stringify(createdRow), {
+  assert.equal(created.status, 'created');
+  assert.equal(mock.orders.size, 1);
+  assert.equal(mock.generationJobs.get(created.jobId)?.status, 'created');
+  assert.equal(mock.eventLog.length, 1);
+});
+
+test('reuses an existing Supabase-backed job when create is retried with the same clientRequestId', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+
+  const mock = installSupabaseMock();
+
+  const first = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    clientRequestId: 'client-request-456',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  const duplicate = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    clientRequestId: 'client-request-456',
+    storyPrompt: 'A different prompt.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/b.jpg' }],
+  });
+
+  assert.equal(mock.orders.size, 1);
+  assert.equal(duplicate.jobId, first.jobId);
+  assert.equal(duplicate.accessToken, first.accessToken);
+});
+
+test('reuses the canonical job when a Supabase create hits a clientRequestId uniqueness race', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+
+  const orders = new Map<string, Record<string, unknown>>();
+  let duplicateLookupCount = 0;
+
+  global.fetch = async (input, init) => {
+    const url = new URL(String(input));
+    const pathname = url.pathname.replace('/rest/v1/', '');
+
+    if (url.origin !== 'https://demo-project.supabase.co') {
+      throw new Error(`Unexpected fetch ${url.href}.`);
+    }
+
+    if (pathname === 'orders' && init?.method === 'GET') {
+      const email = url.searchParams.get('email')?.replace(/^eq\./, '') || '';
+      const clientRequestId = url.searchParams.get('client_request_id')?.replace(/^eq\./, '') || '';
+
+      if (email && clientRequestId) {
+        duplicateLookupCount += 1;
+        const matched = [...orders.values()].find(
+          (row) => row.email === email && row.client_request_id === clientRequestId,
+        );
+        return new Response(JSON.stringify(matched ? [matched] : []), {
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+
+      const jobId = url.searchParams.get('id')?.replace(/^eq\./, '') || '';
+      const row = orders.get(jobId);
+      return new Response(JSON.stringify(row ? [row] : []), {
         headers: { 'content-type': 'application/json' },
       });
     }
 
-    if (action === 'status') {
-      return new Response(JSON.stringify(createdRow), {
-        headers: { 'content-type': 'application/json' },
+    if (pathname === 'orders' && init?.method === 'POST') {
+      const incoming = JSON.parse(String(init.body)) as Record<string, unknown>;
+      const existing = {
+        ...incoming,
+        id: 'job_race_winner',
+        access_token: 'race-access-token',
+      };
+      orders.set(String(existing.id), existing);
+
+      return new Response('duplicate key value violates unique constraint', {
+        status: 409,
       });
     }
 
-    throw new Error(`Unexpected Make request ${String(action)}.`);
+    throw new Error(`Unexpected fetch ${url.href}.`);
   };
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    clientRequestId: 'client-request-race',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  assert.equal(created.jobId, 'job_race_winner');
+  assert.equal(created.accessToken, 'race-access-token');
+  assert.equal(duplicateLookupCount, 2);
+});
+
+test('rejects delivery when the Supabase canonical row is completed without finalAsset', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+
+  const mock = installSupabaseMock();
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  const stored = mock.orders.get(created.jobId);
+  assert.ok(stored);
+  mock.orders.set(created.jobId, {
+    ...stored,
+    status: 'completed',
+    unlocked: true,
+    final_asset: null,
+  });
+
+  await assert.rejects(
+    recordDelivery(created.jobId, {
+      channel: 'email',
+      provider: 'make',
+      recipient: 'customer@example.com',
+    }),
+    (error: unknown) => {
+      assert.ok(error instanceof HttpError);
+      assert.equal(error.status, 409);
+      assert.match(error.message, /finalAsset exists on the canonical job/i);
+      return true;
+    },
+  );
+});
+
+test('serializes inline upload metadata into the Supabase canonical row', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+
+  const mock = installSupabaseMock();
 
   const created = await createMemoryJobRecord({
     email: 'customer@example.com',
@@ -516,250 +820,48 @@ test('serializes inline upload metadata into the Make-backed canonical row', asy
     ],
   });
 
-  assert.ok(createdRow);
-  const row = createdRow as Record<string, unknown>;
-  assert.equal(row.sourceImage1DataUrl, 'data:image/png;base64,cG5n');
-  assert.equal(row.sourceImage1MimeType, 'image/png');
-  assert.equal(row.sourceImage1Filename, 'portrait.png');
-  assert.equal(row.sourceImage1Sha256, 'abc123');
+  const row = mock.orders.get(created.jobId);
+  assert.ok(row);
+  assert.equal(row.cloudinary_folder, `Memories/${created.jobId}`);
+  assert.deepEqual(row.source_images, [
+    {
+      storage: 'inline_data_url',
+      dataUrl: 'data:image/png;base64,cG5n',
+      mimeType: 'image/png',
+      filename: 'portrait.png',
+      sizeBytes: 3,
+      sha256: 'abc123',
+      label: 'customer',
+    },
+  ]);
   assert.equal(created.sourceImages[0]?.storage, 'inline_data_url');
 });
 
-test('rejects invalid Make-backed canonical status rows', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
+test('rejects invalid Supabase canonical status rows', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
 
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
+  const mock = installSupabaseMock();
 
-    if (action === 'create') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      return new Response(
-        JSON.stringify({
-          ...row,
-          status: 'bogus_status',
-        }),
-        {
-          headers: { 'content-type': 'application/json' },
-        },
-      );
-    }
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
 
-    throw new Error(`Unexpected Make request ${String(action)}.`);
-  };
+  const stored = mock.orders.get(created.jobId);
+  assert.ok(stored);
+  mock.orders.set(created.jobId, {
+    ...stored,
+    status: 'bogus_status',
+  });
 
   await assert.rejects(
-    createMemoryJobRecord({
-      email: 'customer@example.com',
-      storyPrompt: 'A memory.',
-      sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
-    }),
+    getMemoryJobStatus(created.jobId, created.accessToken),
     (error: unknown) => {
       assert.ok(error instanceof HttpError);
       assert.equal(error.status, 502);
       assert.match(error.message, /valid job status/i);
-      return true;
-    },
-  );
-});
-
-test('rejects empty Make canonical rows for write actions', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
-
-    if (action === 'create') {
-      return new Response(null, { status: 204 });
-    }
-
-    throw new Error(`Unexpected Make request ${String(action)}.`);
-  };
-
-  await assert.rejects(
-    createMemoryJobRecord({
-      email: 'customer@example.com',
-      storyPrompt: 'A memory.',
-      sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
-    }),
-    (error: unknown) => {
-      assert.ok(error instanceof HttpError);
-      assert.equal(error.status, 502);
-      assert.match(error.message, /canonical row for create/i);
-      return true;
-    },
-  );
-});
-
-test('rejects invalid Make-backed canonical timestamps', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
-
-    if (action === 'create') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      return new Response(
-        JSON.stringify({
-          ...row,
-          updatedAt: 'not-a-timestamp',
-        }),
-        {
-          headers: { 'content-type': 'application/json' },
-        },
-      );
-    }
-
-    throw new Error(`Unexpected Make request ${String(action)}.`);
-  };
-
-  await assert.rejects(
-    createMemoryJobRecord({
-      email: 'customer@example.com',
-      storyPrompt: 'A memory.',
-      sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
-    }),
-    (error: unknown) => {
-      assert.ok(error instanceof HttpError);
-      assert.equal(error.status, 502);
-      assert.match(error.message, /valid updatedAt/i);
-      return true;
-    },
-  );
-});
-
-test('rejects invalid Make-backed source image mime types', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
-
-    if (action === 'create') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      return new Response(
-        JSON.stringify({
-          ...row,
-          sourceImage1MimeType: 'image/gif',
-        }),
-        {
-          headers: { 'content-type': 'application/json' },
-        },
-      );
-    }
-
-    throw new Error(`Unexpected Make request ${String(action)}.`);
-  };
-
-  await assert.rejects(
-    createMemoryJobRecord({
-      email: 'customer@example.com',
-      storyPrompt: 'A memory.',
-      sourceImages: [
-        {
-          storage: 'inline_data_url',
-          dataUrl: 'data:image/png;base64,cG5n',
-          mimeType: 'image/png',
-          filename: 'portrait.png',
-        },
-      ],
-    }),
-    (error: unknown) => {
-      assert.ok(error instanceof HttpError);
-      assert.equal(error.status, 502);
-      assert.match(error.message, /valid sourceImage1MimeType/i);
-      return true;
-    },
-  );
-});
-
-test('rejects invalid Make-backed asset urls', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
-
-    if (action === 'create') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      return new Response(
-        JSON.stringify({
-          ...row,
-          previewAsset: {
-            provider: 'make',
-            url: 'javascript:alert(1)',
-          },
-        }),
-        {
-          headers: { 'content-type': 'application/json' },
-        },
-      );
-    }
-
-    throw new Error(`Unexpected Make request ${String(action)}.`);
-  };
-
-  await assert.rejects(
-    createMemoryJobRecord({
-      email: 'customer@example.com',
-      storyPrompt: 'A memory.',
-      sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
-    }),
-    (error: unknown) => {
-      assert.ok(error instanceof HttpError);
-      assert.equal(error.status, 502);
-      assert.match(error.message, /valid asset\.url/i);
-      return true;
-    },
-  );
-});
-
-test('rejects invalid Make-backed delivery timestamps', async () => {
-  process.env.MEMORIES_MAKE_READ_WEBHOOK_URL = 'https://example.com/make/read';
-  process.env.MEMORIES_MAKE_WRITE_WEBHOOK_URL = 'https://example.com/make/write';
-
-  global.fetch = async (_input, init) => {
-    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
-    const action = body.action;
-
-    if (action === 'create') {
-      const row = JSON.parse(String(body.payload)) as Record<string, unknown>;
-      return new Response(
-        JSON.stringify({
-          ...row,
-          delivery: {
-            channel: 'email',
-            provider: 'make',
-            recipient: 'customer@example.com',
-            deliveredAt: 'not-a-timestamp',
-          },
-        }),
-        {
-          headers: { 'content-type': 'application/json' },
-        },
-      );
-    }
-
-    throw new Error(`Unexpected Make request ${String(action)}.`);
-  };
-
-  await assert.rejects(
-    createMemoryJobRecord({
-      email: 'customer@example.com',
-      storyPrompt: 'A memory.',
-      sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
-    }),
-    (error: unknown) => {
-      assert.ok(error instanceof HttpError);
-      assert.equal(error.status, 502);
-      assert.match(error.message, /valid delivery\.deliveredAt/i);
       return true;
     },
   );

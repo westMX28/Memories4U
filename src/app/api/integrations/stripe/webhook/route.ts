@@ -22,6 +22,7 @@ export async function POST(request: Request) {
           id: string;
           payment_status?: string | null;
           payment_intent?: string | { id?: string | null } | null;
+          client_reference_id?: string | null;
           metadata?: Record<string, string> | null;
         },
       );

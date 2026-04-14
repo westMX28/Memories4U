@@ -41,6 +41,16 @@ export function assertSourceImageUploadConfigured() {
   );
 }
 
+function trimFolderSegment(value: string) {
+  return value.trim().replace(/^\/+|\/+$/g, '');
+}
+
+export function resolveCloudinaryJobFolder(jobId: string) {
+  const { cloudinaryUploadFolder } = getMemoriesConfig();
+  const baseFolder = trimFolderSegment(cloudinaryUploadFolder) || 'Memories';
+  return `${baseFolder}/${trimFolderSegment(jobId)}`;
+}
+
 function createCloudinarySignature(params: Record<string, string>, apiSecret: string) {
   const serialized = Object.entries(params)
     .sort(([left], [right]) => left.localeCompare(right))
@@ -69,11 +79,12 @@ export async function stageSourceImageUpload(
   mimeType: SupportedSourceImageMimeType,
   field: string,
   label: string,
+  jobId: string,
 ): Promise<SourceImage> {
   assertSourceImageUploadConfigured();
 
-  const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret, cloudinaryUploadFolder } =
-    getMemoriesConfig();
+  const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret } = getMemoriesConfig();
+  const cloudinaryUploadFolder = resolveCloudinaryJobFolder(jobId);
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const publicId = `${field}-${randomUUID()}`;
   const signature = createCloudinarySignature(

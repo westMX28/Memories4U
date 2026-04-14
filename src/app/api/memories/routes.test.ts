@@ -8,6 +8,7 @@ import { POST as createRoute } from '@/app/api/memories/create/route';
 import { POST as checkoutRoute } from '@/app/api/memories/[jobId]/checkout/route';
 import { POST as deliveryRoute } from '@/app/api/memories/[jobId]/delivery/route';
 import { POST as mediaRoute } from '@/app/api/memories/[jobId]/media/route';
+import { GET as operatorStatusRoute } from '@/app/api/memories/[jobId]/operator-status/route';
 import { POST as unlockRoute } from '@/app/api/memories/[jobId]/unlock/route';
 import { POST as makeJobUpdateRoute } from '@/app/api/integrations/make/job-update/route';
 import { POST as stripeWebhookRoute } from '@/app/api/integrations/stripe/webhook/route';
@@ -27,6 +28,9 @@ beforeEach(async () => {
   process.env.MEMORIES_DATA_FILE = path.join(tempRoot, 'jobs.json');
   process.env.MEMORIES_APP_URL = 'http://localhost:3000';
   process.env.MEMORIES_INTERNAL_API_SECRET = 'internal-secret';
+  process.env.MEMORIES_SUPABASE_URL = '';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = '';
+  process.env.MEMORIES_SUPABASE_TIMEOUT_MS = '';
   process.env.STRIPE_SECRET_KEY = '';
   process.env.STRIPE_WEBHOOK_SECRET = '';
   process.env.STRIPE_PRICE_ID = '';
@@ -37,7 +41,7 @@ beforeEach(async () => {
   process.env.MEMORIES_CLOUDINARY_CLOUD_NAME = '';
   process.env.MEMORIES_CLOUDINARY_API_KEY = '';
   process.env.MEMORIES_CLOUDINARY_API_SECRET = '';
-  process.env.MEMORIES_CLOUDINARY_UPLOAD_FOLDER = 'memories/source-images';
+  process.env.MEMORIES_CLOUDINARY_UPLOAD_FOLDER = 'Memories';
   global.fetch = originalFetch;
   setStripeClientForTests(null);
 });
@@ -74,13 +78,57 @@ test('create route falls back to the request origin when MEMORIES_APP_URL is uns
   assert.equal(body.sourceImages[0]?.storage, 'remote_url');
 });
 
+test('create route reuses an existing job for the same JSON clientRequestId', async () => {
+  const firstResponse = await createRoute(
+    new Request('http://localhost/api/memories/create', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'customer@example.com',
+        clientRequestId: 'json-client-request-123',
+        storyPrompt: 'A memory.',
+        sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+      }),
+    }),
+  );
+
+  const duplicateResponse = await createRoute(
+    new Request('http://localhost/api/memories/create', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: 'customer@example.com',
+        clientRequestId: 'json-client-request-123',
+        storyPrompt: 'A duplicate submit.',
+        sourceImages: [{ storage: 'remote_url', url: 'https://example.com/b.jpg' }],
+      }),
+    }),
+  );
+
+  assert.equal(firstResponse.status, 201);
+  assert.equal(duplicateResponse.status, 201);
+  const firstBody = (await firstResponse.json()) as { jobId: string; accessToken: string };
+  const duplicateBody = (await duplicateResponse.json()) as { jobId: string; accessToken: string };
+  assert.equal(duplicateBody.jobId, firstBody.jobId);
+  assert.equal(duplicateBody.accessToken, firstBody.accessToken);
+});
+
 test('create route accepts multipart image uploads', async () => {
   process.env.MEMORIES_CLOUDINARY_CLOUD_NAME = 'demo-cloud';
   process.env.MEMORIES_CLOUDINARY_API_KEY = 'api-key';
   process.env.MEMORIES_CLOUDINARY_API_SECRET = 'api-secret';
 
-  global.fetch = async () =>
-    new Response(
+  global.fetch = async (_input, init) => {
+    assert.ok(init?.body instanceof FormData);
+    const folder = init.body.get('folder');
+    assert.ok(typeof folder === 'string');
+    assert.match(folder, /^Memories\/[0-9a-f-]+$/);
+
+    return new Response(
       JSON.stringify({
         secure_url: 'https://res.cloudinary.com/demo-cloud/image/upload/v1/source-image.png',
       }),
@@ -88,6 +136,7 @@ test('create route accepts multipart image uploads', async () => {
         headers: { 'content-type': 'application/json' },
       },
     );
+  };
 
   const formData = new FormData();
   formData.set('email', 'customer@example.com');
@@ -113,6 +162,113 @@ test('create route accepts multipart image uploads', async () => {
     body.sourceImages[0]?.url,
     'https://res.cloudinary.com/demo-cloud/image/upload/v1/source-image.png',
   );
+});
+
+test('create route reuses an existing job for the same clientRequestId without restaging multipart uploads', async () => {
+  process.env.MEMORIES_CLOUDINARY_CLOUD_NAME = 'demo-cloud';
+  process.env.MEMORIES_CLOUDINARY_API_KEY = 'api-key';
+  process.env.MEMORIES_CLOUDINARY_API_SECRET = 'api-secret';
+
+  let uploadCalls = 0;
+  global.fetch = async () => {
+    uploadCalls += 1;
+    return new Response(
+      JSON.stringify({
+        secure_url: 'https://res.cloudinary.com/demo-cloud/image/upload/v1/source-image.png',
+      }),
+      {
+        headers: { 'content-type': 'application/json' },
+      },
+    );
+  };
+
+  const firstFormData = new FormData();
+  firstFormData.set('email', 'customer@example.com');
+  firstFormData.set('clientRequestId', 'client-request-789');
+  firstFormData.set('storyPrompt', 'A memory.');
+  firstFormData.set('image1', new File([Buffer.from('png-data')], 'portrait.png', { type: 'image/png' }));
+
+  const firstResponse = await createRoute(
+    new Request('http://localhost/api/memories/create', {
+      method: 'POST',
+      body: firstFormData,
+    }),
+  );
+
+  const firstBody = (await firstResponse.json()) as { jobId: string; accessToken: string };
+
+  const duplicateFormData = new FormData();
+  duplicateFormData.set('email', 'customer@example.com');
+  duplicateFormData.set('clientRequestId', 'client-request-789');
+  duplicateFormData.set('storyPrompt', 'A duplicate submit.');
+  duplicateFormData.set('image1', new File([Buffer.from('new-png-data')], 'portrait.png', { type: 'image/png' }));
+
+  const duplicateResponse = await createRoute(
+    new Request('http://localhost/api/memories/create', {
+      method: 'POST',
+      body: duplicateFormData,
+    }),
+  );
+
+  assert.equal(firstResponse.status, 201);
+  assert.equal(duplicateResponse.status, 201);
+  const duplicateBody = (await duplicateResponse.json()) as { jobId: string; accessToken: string };
+  assert.equal(duplicateBody.jobId, firstBody.jobId);
+  assert.equal(duplicateBody.accessToken, firstBody.accessToken);
+  assert.equal(uploadCalls, 1);
+});
+
+test('create route honors metadata.clientRequestId for multipart idempotency without restaging uploads', async () => {
+  process.env.MEMORIES_CLOUDINARY_CLOUD_NAME = 'demo-cloud';
+  process.env.MEMORIES_CLOUDINARY_API_KEY = 'api-key';
+  process.env.MEMORIES_CLOUDINARY_API_SECRET = 'api-secret';
+
+  let uploadCalls = 0;
+  global.fetch = async () => {
+    uploadCalls += 1;
+    return new Response(
+      JSON.stringify({
+        secure_url: 'https://res.cloudinary.com/demo-cloud/image/upload/v1/source-image.png',
+      }),
+      {
+        headers: { 'content-type': 'application/json' },
+      },
+    );
+  };
+
+  const firstFormData = new FormData();
+  firstFormData.set('email', 'customer@example.com');
+  firstFormData.set('storyPrompt', 'A memory.');
+  firstFormData.set('metadata', JSON.stringify({ clientRequestId: 'metadata-client-request-123' }));
+  firstFormData.set('image1', new File([Buffer.from('png-data')], 'portrait.png', { type: 'image/png' }));
+
+  const firstResponse = await createRoute(
+    new Request('http://localhost/api/memories/create', {
+      method: 'POST',
+      body: firstFormData,
+    }),
+  );
+
+  const duplicateFormData = new FormData();
+  duplicateFormData.set('email', 'customer@example.com');
+  duplicateFormData.set('storyPrompt', 'A duplicate submit.');
+  duplicateFormData.set('metadata', JSON.stringify({ clientRequestId: 'metadata-client-request-123' }));
+  duplicateFormData.set('image1', new File([Buffer.from('new-png-data')], 'portrait.png', { type: 'image/png' }));
+
+  const duplicateResponse = await createRoute(
+    new Request('http://localhost/api/memories/create', {
+      method: 'POST',
+      body: duplicateFormData,
+    }),
+  );
+
+  assert.equal(firstResponse.status, 201);
+  assert.equal(duplicateResponse.status, 201);
+  const firstBody = (await firstResponse.json()) as { jobId: string; accessToken: string };
+  const duplicateBody = (await duplicateResponse.json()) as { jobId: string; accessToken: string };
+  assert.equal(duplicateBody.jobId, firstBody.jobId);
+  assert.equal(duplicateBody.accessToken, firstBody.accessToken);
+  assert.equal(uploadCalls, 1);
 });
 
 test('create route rejects unsupported multipart image uploads', async () => {
@@ -252,6 +408,61 @@ test('stripe webhook route finalizes checkout.session.completed events', async (
       method: 'POST',
       headers: {
         'stripe-signature': 'sig_test_123',
+      },
+      body: '{"type":"checkout.session.completed"}',
+    }),
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { received: true });
+
+  const status = await getMemoryJobStatus(created.jobId, created.accessToken);
+  assert.equal(status.status, 'unlocked');
+  assert.equal(status.unlocked, true);
+});
+
+test('stripe webhook route falls back to client_reference_id when metadata.jobId is absent', async () => {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_123';
+  process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_123';
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  setStripeClientForTests({
+    webhooks: {
+      constructEvent: (
+        payload: string,
+        signature: string,
+        secret: string,
+      ) => {
+        assert.equal(payload, '{"type":"checkout.session.completed"}');
+        assert.equal(signature, 'sig_test_456');
+        assert.equal(secret, 'whsec_test_123');
+
+        return {
+          type: 'checkout.session.completed',
+          data: {
+            object: {
+              id: 'cs_test_456',
+              client_reference_id: created.jobId,
+              payment_status: 'paid',
+              payment_intent: 'pi_test_456',
+              metadata: {},
+            },
+          },
+        };
+      },
+    },
+  } as never);
+
+  const response = await stripeWebhookRoute(
+    new Request('http://localhost/api/integrations/stripe/webhook', {
+      method: 'POST',
+      headers: {
+        'stripe-signature': 'sig_test_456',
       },
       body: '{"type":"checkout.session.completed"}',
     }),
@@ -442,6 +653,57 @@ test('media route applies trusted asset completion updates', async () => {
   assert.equal(body.finalAsset?.url, 'https://example.com/final.jpg');
 });
 
+test('operator-status route exposes the internal order contract for one job', async () => {
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  await unlockRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/unlock`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        paymentReference: 'pi_123',
+        provider: 'stripe',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  const response = await operatorStatusRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/operator-status`, {
+      method: 'GET',
+      headers: {
+        authorization: 'Bearer internal-secret',
+      },
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    summary: { orderId: string; customerEmail: string; orderState: string };
+    payment: { status: string; provider?: string; reference?: string };
+    generation: { status: string };
+    history: { mode: string; timestamps: { createdAt: string; updatedAt: string } };
+  };
+  assert.equal(body.summary.orderId, created.jobId);
+  assert.equal(body.summary.customerEmail, 'customer@example.com');
+  assert.equal(body.summary.orderState, 'paid');
+  assert.equal(body.payment.status, 'paid');
+  assert.equal(body.payment.provider, 'stripe');
+  assert.equal(body.payment.reference, 'pi_123');
+  assert.equal(body.generation.status, 'unlocked');
+  assert.equal(body.history.mode, 'current_state_only');
+  assert.ok(body.history.timestamps.createdAt);
+  assert.ok(body.history.timestamps.updatedAt);
+});
+
 test('delivery route records trusted delivery updates', async () => {
   const created = await createMemoryJobRecord({
     email: 'customer@example.com',
@@ -569,6 +831,20 @@ test('delivery route rejects unauthenticated requests', async () => {
         provider: 'manual',
         recipient: 'customer@example.com',
       }),
+    }),
+    { params: Promise.resolve({ jobId: 'job_123' }) },
+  );
+
+  assert.equal(response.status, 401);
+  assert.deepEqual((await response.json()) as ErrorResponse, {
+    error: 'Internal authorization failed.',
+  });
+});
+
+test('operator-status route rejects unauthenticated requests', async () => {
+  const response = await operatorStatusRoute(
+    new Request('http://localhost/api/memories/job_123/operator-status', {
+      method: 'GET',
     }),
     { params: Promise.resolve({ jobId: 'job_123' }) },
   );

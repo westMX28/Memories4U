@@ -10,6 +10,7 @@ This app now owns the API boundary for the first product slice. Make and Cloudin
 - Accepts either:
   - `application/json` with `email`, `storyPrompt`, and `sourceImages` containing one or two public image URLs, or
   - `multipart/form-data` with `email`, `storyPrompt`, `image1` (required), and `image2` (optional) for direct `png` / `jpg` / `jpeg` uploads.
+- Optionally accepts a create idempotency key as either top-level `clientRequestId` or `metadata.clientRequestId` on either input shape. When present, create becomes idempotent for that customer email plus request id and reuses the existing canonical job instead of minting a duplicate.
 - Returns `jobId`, `accessToken`, `status`, a status URL, and the canonical stored `sourceImages` references persisted for downstream processing.
 - `statusUrl` uses `MEMORIES_APP_URL` when configured; otherwise it falls back to the incoming request origin.
 - Multipart uploads are staged server-side into hosted Cloudinary image URLs before the job record is created, so downstream persistence and Make continue to receive canonical `sourceImages[].url` values.
@@ -27,6 +28,17 @@ This app now owns the API boundary for the first product slice. Make and Cloudin
 
 - Returns the current job status, preview/final asset info, delivery info, and last error.
 - Intended for the customer status page or polling from the frontend.
+
+`GET /api/memories/:jobId/operator-status`
+
+- Requires internal auth via `Authorization: Bearer $MEMORIES_INTERNAL_API_SECRET` or `x-memories-internal-secret`.
+- Returns the internal operator view for one order:
+  - `summary`: order/job id, created/updated timestamps, customer email, and derived order state
+  - `payment`: derived payment status plus provider/reference when present
+  - `generation`: canonical generation status, unlocked flag, and last error
+  - `assets`: preview/final presence booleans plus metadata when present
+  - `delivery`: delivery presence plus provider/recipient/reference fields when present
+  - `history`: explicitly `current_state_only`; exposes only timestamps and references available on the canonical order without inventing an event timeline
 
 `POST /api/memories/:jobId/unlock`
 
@@ -70,18 +82,14 @@ This app now owns the API boundary for the first product slice. Make and Cloudin
 
 ## Integration boundary
 
-- When `MEMORIES_MAKE_READ_WEBHOOK_URL` and `MEMORIES_MAKE_WRITE_WEBHOOK_URL` are configured, the Next.js app treats Make + Google Sheets as the canonical job store.
+- Supabase is the canonical job store when `MEMORIES_SUPABASE_URL` and `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` are configured.
+- The app-owned write path persists the current customer/API contract into `orders`, mirrors lifecycle state into `generation_jobs`, mirrors preview/final media into `generated_assets`, and appends lifecycle snapshots into `event_log`.
+- The first-pass schema is documented in `docs/supabase-schema.sql`.
+- `MEMORIES_DATA_FILE` remains the local development fallback when Supabase is not configured.
 - Stripe is only used for payment initiation and confirmation. The application state still changes through the existing job lifecycle and unlock logic.
-- `MEMORIES_MAKE_WEBHOOK_URL` remains a legacy fallback and is used for both read and write paths when the split variables are omitted.
-- The app sends a flat JSON control contract to Make:
-  - Write hook:
-    `create`, `unlock`, and `update` send `{ action, jobId, status, payload }` where `payload` is the serialized canonical row JSON. The row includes `jobId`, `accessToken`, `email`, `customerName`, `storyPrompt`, `sourceImage1Url`, `sourceImage2Url`, `sourceImage1MimeType`, `sourceImage2MimeType`, `sourceImage1Filename`, `sourceImage2Filename`, `sourceImage1Label`, `sourceImage2Label`, `sourceImage1SizeBytes`, `sourceImage2SizeBytes`, `sourceImage1Sha256`, `sourceImage2Sha256`, `status`, `paymentState`, `paymentReference`, `previewAssetUrl`, `finalAssetUrl`, `deliveryEmail`, `lastError`, `createdAt`, and `updatedAt`
-  - Read hook:
-    `status` sends `{ action, jobId }`
-- Make should respond with the canonical row JSON body. For missing `status`, the read hook can return `404` or an empty JSON object.
-- Write-hook responses are treated as authoritative canonical rows. `create`, `unlock`, and `update` must return a non-empty JSON row body; `204` or empty write responses are rejected.
-- The app validates Make row shape before accepting it into canonical state, including `status`, `createdAt`, `updatedAt`, source-image MIME types, asset URLs, and delivery timestamps.
-- `/api/integrations/make/job-update`, `/api/memories/:jobId/media`, and `/api/memories/:jobId/delivery` remain internal write paths, but they now need to flow into that same canonical row store instead of a local production file.
+- `MEMORIES_MAKE_WEBHOOK_URL` is now a worker handoff endpoint. When configured, unlock dispatches `{ action: "generate", jobId, status, accessToken, email, customerName, storyPrompt, sourceImage1Url, sourceImage2Url, paymentReference, paymentProvider, createdAt, updatedAt }`.
+- Make acknowledgement responses are not treated as canonical row bodies. A `200` or `204` response is enough as long as the scenario later writes lifecycle updates back through `/api/integrations/make/job-update`.
+- `/api/integrations/make/job-update`, `/api/memories/:jobId/media`, and `/api/memories/:jobId/delivery` all update the same canonical store boundary behind `src/lib/memories/store.ts`.
 - Cloudinary stays visible in the contract as asset metadata (`provider`, `url`, `publicId`, `format`, dimensions) instead of hidden inside free-form webhook payloads.
 
 ## Environment
@@ -90,10 +98,12 @@ See `.env.example` for the expected variables.
 
 - `MEMORIES_INTERNAL_API_SECRET` is required for internal callbacks and admin mutations.
 - `MEMORIES_APP_URL` is optional but recommended as the explicit public base URL for hosted links and checkout redirects. When unset, create/checkout routes fall back to the current request origin.
+- `MEMORIES_SUPABASE_URL` and `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` enable the canonical Supabase store.
+- `SUPABASE_API` is accepted as the backend secret alias when `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` is not injected yet.
+- `MEMORIES_SUPABASE_TIMEOUT_MS` controls timeout/retry budgeting for Supabase REST calls.
 - `STRIPE_SECRET_KEY` or `STRIPE_API_KEY`, plus `STRIPE_WEBHOOK_SECRET` and `STRIPE_PRICE_ID`, are required for the hosted checkout flow.
-- `MEMORIES_MAKE_READ_WEBHOOK_URL` and `MEMORIES_MAKE_WRITE_WEBHOOK_URL` enable the split Make-backed store.
-- `MEMORIES_MAKE_WEBHOOK_URL` remains available as the single-hook fallback.
-- `MEMORIES_MAKE_API_KEY` carries any shared secret required by the Make hooks.
+- `MEMORIES_MAKE_WEBHOOK_URL` enables the generation handoff webhook after unlock.
+- `MEMORIES_MAKE_API_KEY` carries any shared secret required by that handoff webhook.
 - `MEMORIES_MAX_SOURCE_IMAGE_BYTES` caps direct-upload size for the v1 staging path.
 - `MEMORIES_MAKE_API_BASE_URL`, `MEMORIES_MAKE_ORGANIZATION_ID`, and `MEMORIES_MAKE_TEAM_ID` enable direct Make management validation from the repo.
 - `MEMORIES_DATA_FILE` is now a local development fallback only.
@@ -106,18 +116,22 @@ See `.env.example` for the expected variables.
 - Use `npm run make:validate` for a disposable end-to-end access check that creates, patches, and deletes temporary Make assets.
 - The validation script loads repo `.env*` files through Next's env loader, but production-style automation still needs the Make management variables injected as secrets instead of committed to the repo.
 
+## Supabase validation
+
+- Use `npm run supabase:validate` for a read-only check that the configured Supabase project exposes the canonical `orders`, `generation_jobs`, `generated_assets`, and `event_log` tables with the key columns this app expects, including `orders.client_request_id`.
+- The validation script loads repo `.env*` files through Next's env loader and requires `MEMORIES_SUPABASE_URL` plus `MEMORIES_SUPABASE_SERVICE_ROLE_KEY`.
+
 ## Current limitation
 
-Production still depends on the board updating the Make scenarios/webhooks to honor the new JSON contract and write the richer Google Sheets schema. Until that live Make side is updated and validated, local tests only verify the app contract and fallback behavior.
+The first Supabase integration uses separate REST writes for `orders`, `generation_jobs`, `generated_assets`, and `event_log` instead of a single transactional RPC. `orders` remains canonical, but operators should treat the mirrored tables as eventually consistent until a transactional database function is introduced.
 
 ## Operational follow-up
 
-Before pointing production traffic at the Make-backed canonical store, the live scenario should be checked against this backend contract:
+Before pointing production traffic at the Supabase-backed canonical store, the live environment should be checked against this backend contract:
 
-- `create`, `unlock`, and `update` must always return a non-empty JSON canonical row body.
-- `status` may return `404` or an empty JSON object only when the job truly does not exist.
-- Canonical row `status` must be one of the backend-supported lifecycle values.
-- Canonical row `createdAt`, `updatedAt`, and `delivery.deliveredAt` must be valid timestamps.
-- Source-image MIME types must be limited to `image/png` or `image/jpeg`.
-- Asset URLs returned in `previewAsset` or `finalAsset` must be valid `http` or `https` URLs.
-- Any change to the row shape should be coordinated with the CTO - Technical Manager and Frontend Agent before rollout.
+- apply `docs/supabase-schema.sql` to the target Supabase project
+- inject `MEMORIES_SUPABASE_URL` and `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` into the runtime
+- keep `MEMORIES_DATA_FILE` only for local fallback; do not rely on it in production once cutover starts
+- confirm the Make scenario only performs generation work and calls the app callbacks instead of treating its own rows as source of truth
+- validate that canonical `status`, asset URLs, timestamps, and source-image MIME types still satisfy the existing app contract
+- coordinate any row-shape changes with the CTO - Technical Manager and Frontend Agent before rollout
