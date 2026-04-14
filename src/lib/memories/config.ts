@@ -60,7 +60,7 @@ export function getMemoriesConfig() {
     appUrl: process.env.MEMORIES_APP_URL || '',
     dataFile: configuredDataFile,
     internalApiSecret: process.env.MEMORIES_INTERNAL_API_SECRET || '',
-    supabaseUrl: process.env.MEMORIES_SUPABASE_URL || '',
+    supabaseUrl: firstDefined(readEnv('MEMORIES_SUPABASE_URL'), readEnv('SUPABASE_URL')) || '',
     supabaseServiceRoleKey:
       firstDefined(readEnv('MEMORIES_SUPABASE_SERVICE_ROLE_KEY'), readEnv('SUPABASE_API')) || '',
     supabaseTimeoutMs: readPositiveIntegerEnv(

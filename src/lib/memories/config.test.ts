@@ -7,6 +7,7 @@ beforeEach(() => {
   delete process.env.MEMORIES_SUPABASE_URL;
   delete process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY;
   delete process.env.MEMORIES_SUPABASE_TIMEOUT_MS;
+  delete process.env.SUPABASE_URL;
   delete process.env.SUPABASE_API;
   delete process.env.MEMORIES_MAKE_WEBHOOK_URL;
   delete process.env.MEMORIES_MAKE_READ_WEBHOOK_URL;
@@ -76,6 +77,16 @@ test('accepts SUPABASE_API as the server-side Supabase secret alias', () => {
   const config = getMemoriesConfig();
 
   assert.equal(config.supabaseUrl, 'https://demo-project.supabase.co');
+  assert.equal(config.supabaseServiceRoleKey, 'supabase-api-secret');
+});
+
+test('accepts SUPABASE_URL as the Supabase URL alias', () => {
+  process.env.SUPABASE_URL = 'https://alias-project.supabase.co';
+  process.env.SUPABASE_API = 'supabase-api-secret';
+
+  const config = getMemoriesConfig();
+
+  assert.equal(config.supabaseUrl, 'https://alias-project.supabase.co');
   assert.equal(config.supabaseServiceRoleKey, 'supabase-api-secret');
 });
 

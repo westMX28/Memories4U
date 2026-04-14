@@ -99,6 +99,7 @@ See `.env.example` for the expected variables.
 - `MEMORIES_INTERNAL_API_SECRET` is required for internal callbacks and admin mutations.
 - `MEMORIES_APP_URL` is optional but recommended as the explicit public base URL for hosted links and checkout redirects. When unset, create/checkout routes fall back to the current request origin.
 - `MEMORIES_SUPABASE_URL` and `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` enable the canonical Supabase store.
+- `SUPABASE_URL` and `SUPABASE_API` are accepted as production compatibility aliases when the canonical `MEMORIES_*` names are not injected yet.
 - `SUPABASE_API` is accepted as the backend secret alias when `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` is not injected yet.
 - `MEMORIES_SUPABASE_TIMEOUT_MS` controls timeout/retry budgeting for Supabase REST calls.
 - `STRIPE_SECRET_KEY` or `STRIPE_API_KEY`, plus `STRIPE_WEBHOOK_SECRET` and `STRIPE_PRICE_ID`, are required for the hosted checkout flow.
