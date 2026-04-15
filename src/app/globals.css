@@ -245,11 +245,17 @@ h3 {
 
 .upload-field {
   display: grid;
-  gap: 10px;
-  padding: 20px;
-  border: 1px solid rgba(123, 161, 207, 0.22);
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 249, 255, 0.96));
+  gap: 12px;
+  padding: 20px 20px;
+  border: 1px solid rgba(100, 116, 139, 0.16);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.94));
+  transition: all 0.2s ease;
+}
+
+.upload-field:hover {
+  border-color: rgba(100, 116, 139, 0.24);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(251, 252, 253, 0.96));
 }
 
 .upload-label {
@@ -756,13 +762,7 @@ h3 {
 
 .intake-form {
   display: grid;
-  gap: 20px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 24px;
 }
 
 .field {
@@ -771,10 +771,17 @@ h3 {
 }
 
 .field span {
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--foreground);
 }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 
 .input {
   width: 100%;
