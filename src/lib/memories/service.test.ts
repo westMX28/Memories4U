@@ -659,6 +659,37 @@ test('uses Supabase as the canonical store and Make only for generation handoff'
   assert.ok(mock.eventLog.length >= 4);
 });
 
+test('keeps non-current Supabase lifecycle timestamps empty while a job is only completed', async () => {
+  process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
+  process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+  process.env.MEMORIES_MAKE_WEBHOOK_URL = 'https://example.com/make/generate';
+
+  const mock = installSupabaseMock();
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A warm birthday memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  await unlockMemoryJob(created.jobId, { paymentReference: 'pay_remote_789' });
+  await applyMediaCommand(created.jobId, {
+    command: 'mark_completed',
+    provider: 'make',
+    asset: {
+      provider: 'make',
+      url: 'https://example.com/final.jpg',
+    },
+  });
+
+  const generationJob = mock.generationJobs.get(created.jobId);
+  assert.ok(generationJob);
+  assert.equal(generationJob.status, 'completed');
+  assert.ok(typeof generationJob.completed_at === 'string');
+  assert.equal(generationJob.delivered_at, null);
+  assert.equal(generationJob.failed_at, null);
+});
+
 test('prefers the write-specific Make webhook for unlock handoff when both aliases are configured', async () => {
   process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
   process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';

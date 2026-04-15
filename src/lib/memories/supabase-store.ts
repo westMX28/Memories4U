@@ -244,14 +244,18 @@ function jobToOrderRow(job: MemoryJob): OrderRow {
 }
 
 function jobToGenerationJobRow(job: MemoryJob): GenerationJobRow {
-  const lifecycleTimestamps: Partial<Record<MemoryStatus, string>> = {
-    queued: job.updatedAt,
-    processing: job.updatedAt,
-    preview_ready: job.updatedAt,
-    completed: job.updatedAt,
-    delivered: job.updatedAt,
-    failed: job.updatedAt,
-  };
+  const lifecycleTimestamps: Partial<Record<MemoryStatus, string>> = {};
+
+  if (
+    job.status === 'queued' ||
+    job.status === 'processing' ||
+    job.status === 'preview_ready' ||
+    job.status === 'completed' ||
+    job.status === 'delivered' ||
+    job.status === 'failed'
+  ) {
+    lifecycleTimestamps[job.status] = job.updatedAt;
+  }
 
   return {
     order_id: job.id,
