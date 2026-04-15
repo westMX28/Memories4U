@@ -66,6 +66,53 @@ export default function HowItWorksPage() {
           ))}
         </div>
 
+        {/* Preview Promise Section */}
+        <Card className="border-white/70 bg-gradient-to-br from-blue-50/90 to-white/90 p-8 lg:p-10">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <div className="space-y-3">
+              <Badge className="accent-chip">Before the final delivery</Badge>
+              <h2 className="font-display text-2xl leading-tight text-slate-900">
+                You'll see the direction taking shape.
+              </h2>
+            </div>
+            <p className="text-base leading-relaxed text-slate-700 max-w-2xl">
+              Between your order and final delivery, you get a preview moment. Not a rough draft. Not a proof of concept.
+              A carefully crafted glimpse that shows you the emotional tone, the visual direction, and the overall feeling of the gift.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2 mt-6">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-slate-900">What you'll see</h4>
+                <ul className="text-sm text-slate-700 space-y-2">
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 flex-shrink-0">•</span>
+                    <span>The visual composition taking form</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 flex-shrink-0">•</span>
+                    <span>The emotional tone and mood</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 flex-shrink-0">•</span>
+                    <span>How your story is being told</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-slate-900">Why this matters</h4>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  You gain confidence that the gift is being shaped around your memory in exactly the way you imagined.
+                  It feels real because it is becoming real.
+                </p>
+              </div>
+            </div>
+            <div className="pt-4 border-t border-blue-200">
+              <p className="text-sm text-slate-600">
+                <strong className="text-slate-800">The promise:</strong> By the time you see the preview, you'll know this gift honors what you shared.
+              </p>
+            </div>
+          </div>
+        </Card>
+
         {/* What makes this safe & easy */}
         <div className="space-y-8">
           <div className="text-center space-y-3">
