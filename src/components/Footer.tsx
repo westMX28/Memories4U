@@ -12,7 +12,7 @@ export function Footer() {
     <footer className="footer">
       <div className="container space-y-8">
         <Card className="overflow-hidden border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(232,243,255,0.88))]">
-          <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,1fr)] lg:p-10">
+          <CardContent className="grid gap-6 sm:gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,1fr)] lg:p-10">
             <div className="space-y-6">
               <Badge className="w-fit accent-chip" variant="secondary">Premium birthday stories</Badge>
               <div className="space-y-4">
@@ -22,39 +22,39 @@ export function Footer() {
                   handcrafted stories for birthdays that deserve something meaningful.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3 text-sm">
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/85 px-4 py-2.5">
-                  <WandSparkles className="size-4 text-sky-700" />
-                  Emotionally intentional
+              <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm">
+                <span className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-sky-100 bg-white/85 px-3 sm:px-4 py-2">
+                  <WandSparkles className="size-3 sm:size-4 text-sky-700" />
+                  <span>Emotionally intentional</span>
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/85 px-4 py-2.5">
-                  <LockKeyhole className="size-4 text-sky-700" />
-                  Completely private
+                <span className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-sky-100 bg-white/85 px-3 sm:px-4 py-2">
+                  <LockKeyhole className="size-3 sm:size-4 text-sky-700" />
+                  <span>Completely private</span>
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/85 px-4 py-2.5">
-                  <MailCheck className="size-4 text-sky-700" />
-                  Seamless delivery
+                <span className="hidden sm:inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-sky-100 bg-white/85 px-3 sm:px-4 py-2">
+                  <MailCheck className="size-3 sm:size-4 text-sky-700" />
+                  <span>Seamless delivery</span>
                 </span>
               </div>
             </div>
 
-            <div className="grid gap-4 rounded-[32px] border border-white/75 bg-white/80 p-7 shadow-[0_20px_48px_rgba(148,163,184,0.1)]">
+            <div className="grid gap-4 rounded-[24px] sm:rounded-[32px] border border-white/75 bg-white/80 p-5 sm:p-7 shadow-[0_20px_48px_rgba(148,163,184,0.1)]">
               <div>
-                <div className="footer-kicker">Get started</div>
-                <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
+                <div className="footer-kicker text-xs sm:text-sm">Get started</div>
+                <p className="mb-0 mt-2 sm:mt-3 text-xs sm:text-sm leading-6 sm:leading-7 text-slate-700">
                   {orderingAvailable
-                    ? 'Begin your gift now. Share photos, memories, and complete checkout. Your private status link stays with you.'
-                    : 'Existing orders remain accessible through the private status page. New orders resume soon.'}
+                    ? 'Share photos and memories. Complete checkout. Your link stays with you.'
+                    : 'Existing orders remain accessible. New gifting resumes soon.'}
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="flex-shrink-0">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                <Button asChild className="flex-shrink-0 h-9 sm:h-11">
                   <Link href={orderingAvailable ? '/memories' : '/status'}>
                     {orderingAvailable ? 'Create gift' : 'View order'}
-                    <ArrowUpRight className="size-4" />
+                    <ArrowUpRight className="size-3.5 sm:size-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="secondary" className="flex-shrink-0">
+                <Button asChild variant="secondary" className="flex-shrink-0 h-9 sm:h-11">
                   <Link href="/">Back home</Link>
                 </Button>
               </div>

@@ -101,16 +101,34 @@ button:disabled {
 }
 
 .section {
-  padding: 140px 0;
+  padding: 60px 0;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: 140px 0;
+  }
 }
 
 .section-tight {
   padding-top: 0;
-  padding-bottom: 140px;
+  padding-bottom: 60px;
+}
+
+@media (min-width: 768px) {
+  .section-tight {
+    padding-bottom: 140px;
+  }
 }
 
 .section-top {
-  margin-top: 32px;
+  margin-top: 24px;
+}
+
+@media (min-width: 768px) {
+  .section-top {
+    margin-top: 32px;
+  }
 }
 
 .page-shell {
@@ -118,11 +136,23 @@ button:disabled {
 }
 
 .hero {
-  padding: 128px 0 80px;
+  padding: 48px 0 40px;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    padding: 128px 0 80px;
+  }
 }
 
 .hero-home {
-  padding-top: 64px;
+  padding-top: 32px;
+}
+
+@media (min-width: 768px) {
+  .hero-home {
+    padding-top: 64px;
+  }
 }
 
 .eyebrow {

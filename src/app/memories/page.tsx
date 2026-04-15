@@ -39,7 +39,7 @@ export default function MemoriesPage() {
       <div className="container space-y-8">
         {/* Hero Section */}
         <Card className="overflow-hidden card-hero">
-          <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
+          <CardContent className="grid gap-6 sm:gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
             <div className="space-y-6">
               <Badge className="w-fit accent-chip">Create your gift</Badge>
               <div className="space-y-4">
@@ -49,13 +49,13 @@ export default function MemoriesPage() {
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3">
                 {whatYouNeed.map((item) => (
                   <div
-                    className="rounded-[24px] border border-[var(--border)] bg-white/80 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[var(--shadow)]"
+                    className="rounded-[18px] border border-[var(--border)] bg-white/80 px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm leading-5 sm:leading-6 text-slate-700 shadow-[var(--shadow)]"
                     key={item}
                   >
-                    <CheckCircle2 className="mb-2 size-4 text-blue-600 flex-shrink-0" />
+                    <CheckCircle2 className="mb-1.5 size-3 sm:size-4 text-blue-600 flex-shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -106,7 +106,7 @@ export default function MemoriesPage() {
         </Card>
 
         {/* Form & Info Section */}
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div id={orderingAvailable ? 'intake-form' : 'ordering-status'}>
             <MemoriesIntakeForm orderingAvailable={orderingAvailable} />
           </div>

@@ -38,17 +38,15 @@ export function Header() {
         </nav>
 
         <div className="header-cta">
-          {orderingAvailable && (
-            <Button asChild size="sm" className="header-btn">
-              <Link href="/memories">
-                Start crerating
-                <Sparkles className="size-4" />
-              </Link>
-            </Button>
-          )}
-          <Button asChild size="sm" className="header-btn">
+          <Button asChild size="sm" className="header-btn hidden sm:inline-flex">
             <Link href={orderingAvailable ? '/memories' : '/status'}>
               {orderingAvailable ? 'Start gifting' : 'Check order'}
+              {orderingAvailable ? <Sparkles className="size-4" /> : <ArrowUpRight className="size-4" />}
+            </Link>
+          </Button>
+          <Button asChild size="sm" className="header-btn sm:hidden">
+            <Link href={orderingAvailable ? '/memories' : '/status'}>
+              {orderingAvailable ? 'Start' : 'Check'}
               {orderingAvailable ? <Sparkles className="size-4" /> : <ArrowUpRight className="size-4" />}
             </Link>
           </Button>

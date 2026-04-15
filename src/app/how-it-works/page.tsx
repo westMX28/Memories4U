@@ -47,28 +47,28 @@ export default function HowItWorksPage() {
         </div>
 
         {/* The Four Steps - Outcome Focused */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           {steps.map(({ step, icon: Icon, title, outcome }, index) => (
-            <Card key={step} className={`p-8 ${index === 1 || index === 3 ? 'card-soft' : 'card-subtle'}`}>
-              <div className="space-y-5">
-                <div className="flex items-start justify-between">
+            <Card key={step} className={`p-5 sm:p-8 ${index === 1 || index === 3 ? 'card-soft' : 'card-subtle'}`}>
+              <div className="space-y-4 sm:space-y-5">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-sm font-semibold uppercase tracking-widest text-blue-700 mb-2">Step {step}</div>
-                    <h3 className="font-display text-xl leading-tight text-slate-900">{title}</h3>
+                    <div className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-blue-700 mb-1.5 sm:mb-2">Step {step}</div>
+                    <h3 className="font-display text-lg sm:text-xl leading-tight text-slate-900">{title}</h3>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center flex-shrink-0">
-                    <Icon className="size-6 text-blue-700" />
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Icon className="size-5 sm:size-6 text-blue-700" />
                   </div>
                 </div>
-                <p className="text-base leading-relaxed text-slate-700 font-medium">{outcome}</p>
+                <p className="text-sm sm:text-base leading-relaxed text-slate-700 font-medium">{outcome}</p>
               </div>
             </Card>
           ))}
         </div>
 
         {/* Preview Promise Section */}
-        <Card className="card-soft p-8 lg:p-10 bg-gradient-to-br from-blue-50/90 to-blue-50/70">
-          <div className="max-w-3xl mx-auto space-y-6">
+        <Card className="card-soft p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-blue-50/90 to-blue-50/70">
+          <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
             <div className="space-y-3">
               <Badge className="accent-chip">Mid-creation</Badge>
               <h2 className="font-display text-2xl leading-tight text-slate-900">

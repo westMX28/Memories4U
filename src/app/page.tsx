@@ -223,7 +223,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 {
                   title: 'Custom arrangement',
@@ -241,7 +241,7 @@ export default function HomePage() {
                   details: ['Download and keep it', 'Share or display', 'Stays yours']
                 }
               ].map((item) => (
-                <Card key={item.title} className="border-white/70 bg-white/76 p-6">
+                <Card key={item.title} className="border-white/70 bg-white/76 p-4 sm:p-6">
                   <h3 className="font-display text-lg leading-tight mb-3 text-slate-900">{item.title}</h3>
                   <p className="text-sm leading-6 text-slate-700 mb-4">{item.description}</p>
                   <ul className="space-y-2">
@@ -257,8 +257,8 @@ export default function HomePage() {
             </div>
 
             <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-blue-50/90 to-slate-50/90">
-              <CardContent className="p-8 lg:p-10">
-                <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+              <CardContent className="p-6 sm:p-8 lg:p-10">
+                <div className="grid gap-6 sm:gap-8 lg:grid-cols-2 lg:items-center">
                   <div className="space-y-4">
                     <h3 className="font-display text-2xl leading-tight text-slate-900">
                       Why someone notices the difference.
@@ -350,7 +350,7 @@ export default function HomePage() {
       <section className="section">
         <div className="container grid gap-6 lg:grid-cols-2">
           <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
-            <CardContent className="space-y-6 p-8 lg:p-10">
+            <CardContent className="space-y-6 p-6 sm:p-8 lg:p-10">
               <div className="space-y-3">
                 <Badge className="w-fit accent-chip" variant="secondary">What to share</Badge>
                 <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
@@ -361,36 +361,36 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="rounded-[28px] bg-white/80 p-7 space-y-5">
-                <div className="space-y-5">
-                  <div className="flex gap-4 items-start">
-                    <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
+              <div className="rounded-[24px] bg-white/80 p-5 sm:p-7 space-y-4 sm:space-y-5">
+                <div className="space-y-4 sm:space-y-5">
+                  <div className="flex gap-3 sm:gap-4 items-start">
+                    <div className="text-xl sm:text-2xl font-light text-slate-400 flex-shrink-0 w-5 sm:w-6 text-center">→</div>
                     <div>
-                      <p className="font-semibold text-slate-900 mb-1">One or two photos (PNG or JPG)</p>
-                      <p className="text-sm text-slate-600">Any size, any quality. Photos that feel right to you. That's it.</p>
+                      <p className="font-semibold text-slate-900 mb-1 text-sm sm:text-base">One or two photos</p>
+                      <p className="text-xs sm:text-sm text-slate-600">Any size, any quality. That's it.</p>
                     </div>
                   </div>
 
-                  <div className="flex gap-4 items-start">
-                    <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
+                  <div className="flex gap-3 sm:gap-4 items-start">
+                    <div className="text-xl sm:text-2xl font-light text-slate-400 flex-shrink-0 w-5 sm:w-6 text-center">→</div>
                     <div>
-                      <p className="font-semibold text-slate-900 mb-1">Their name and your email</p>
-                      <p className="text-sm text-slate-600">So we know who the gift is for and where to send your private link.</p>
+                      <p className="font-semibold text-slate-900 mb-1 text-sm sm:text-base">Their name and email</p>
+                      <p className="text-xs sm:text-sm text-slate-600">We know who the gift is for and where to send your link.</p>
                     </div>
                   </div>
 
-                  <div className="flex gap-4 items-start">
-                    <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
+                  <div className="flex gap-3 sm:gap-4 items-start">
+                    <div className="text-xl sm:text-2xl font-light text-slate-400 flex-shrink-0 w-5 sm:w-6 text-center">→</div>
                     <div>
-                      <p className="font-semibold text-slate-900 mb-1">A sentence or two about the feeling</p>
-                      <p className="text-sm text-slate-600">A memory. A inside joke. What makes this person special to you. Even one sentence shapes the whole gift.</p>
+                      <p className="font-semibold text-slate-900 mb-1 text-sm sm:text-base">A sentence about feeling</p>
+                      <p className="text-xs sm:text-sm text-slate-600">Even one sentence shapes the whole gift.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-slate-200 pt-5 mt-5">
+                <div className="border-t border-slate-200 pt-4 sm:pt-5 mt-4 sm:mt-5">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>No writing skills needed.</strong> No long descriptions required. We listen for feeling, not perfection. What you share emotionally is what shapes the gift.
+                    <strong>No writing skills needed.</strong> We listen for feeling, not perfection.
                   </p>
                 </div>
               </div>
@@ -398,29 +398,29 @@ export default function HomePage() {
           </Card>
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_64px_rgba(86,117,166,0.08)]">
-            <CardHeader>
+            <CardHeader className="pb-4 sm:pb-6">
               <Badge className="w-fit accent-chip">The final gift</Badge>
-              <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
+              <CardTitle className="text-[clamp(1.4rem,3vw,2.4rem)] max-w-[12ch]">
                 Ready to celebrate.
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="rounded-[24px] bg-blue-50/70 p-5">
-                <div className="mini-kicker">What you get</div>
-                <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
-                  A premium digital story, beautifully designed and personalized. Delivered to your private link.
+            <CardContent className="grid gap-3 sm:gap-4 pt-0">
+              <div className="rounded-[20px] bg-blue-50/70 p-4 sm:p-5">
+                <div className="mini-kicker text-xs">What you get</div>
+                <p className="mb-0 mt-2 text-xs sm:text-sm leading-5 sm:leading-6 text-slate-700">
+                  A designed story, personalized and ready to download.
                 </p>
               </div>
-              <div className="rounded-[24px] bg-white/80 p-5">
-                <div className="mini-kicker">Your access</div>
-                <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
-                  Private status page. No account needed. Download when ready. Share the joy immediately.
+              <div className="rounded-[20px] bg-white/80 p-4 sm:p-5">
+                <div className="mini-kicker text-xs">Your access</div>
+                <p className="mb-0 mt-2 text-xs sm:text-sm leading-5 sm:leading-6 text-slate-700">
+                  Private page. No login. Download anytime.
                 </p>
               </div>
-              <div className="rounded-[28px] bg-slate-950 px-6 py-7 text-white flex items-start gap-4">
-                <Sparkles className="mt-0.5 size-5 text-blue-300 flex-shrink-0" />
-                <p className="mb-0 text-sm leading-6 text-slate-200">
-                  Everything designed for one birthday. One gift. One moment that matters.
+              <div className="rounded-[20px] bg-slate-950 px-4 sm:px-6 py-5 sm:py-7 text-white flex items-start gap-3 sm:gap-4">
+                <Sparkles className="mt-0.5 size-4 sm:size-5 text-blue-300 flex-shrink-0" />
+                <p className="mb-0 text-xs sm:text-sm leading-5 sm:leading-6 text-slate-200">
+                  Everything for one moment. One gift. One birthday.
                 </p>
               </div>
             </CardContent>
