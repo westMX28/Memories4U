@@ -156,7 +156,7 @@ export default function HomePage() {
                     </p>
                   </div>
 
-                  <div className="rounded-[20px] bg-slate-950/50 border border-slate-700/50 p-4 backdrop-blur-sm">
+                  <div className="rounded-[20px] bg-white/10 border border-white/20 p-4 backdrop-blur-sm">
                     <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-2">Simple process</div>
                     <ul className="space-y-2 text-sm text-slate-300">
                       <li className="flex gap-2">
