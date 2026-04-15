@@ -19,7 +19,7 @@ export default async function StatusPage({
     <main className="section page-shell">
       <div className="container space-y-8">
         {/* Hero Section */}
-        <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
+        <Card className="overflow-hidden card-hero">
           <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
             <div className="space-y-6">
               <Badge className="w-fit accent-chip">Dein privater Auftragsraum</Badge>
@@ -40,7 +40,7 @@ export default async function StatusPage({
 
             {/* Info Cards */}
             <div className="grid gap-4">
-              <Card className="border-white/70 bg-white/80 shadow-lg">
+              <Card className="card-neutral">
                 <CardHeader>
                   <Badge className="w-fit accent-chip" variant="secondary">Wie das funktioniert</Badge>
                   <CardTitle className="text-lg">Kein Konto. Kein Login. Nur dein Link.</CardTitle>
@@ -50,7 +50,7 @@ export default async function StatusPage({
                 </CardHeader>
               </Card>
 
-              <Card className="border-white/70 bg-white/76">
+              <Card className="card-subtle">
                 <CardContent className="flex gap-4 p-5">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <Lock className="size-5" />
@@ -64,7 +64,7 @@ export default async function StatusPage({
                 </CardContent>
               </Card>
 
-              <Card className="border-white/70 bg-white/76">
+              <Card className="card-subtle">
                 <CardContent className="flex gap-4 p-5">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <RefreshCcw className="size-5" />
@@ -78,7 +78,7 @@ export default async function StatusPage({
                 </CardContent>
               </Card>
 
-              <Card className="border-white/70 bg-white/76">
+              <Card className="card-subtle">
                 <CardContent className="flex gap-4 p-5">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <Zap className="size-5" />
@@ -104,7 +104,7 @@ export default async function StatusPage({
 
         {/* Bottom Info */}
         <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="border-white/70 bg-white/76">
+          <Card className="card-subtle">
             <CardHeader>
               <Badge className="w-fit accent-chip" variant="secondary">Ehrlichkeit</Badge>
               <CardTitle>Status, wie er ist.</CardTitle>
@@ -114,7 +114,7 @@ export default async function StatusPage({
             </CardHeader>
           </Card>
 
-          <Card className="border-white/70 bg-white/76">
+          <Card className="card-subtle">
             <CardContent className="flex h-full flex-col justify-between gap-6 p-8">
               <div>
                 <div className="mini-kicker">Nächste Schritte</div>

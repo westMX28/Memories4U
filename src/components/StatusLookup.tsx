@@ -460,7 +460,7 @@ export function StatusLookup({
 
   return (
     <div className="stack">
-      <Card className="border-white/90 bg-white/82">
+      <Card className="card-neutral">
         <CardHeader className="space-y-4">
           <Badge className="w-fit accent-chip">Dein privater Raum</Badge>
           <div className="space-y-2">
@@ -541,7 +541,7 @@ export function StatusLookup({
       </Card>
 
       {recentJobs.length > 0 ? (
-        <Card className="recent-jobs-card border-white/90 bg-white/82">
+        <Card className="recent-jobs-card card-neutral">
           <CardHeader>
             <Badge className="w-fit" variant="secondary">
               Deine Aufträge
@@ -568,7 +568,7 @@ export function StatusLookup({
       ) : null}
 
       {result ? (
-        <Card className="status-detail border-white/90 bg-white/82">
+        <Card className="status-detail card-neutral">
           <CardContent className="space-y-6 p-6 sm:p-8">
             <div className="status-detail-head">
               <div>

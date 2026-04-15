@@ -49,7 +49,7 @@ export default function HowItWorksPage() {
         {/* The Four Steps - Outcome Focused */}
         <div className="grid gap-6 lg:grid-cols-2">
           {steps.map(({ step, icon: Icon, title, outcome }, index) => (
-            <Card key={step} className={`border-white/70 p-8 ${index === 1 || index === 3 ? 'bg-blue-50/70' : 'bg-white/76'}`}>
+            <Card key={step} className={`p-8 ${index === 1 || index === 3 ? 'card-soft' : 'card-subtle'}`}>
               <div className="space-y-5">
                 <div className="flex items-start justify-between">
                   <div>
@@ -67,7 +67,7 @@ export default function HowItWorksPage() {
         </div>
 
         {/* Preview Promise Section */}
-        <Card className="border-white/70 bg-gradient-to-br from-blue-50/90 to-white/90 p-8 lg:p-10">
+        <Card className="card-soft p-8 lg:p-10 bg-gradient-to-br from-blue-50/90 to-blue-50/70">
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="space-y-3">
               <Badge className="accent-chip">Before the final delivery</Badge>

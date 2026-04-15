@@ -26,7 +26,7 @@ export default async function SuccessPage({
   return (
     <main className="section page-shell">
       <div className="container space-y-8">
-        <Card className="success-shell overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
+        <Card className="success-shell overflow-hidden card-hero">
           <CardContent className="p-10 text-center sm:p-12">
             <div className="inline-flex mb-6">
               <Badge className="success-badge flex items-center gap-2">
@@ -53,7 +53,7 @@ export default async function SuccessPage({
 
             {params.email ? (
               <div className="success-meta mx-auto max-w-3xl mt-8">
-                <div className="rounded-[24px] bg-white/85 border border-sky-100 p-5">
+                <div className="rounded-[24px] bg-white/80 border border-blue-100 p-5">
                   <div className="text-sm uppercase tracking-widest text-blue-700 font-semibold">Zustelladresse</div>
                   <p className="mb-0 text-base mt-2 text-slate-700">{params.email}</p>
                 </div>
@@ -61,7 +61,7 @@ export default async function SuccessPage({
             ) : null}
 
             {deliveryAsset ? (
-              <Card className="mx-auto mt-12 max-w-4xl border-white/70 bg-white/82 text-left shadow-[0_32px_96px_rgba(96,174,252,0.12)]">
+              <Card className="mx-auto mt-12 max-w-4xl card-neutral text-left">
                 <CardContent className="space-y-6 p-8 sm:p-10">
                   <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div className="space-y-4">
@@ -115,7 +115,7 @@ export default async function SuccessPage({
             ) : null}
 
             {/* Continuation & Status Path Reassurance */}
-            <Card className="mx-auto mt-12 max-w-3xl border-white/80 bg-blue-50/60">
+            <Card className="mx-auto mt-12 max-w-3xl card-soft">
               <CardContent className="p-8 sm:p-10">
                 <div className="space-y-4">
                   <h2 className="text-xl font-display font-semibold text-slate-900">Die Reise geht weiter.</h2>
@@ -140,7 +140,7 @@ export default async function SuccessPage({
             </Card>
 
             <div className="mt-12 grid gap-4 md:grid-cols-3">
-              <Card className="border-white/70 bg-white/76">
+              <Card className="card-subtle">
                 <CardContent className="flex gap-4 p-6">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mt-1">
                     <Lock className="size-5" />
@@ -153,7 +153,7 @@ export default async function SuccessPage({
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-white/70 bg-white/76">
+              <Card className="card-subtle">
                 <CardContent className="flex gap-4 p-6">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mt-1">
                     <Sparkles className="size-5" />
@@ -168,7 +168,7 @@ export default async function SuccessPage({
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-white/70 bg-white/76">
+              <Card className="card-subtle">
                 <CardContent className="flex gap-4 p-6">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mt-1">
                     <Clock className="size-5" />

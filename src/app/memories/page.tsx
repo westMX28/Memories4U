@@ -38,7 +38,7 @@ export default function MemoriesPage() {
     <main className="section page-shell">
       <div className="container space-y-8">
         {/* Hero Section */}
-        <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
+        <Card className="overflow-hidden card-hero">
           <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
             <div className="space-y-6">
               <Badge className="w-fit accent-chip">Create your gift</Badge>
@@ -53,7 +53,7 @@ export default function MemoriesPage() {
               <div className="grid gap-3 sm:grid-cols-3">
                 {whatYouNeed.map((item) => (
                   <div
-                    className="rounded-[24px] border border-white/70 bg-white/80 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_12px_32px_rgba(148,163,184,0.08)]"
+                    className="rounded-[24px] border border-[var(--border)] bg-white/80 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[var(--shadow)]"
                     key={item}
                   >
                     <CheckCircle2 className="mb-2 size-4 text-blue-600 flex-shrink-0" />
@@ -78,7 +78,7 @@ export default function MemoriesPage() {
 
             {/* Side Panel */}
             <div className="grid gap-4">
-              <Card className="border-white/70 bg-white/80 shadow-lg">
+              <Card className="card-neutral">
                 <CardHeader>
                   <Badge className="w-fit accent-chip" variant="secondary">No work required</Badge>
                   <CardTitle className="text-lg">Simple. No overthinking needed.</CardTitle>
@@ -90,7 +90,7 @@ export default function MemoriesPage() {
               </Card>
 
               {nextSteps.map(({ icon: Icon, title, description }) => (
-                <Card key={title} className="border-white/70 bg-white/76">
+                <Card key={title} className="card-subtle">
                   <CardContent className="flex gap-4 p-5">
                     <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                       <Icon className="size-5" />
@@ -115,7 +115,7 @@ export default function MemoriesPage() {
           {/* Side Information */}
           <div className="space-y-4">
             {/* What Happens After Submit */}
-            <Card className="border-white/70 bg-white/76">
+            <Card className="card-subtle">
               <CardHeader>
                 <Badge className="w-fit accent-chip" variant="secondary">The flow</Badge>
                 <CardTitle className="text-lg">Here's exactly what happens next.</CardTitle>
@@ -147,7 +147,7 @@ export default function MemoriesPage() {
             </Card>
 
             {/* Trust Guarantee */}
-            <Card className="border-white/70 bg-gradient-to-br from-slate-950 to-blue-950 text-white">
+            <Card className="border border-slate-700 bg-slate-950 text-white">
               <CardContent className="space-y-4 p-6">
                 <Badge className="border-white/15 bg-white/10 text-white" variant="dark">No pressure. No complexity.</Badge>
                 <h3 className="font-display text-lg leading-tight">Simple form. Secure process. Always your link.</h3>

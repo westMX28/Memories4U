@@ -362,7 +362,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="rounded-[32px] bg-white/85 p-7 space-y-5">
+              <div className="rounded-[28px] bg-white/80 p-7 space-y-5">
                 <div className="space-y-5">
                   <div className="flex gap-4 items-start">
                     <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
@@ -406,19 +406,19 @@ export default function HomePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="rounded-[26px] bg-blue-50/75 p-5">
+              <div className="rounded-[24px] bg-blue-50/70 p-5">
                 <div className="mini-kicker">What you get</div>
                 <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
                   A premium digital story, beautifully designed and personalized. Delivered to your private link.
                 </p>
               </div>
-              <div className="rounded-[26px] bg-white p-5">
+              <div className="rounded-[24px] bg-white/80 p-5">
                 <div className="mini-kicker">Your access</div>
                 <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
                   Private status page. No account needed. Download when ready. Share the joy immediately.
                 </p>
               </div>
-              <div className="rounded-[30px] bg-slate-950 px-6 py-7 text-white flex items-start gap-4">
+              <div className="rounded-[28px] bg-slate-950 px-6 py-7 text-white flex items-start gap-4">
                 <Sparkles className="mt-0.5 size-5 text-blue-300 flex-shrink-0" />
                 <p className="mb-0 text-sm leading-6 text-slate-200">
                   Everything designed for one birthday. One gift. One moment that matters.
@@ -443,7 +443,7 @@ export default function HomePage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-[34px] bg-gradient-to-br from-slate-950 via-blue-950 to-blue-900 p-8 text-white shadow-[0_28px_60px_rgba(15,23,42,0.2)]">
+              <div className="rounded-[28px] bg-gradient-to-br from-slate-950 via-blue-950 to-blue-900 p-8 text-white shadow-[0_28px_60px_rgba(15,23,42,0.2)]">
                 <div className="text-xs uppercase tracking-[0.2em] text-blue-200 font-semibold">
                   Handcrafted story
                 </div>
