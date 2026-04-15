@@ -180,44 +180,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust & Values Section */}
-      <section className="promise-section">
-        <div className="container">
-          <div className="promise-header">
-            <h2 className="h2">Why choose Memories4U</h2>
-            <p className="lead max-w-[60ch] mx-auto mt-3">
-              A gift service designed around what birthdays actually need: thoughtfulness, privacy, and beauty.
-            </p>
-          </div>
-          <div className="promise-grid">
-            {trustPoints.map(({ icon: Icon, title, description }) => (
-              <Card key={title} className="promise-card">
-                <CardHeader className="promise-card-header">
-                  <span className="promise-card-icon">
-                    <Icon className="promise-card-icon-inner" />
-                  </span>
-                  <div className="promise-card-content">
-                    <CardTitle className="promise-card-title">{title}</CardTitle>
-                    <CardDescription className="promise-card-description">{description}</CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Process Section */}
+      {/* Section 2: Simplicity (why it's easy) */}
       <section className="workflow-section">
         <div className="container">
           <div className="workflow-header">
             <div className="workflow-header-content">
-              <Badge className="w-fit accent-chip" variant="secondary">Simple process</Badge>
+              <Badge className="w-fit accent-chip" variant="secondary">Three simple steps</Badge>
               <h2 className="h2 max-w-[12ch]">
-                Three thoughtful steps.
+                So easy, you can do it in minutes.
               </h2>
               <p className="lead max-w-[50ch]">
-                From memory to finished gift, we keep everything simple and intentional.
+                Everything from photos to checkout is designed to be fast, clear, and intuitive.
               </p>
             </div>
           </div>
@@ -239,70 +212,97 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Editorial Section */}
+      {/* Section 3: Trust (why it's safe & personal) */}
+      <section className="promise-section">
+        <div className="container">
+          <div className="promise-header">
+            <h2 className="h2">Why this feels personal and safe</h2>
+            <p className="lead max-w-[60ch] mx-auto mt-3">
+              Private by design. Personal by intention. Premium in every detail.
+            </p>
+          </div>
+          <div className="promise-grid">
+            {trustPoints.map(({ icon: Icon, title, description }) => (
+              <Card key={title} className="promise-card">
+                <CardHeader className="promise-card-header">
+                  <span className="promise-card-icon">
+                    <Icon className="promise-card-icon-inner" />
+                  </span>
+                  <div className="promise-card-content">
+                    <CardTitle className="promise-card-title">{title}</CardTitle>
+                    <CardDescription className="promise-card-description">{description}</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: What you share + What happens (combined clarity) */}
       <section className="section">
         <div className="container grid gap-6 lg:grid-cols-2">
           <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
             <CardContent className="space-y-6 p-8 lg:p-10">
               <div className="space-y-3">
-                <Badge className="w-fit accent-chip" variant="secondary">Design & experience</Badge>
+                <Badge className="w-fit accent-chip" variant="secondary">Your input</Badge>
                 <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
-                  Premium and intentional.
+                  Just what matters.
                 </CardTitle>
               </div>
 
               <div className="rounded-[32px] bg-white/85 p-7 space-y-4">
-                <div className="rounded-[28px] bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 mb-4">
-                    The gift experience
-                  </div>
-                  <p className="font-display text-2xl leading-tight text-slate-900">
-                    &quot;A celebration of this person told through moments that matter to you.&quot;
-                  </p>
-                </div>
-                
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[24px] bg-blue-50/80 p-5">
-                    <div className="mini-kicker">Tone</div>
-                    <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
-                      Warm, editorial, and genuinely personal—never corporate or generic.
-                    </p>
-                  </div>
-                  <div className="rounded-[24px] bg-white p-5">
-                    <div className="mini-kicker">Journey</div>
-                    <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
-                      Minimal friction, maximum intention. From first click to final delivery.
-                    </p>
-                  </div>
-                </div>
+                <ul className="space-y-4">
+                  <li className="flex gap-3 items-start">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-700">1</div>
+                    <div>
+                      <p className="font-semibold text-slate-900 mb-1">One or two photos</p>
+                      <p className="text-sm text-slate-600">That capture the feeling you want to celebrate</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-3 items-start">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-700">2</div>
+                    <div>
+                      <p className="font-semibold text-slate-900 mb-1">Their name & your email</p>
+                      <p className="text-sm text-slate-600">For personalization and delivery</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-3 items-start">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-700">3</div>
+                    <div>
+                      <p className="font-semibold text-slate-900 mb-1">A brief memory or feeling</p>
+                      <p className="text-sm text-slate-600">The emotional core that shapes everything</p>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_64px_rgba(86,117,166,0.08)]">
             <CardHeader>
-              <Badge className="w-fit accent-chip">Transparency</Badge>
+              <Badge className="w-fit accent-chip">The result</Badge>
               <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
-                Clear from start to finish.
+                A handcrafted gift.
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="rounded-[26px] bg-blue-50/75 p-5">
                 <div className="mini-kicker">What you get</div>
                 <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
-                  One handcrafted story, beautiful presentation, digital delivery, and a private status link forever.
+                  A premium digital story, beautifully designed and personalized. Delivered to your private link.
                 </p>
               </div>
               <div className="rounded-[26px] bg-white p-5">
-                <div className="mini-kicker">What you won&apos;t</div>
+                <div className="mini-kicker">Your access</div>
                 <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
-                  No previews to approve, no account required, no ongoing costs, no data collection.
+                  Private status page. No account needed. Download when ready. Share the joy immediately.
                 </p>
               </div>
               <div className="rounded-[30px] bg-slate-950 px-6 py-7 text-white flex items-start gap-4">
-                <Mail className="mt-0.5 size-5 text-blue-300 flex-shrink-0" />
+                <Sparkles className="mt-0.5 size-5 text-blue-300 flex-shrink-0" />
                 <p className="mb-0 text-sm leading-6 text-slate-200">
-                  We speak like a service, not software. Clear, warm, and human.
+                  Everything designed for one birthday. One gift. One moment that matters.
                 </p>
               </div>
             </CardContent>
@@ -366,34 +366,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Final CTA Section */}
+      {/* Final CTA Section - Decision moment */}
       <section className="section pt-0">
         <div className="container">
           <Card className="border-white/80 bg-gradient-to-br from-slate-950 via-blue-950 to-blue-900 text-white shadow-[0_32px_96px_rgba(15,23,42,0.16)]">
-            <CardContent className="flex flex-col gap-6 p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
-              <div className="space-y-3 flex-1">
-                <Badge className="w-fit border-white/20 bg-white/10 text-white" variant="dark">
-                  Ready to create
-                </Badge>
-                <h2 className="font-display text-[clamp(1.8rem,3vw,2.8rem)] leading-tight">
-                  Transform a memory into a gift.
+            <CardContent className="flex flex-col gap-8 p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
+              <div className="space-y-4 flex-1">
+                <h2 className="font-display text-[clamp(2rem,4vw,3rem)] leading-tight">
+                  Create their gift today.
                 </h2>
-                <p className="max-w-[45ch] text-sm leading-7 text-slate-300">
-                  Start now. It takes just a few minutes to share what matters and begin the process.
+                <p className="max-w-[48ch] text-base leading-7 text-slate-300">
+                  Photos, a memory, and your email. That&apos;s all it takes. The birthday is coming. Make it meaningful.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3 flex-shrink-0">
-                <Button asChild size="lg" className="bg-white text-slate-950 hover:bg-slate-100">
-                  <Link href={orderingAvailable ? '/memories' : '/status'}>
-                    {orderingAvailable ? 'Begin now' : 'Check order'}
-                    <Sparkles className="size-4" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="secondary" className="border-white/20 text-white hover:bg-white/10">
-                  <Link href="/how-it-works">See the process</Link>
-                </Button>
-              </div>
+              <Button asChild size="lg" className="bg-white text-slate-950 hover:bg-slate-100 px-8 h-12 flex-shrink-0">
+                <Link href={orderingAvailable ? '/memories' : '/status'}>
+                  {orderingAvailable ? 'Create your gift' : 'Check order'}
+                  <ArrowRight className="size-5" />
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>
