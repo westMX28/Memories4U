@@ -147,28 +147,28 @@ export default function HomePage() {
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest font-semibold text-blue-400 mb-2">The result</p>
-                    <h2 className="text-2xl font-display leading-tight text-white mb-3">
+                    <p className="text-xs uppercase tracking-widest font-semibold text-slate-400 mb-2">The result</p>
+                    <h2 className="text-2xl font-display leading-tight text-slate-100 mb-3">
                       A celebration of the moments that matter.
                     </h2>
-                    <p className="text-sm text-slate-300 leading-relaxed">
+                    <p className="text-sm text-slate-400 leading-relaxed">
                       A premium digital gift shaped around your photos and memories. Ready to download and celebrate.
                     </p>
                   </div>
 
-                  <div className="rounded-[20px] bg-white/10 border border-white/20 p-4 backdrop-blur-sm">
-                    <div className="text-xs uppercase tracking-widest text-blue-200 font-semibold mb-2">Simple process</div>
-                    <ul className="space-y-2 text-sm text-slate-200">
+                  <div className="rounded-[20px] bg-slate-950/50 border border-slate-700/50 p-4 backdrop-blur-sm">
+                    <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-2">Simple process</div>
+                    <ul className="space-y-2 text-sm text-slate-300">
                       <li className="flex gap-2">
-                        <span className="text-blue-400 flex-shrink-0">→</span>
+                        <span className="text-slate-500 flex-shrink-0">→</span>
                         <span>Upload 1-2 photos & brief memory</span>
                       </li>
                       <li className="flex gap-2">
-                        <span className="text-blue-400 flex-shrink-0">→</span>
+                        <span className="text-slate-500 flex-shrink-0">→</span>
                         <span>See price, checkout, get link</span>
                       </li>
                       <li className="flex gap-2">
-                        <span className="text-blue-400 flex-shrink-0">→</span>
+                        <span className="text-slate-500 flex-shrink-0">→</span>
                         <span>Download when ready, share the joy</span>
                       </li>
                     </ul>
