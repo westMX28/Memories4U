@@ -353,36 +353,47 @@ export default function HomePage() {
           <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
             <CardContent className="space-y-6 p-8 lg:p-10">
               <div className="space-y-3">
-                <Badge className="w-fit accent-chip" variant="secondary">Your input</Badge>
+                <Badge className="w-fit accent-chip" variant="secondary">What you share</Badge>
                 <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
-                  Just what matters.
+                  Minimal. Emotional. Enough.
                 </CardTitle>
+                <p className="text-slate-700 text-base leading-relaxed">
+                  No long forms, no detailed descriptions. Just share the heart of it.
+                </p>
               </div>
 
-              <div className="rounded-[32px] bg-white/85 p-7 space-y-4">
-                <ul className="space-y-4">
-                  <li className="flex gap-3 items-start">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-700">1</div>
+              <div className="rounded-[32px] bg-white/85 p-7 space-y-5">
+                <div className="space-y-5">
+                  <div className="flex gap-4 items-start">
+                    <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
                     <div>
-                      <p className="font-semibold text-slate-900 mb-1">One or two photos</p>
-                      <p className="text-sm text-slate-600">That capture the feeling you want to celebrate</p>
+                      <p className="font-semibold text-slate-900 mb-1">One or two photos (PNG or JPG)</p>
+                      <p className="text-sm text-slate-600">Any size, any quality. Photos that feel right to you. That's it.</p>
                     </div>
-                  </li>
-                  <li className="flex gap-3 items-start">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-700">2</div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
                     <div>
-                      <p className="font-semibold text-slate-900 mb-1">Their name & your email</p>
-                      <p className="text-sm text-slate-600">For personalization and delivery</p>
+                      <p className="font-semibold text-slate-900 mb-1">Their name and your email</p>
+                      <p className="text-sm text-slate-600">So we know who the gift is for and where to send your private link.</p>
                     </div>
-                  </li>
-                  <li className="flex gap-3 items-start">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-700">3</div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="text-2xl font-light text-slate-400 flex-shrink-0 w-6 text-center">→</div>
                     <div>
-                      <p className="font-semibold text-slate-900 mb-1">A brief memory or feeling</p>
-                      <p className="text-sm text-slate-600">The emotional core that shapes everything</p>
+                      <p className="font-semibold text-slate-900 mb-1">A sentence or two about the feeling</p>
+                      <p className="text-sm text-slate-600">A memory. A inside joke. What makes this person special to you. Even one sentence shapes the whole gift.</p>
                     </div>
-                  </li>
-                </ul>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 pt-5 mt-5">
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>No writing skills needed.</strong> No long descriptions required. We listen for feeling, not perfection. What you share emotionally is what shapes the gift.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

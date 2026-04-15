@@ -8,26 +8,26 @@ import { Separator } from '@/components/ui/separator';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
 const whatYouNeed = [
-  'One or two photos as PNG or JPG',
-  'The recipient\'s name and your email',
-  'A brief emotional cue instead of detailed instructions',
+  'One or two photos (PNG or JPG—any size)',
+  'Their name and your email (so we know who and where)',
+  'A sentence or two about the feeling (that\'s enough)',
 ];
 
 const nextSteps = [
   {
     icon: Images,
-    title: 'Your briefing',
-    description: 'Only the information that truly matters for a personal, meaningful story.',
+    title: 'We listen, not judge',
+    description: 'Your photos and feelings shape the whole thing. No perfectionism required.',
   },
   {
     icon: CreditCard,
-    title: 'Quick checkout',
-    description: 'Your order is secured immediately. No extra steps. Clear pricing upfront.',
+    title: 'One price, no surprises',
+    description: '$299, all-in. See the price before you checkout. Nothing hidden.',
   },
   {
     icon: LockKeyhole,
-    title: 'Your private path',
-    description: 'The same secure link stays with your order for tracking and delivery.',
+    title: 'Your private link forever',
+    description: 'Download anytime. No account login. It\'s yours to keep and share.',
   },
 ];
 
@@ -41,12 +41,12 @@ export default function MemoriesPage() {
         <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
           <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
             <div className="space-y-6">
-              <Badge className="w-fit accent-chip">Order briefing</Badge>
+              <Badge className="w-fit accent-chip">Create your gift</Badge>
               <div className="space-y-4">
-                <h1 className="h2 max-w-[12ch]">Share simply. We listen carefully.</h1>
+                <h1 className="h2 max-w-[12ch]">Just share what matters.</h1>
                 <p className="lead max-w-[60ch]">
-                  This form is intentionally minimal. Not because gifts are simple, but because 
-                  your feelings matter more than your specifications.
+                  Two photos. A name. A feeling. That's genuinely all we need. No long forms, no complex descriptions.
+                  You won't need to write a lot.
                 </p>
               </div>
 
@@ -65,7 +65,7 @@ export default function MemoriesPage() {
               <div className="flex flex-wrap gap-3">
                 <Button asChild>
                   <a href={orderingAvailable ? '#intake-form' : '#ordering-status'}>
-                    {orderingAvailable ? 'Begin briefing' : 'View status'}
+                    {orderingAvailable ? 'Start here' : 'View status'}
                   </a>
                 </Button>
                 <Button asChild variant="secondary">
@@ -80,11 +80,11 @@ export default function MemoriesPage() {
             <div className="grid gap-4">
               <Card className="border-white/70 bg-white/80 shadow-lg">
                 <CardHeader>
-                  <Badge className="w-fit accent-chip" variant="secondary">Designed for intention</Badge>
-                  <CardTitle className="text-lg">Premium experience, not complexity.</CardTitle>
+                  <Badge className="w-fit accent-chip" variant="secondary">No work required</Badge>
+                  <CardTitle className="text-lg">Simple. No overthinking needed.</CardTitle>
                   <CardDescription className="text-sm">
-                    Generous spacing, clear hierarchy, and every field has a purpose. 
-                    Nothing more, nothing less.
+                    You won't spend time writing detailed descriptions or filling out complex forms.
+                    This is about emotion, not perfection.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -117,41 +117,41 @@ export default function MemoriesPage() {
             {/* What Happens Next */}
             <Card className="border-white/70 bg-white/76">
               <CardHeader>
-                <Badge className="w-fit accent-chip" variant="secondary">What happens next</Badge>
-                <CardTitle className="text-lg">One order. One secure link. No account required.</CardTitle>
+                <Badge className="w-fit accent-chip" variant="secondary">Your access</Badge>
+                <CardTitle className="text-lg">Everything stays private. Everything stays yours.</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-[24px] border border-blue-100 bg-blue-50/70 p-4">
-                  <div className="mini-kicker">After you submit</div>
+                  <div className="mini-kicker">After you submit & pay</div>
                   <p className="mb-0 text-sm leading-6 text-slate-700">
-                    Your order is created immediately and moved to checkout to secure payment.
+                    You get a private link immediately. No account, no login. Save it or share it.
                   </p>
                 </div>
                 <div className="rounded-[24px] border border-white/70 bg-white p-4">
-                  <div className="mini-kicker">If checkout is interrupted</div>
+                  <div className="mini-kicker">If you need to step away</div>
                   <p className="mb-0 text-sm leading-6 text-slate-700">
-                    Your saved order remains accessible through the status page using your email.
+                    Your order is saved. Come back anytime using the same link. No rushing.
                   </p>
                 </div>
                 <Separator className="bg-blue-100" />
                 <p className="mb-0 text-xs leading-6 text-slate-600">
-                  We save everything so you can resume without friction. That&apos;s the design promise.
+                  This is designed for your peace of mind. Flexible. Private. Always accessible.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Important Note */}
+            {/* Reassurance Note */}
             <Card className="border-white/70 bg-gradient-to-br from-slate-950 to-blue-950 text-white">
               <CardContent className="space-y-4 p-6">
-                <Badge className="border-white/15 bg-white/10 text-white" variant="dark">Important</Badge>
-                <h3 className="font-display text-lg leading-tight">No previews. No revisions.</h3>
+                <Badge className="border-white/15 bg-white/10 text-white" variant="dark">You&apos;re covered</Badge>
+                <h3 className="font-display text-lg leading-tight">You won&apos;t need to write much.</h3>
                 <p className="mb-0 text-sm leading-6 text-slate-200">
-                  We craft based on your briefing alone. This isn&apos;t a collaborative tool—
-                  it&apos;s a commissioned gift. Trust in your words.
+                  Just your photos and a sentence or two about the feeling. That&apos;s the input we craft from.
+                  No long descriptions. No overthinking. We listen for emotion, not perfection.
                 </p>
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-slate-100 font-medium">
                   <Sparkles className="size-4 text-blue-300" />
-                  Intentionally simplified
+                  Designed to be friction-light
                 </div>
               </CardContent>
             </Card>
