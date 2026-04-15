@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { ArrowDownToLine, ExternalLink } from 'lucide-react';
+import { ArrowDownToLine, ExternalLink, CheckCircle, Sparkles, Lock, Clock } from 'lucide-react';
 import { getMemoryJobStatus } from '@/lib/memories/service';
 import { MemoryAssetPreview } from '@/components/MemoryAssetPreview';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function SuccessPage({
   searchParams,
@@ -25,76 +25,82 @@ export default async function SuccessPage({
 
   return (
     <main className="section page-shell">
-      <div className="container">
-        <Card className="success-shell overflow-hidden border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(231,243,255,0.92))]">
-          <CardContent className="p-8 text-center sm:p-10">
-            <Badge className="success-badge mx-auto w-fit">
-              {paymentConfirmed ? 'Zahlung bestätigt' : 'Auftrag gespeichert'}
-            </Badge>
-            <h1 className="h2 max-w-[14ch] mx-auto">
+      <div className="container space-y-8">
+        <Card className="success-shell overflow-hidden card-hero">
+          <CardContent className="p-10 text-center sm:p-12">
+            <div className="inline-flex mb-6">
+              <Badge className="success-badge flex items-center gap-2">
+                <CheckCircle className="size-5" />
+                {paymentConfirmed ? 'On the way' : 'Order saved'}
+              </Badge>
+            </div>
+
+            <h1 className="h2 max-w-[18ch] mx-auto">
               {paymentConfirmed
-                ? 'Dein Story-Auftrag ist bestätigt und mit der Statusverfolgung verbunden.'
-                : 'Dein Auftrag ist gespeichert und bereit zum Fortsetzen.'}
+                ? 'Your gift is being created.'
+                : 'Your gift is ready for payment.'}
             </h1>
-            <p className="lead mx-auto max-w-[46ch]">
+
+            <p className="lead mx-auto max-w-[60ch] mt-6">
               {paymentConfirmed
                 ? liveStatus?.finalAsset
-                  ? 'Die Zahlung ist bestätigt, und die fertige Story ist bereits auf dieser Seite und über die verknüpfte Statusroute verfügbar.'
+                  ? 'It\'s ready. Download it and celebrate with them.'
                   : liveStatus?.previewAsset
-                    ? 'Die Zahlung ist bestätigt, und eine Vorschau ist bereits verfügbar, während die finale Zustellung weiterläuft.'
-                    : 'Diese Seite bestätigt die erfolgreiche Übergabe. Von hier an ist die Statusroute der zentrale Ort für Fortschritt und finale Zustellung.'
-                : 'Das Briefing ist gespeichert. Wenn die Zahlung nicht abgeschlossen wurde, kannst du denselben Auftrag über die Statusseite wieder öffnen, ohne neu zu beginnen.'}
+                    ? 'You\'ll see a preview soon to make sure it feels right.'
+                    : 'We\'re working on it now. Check your private status page for updates, or come back here anytime.'
+                : 'Everything you shared is saved. Your private link is waiting. Complete payment whenever you\'re ready.'}
             </p>
 
             {params.email ? (
-              <div className="success-meta mx-auto max-w-3xl">
-                <div>
-                  <strong>Zustell-E-Mail</strong>
-                  <span>{params.email}</span>
+              <div className="success-meta mx-auto max-w-3xl mt-8">
+                <div className="rounded-[24px] bg-white/80 border border-blue-100 p-5">
+                  <div className="text-sm uppercase tracking-widest text-blue-700 font-semibold">Being delivered to</div>
+                  <p className="mb-0 text-base mt-2 text-slate-700">{params.email}</p>
                 </div>
               </div>
             ) : null}
 
             {deliveryAsset ? (
-              <Card className="mx-auto mt-8 max-w-4xl border-sky-200 bg-[linear-gradient(180deg,rgba(239,247,255,0.96),rgba(223,239,255,0.92))] text-left shadow-[0_28px_80px_rgba(96,174,252,0.18)]">
-                <CardContent className="space-y-5 p-6 sm:p-7">
-                  <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div className="space-y-3">
+              <Card className="mx-auto mt-12 max-w-4xl card-neutral text-left">
+                <CardContent className="space-y-6 p-8 sm:p-10">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="space-y-4">
                       <Badge className="w-fit accent-chip" variant="secondary">
-                        {liveStatus?.finalAsset ? 'Zustellung bereit' : 'Vorschau bereit'}
+                        {liveStatus?.finalAsset ? 'Ready' : 'Preview available'}
                       </Badge>
                       <div>
-                        <h2 className="mb-3 text-3xl">
+                        <h2 className="text-3xl leading-tight font-display mb-3">
                           {liveStatus?.finalAsset
-                            ? 'Deine Story ist jetzt zum Öffnen oder Herunterladen bereit.'
-                            : 'Eine Vorschau ist bereits verfügbar.'}
+                            ? 'Your gift is ready.'
+                            : 'Preview is ready.'}
                         </h2>
-                        <p className="copy mb-0 max-w-[52ch]">
+                        <p className="text-slate-700 mb-0 max-w-[56ch] leading-relaxed">
                           {liveStatus?.delivery
-                            ? `Das Asset wurde zusätzlich an ${liveStatus.delivery.recipient} gesendet.`
+                            ? `Delivered to ${liveStatus.delivery.recipient}. You can download it here anytime.`
                             : liveStatus?.finalAsset
-                              ? 'Du musst nicht auf eine separate Zustell-E-Mail warten, um auf das fertige Asset zuzugreifen.'
-                              : 'Die finale Zustellung läuft noch, aber das aktuelle Asset ist bereits über denselben privaten Auftragspfad verfügbar.'}
+                              ? 'Download it, share it, celebrate with them. It\'s yours now.'
+                              : 'Get a look at how it\'s coming together. Let us know if anything needs adjusting, or we\'ll move to the final version.'}
                         </p>
                       </div>
                     </div>
 
-                    <div className="btn-row mt-0">
+                    <div className="flex flex-wrap gap-3 flex-shrink-0">
                       <Button asChild size="lg">
                         <a
                           href={deliveryAsset.url}
                           target="_blank"
                           rel="noreferrer"
                           download={liveStatus?.finalAsset ? '' : undefined}
+                          className="flex items-center gap-2"
                         >
-                          <ArrowDownToLine />
-                          {liveStatus?.finalAsset ? 'Story herunterladen' : 'Vorschau öffnen'}
+                          <ArrowDownToLine className="size-5" />
+                          {liveStatus?.finalAsset ? 'Herunterladen' : 'Vorschau ansehen'}
                         </a>
                       </Button>
                       <Button asChild size="lg" variant="secondary">
-                        <Link href={statusHref}>
-                          <ExternalLink />
-                          Live-Status öffnen
+                        <Link href={statusHref} className="flex items-center gap-2">
+                          <Clock className="size-4" />
+                          Fortschritt
                         </Link>
                       </Button>
                     </div>
@@ -108,43 +114,84 @@ export default async function SuccessPage({
               </Card>
             ) : null}
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <Card className="border-white/90 bg-white/82">
-                <CardContent className="p-6">
-                  <div className="mini-kicker">gespeichert</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">
-                    Der Auftrag bleibt an eine private Auftrags-ID und ein Zugriffstoken gebunden.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-white/90 bg-white/82">
-                <CardContent className="p-6">
-                  <div className="mini-kicker">als Nächstes</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">
+            {/* Continuation & Status Path Reassurance */}
+            <Card className="mx-auto mt-12 max-w-3xl card-soft">
+              <CardContent className="p-8 sm:p-10">
+                <div className="space-y-4">
+                  <h2 className="text-xl font-display font-semibold text-slate-900">What's next.</h2>
+                  <p className="text-slate-700 leading-relaxed mb-0">
                     {paymentConfirmed
-                      ? deliveryAsset
-                        ? 'Sobald Fulfillment-Daten vorliegen, ist hier eine direkte Asset-Aktion verfügbar.'
-                        : 'Produktion und finale Zustellung laufen außerhalb dieser Seite weiter.'
-                      : 'Der Checkout kann später über die Statusroute erneut geöffnet werden.'}
+                      ? 'Your gift is now being created. Return to your private status page anytime to check progress, see the preview, or download the final version. Everything stays secure and private.'
+                      : 'Your gift is here, waiting for payment. When you\'re ready to pay, return to your private page and complete checkout. No information is lost, no starting over needed.'}
                   </p>
+                  {paymentConfirmed && (
+                    <div className="mt-6 flex items-start gap-4 p-4 rounded-[24px] bg-white/70 border border-blue-200">
+                      <div className="text-blue-600 mt-1 flex-shrink-0">
+                        <Clock className="size-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-900 mb-1">Live tracking</p>
+                        <p className="text-sm text-slate-700 mb-0">Your status page updates in real-time as we work on your gift.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="mt-12 grid gap-4 md:grid-cols-3">
+              <Card className="card-subtle">
+                <CardContent className="flex gap-4 p-6">
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mt-1">
+                    <Lock className="size-5" />
+                  </span>
+                  <div>
+                    <div className="mini-kicker">Your gift</div>
+                    <p className="mb-0 text-sm leading-6 text-slate-700">
+                      Saved privately. Fully secure. Only your link can access it.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
-              <Card className="border-white/90 bg-white/82">
-                <CardContent className="p-6">
-                  <div className="mini-kicker">Rückkehrpunkt</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">
-                    Die Statusseite ist der feste Rückkehrpunkt für Updates und finale Assets.
-                  </p>
+              <Card className="card-subtle">
+                <CardContent className="flex gap-4 p-6">
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mt-1">
+                    <Sparkles className="size-5" />
+                  </span>
+                  <div>
+                    <div className="mini-kicker">What's happening</div>
+                    <p className="mb-0 text-sm leading-6 text-slate-700">
+                      {paymentConfirmed
+                        ? 'Your gift is being created. Live updates on your status page.'
+                        : 'Pay when you\'re ready. Your gift is safe and waiting.'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="card-subtle">
+                <CardContent className="flex gap-4 p-6">
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mt-1">
+                    <Clock className="size-5" />
+                  </span>
+                  <div>
+                    <div className="mini-kicker">Your access point</div>
+                    <p className="mb-0 text-sm leading-6 text-slate-700">
+                      One private page for everything: progress, updates, and your final gift.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="btn-row justify-center">
-              <Button asChild>
-                <Link href={statusHref}>Auftragsstatus öffnen</Link>
+            <div className="flex flex-wrap gap-3 justify-center mt-12">
+              <Button asChild size="lg">
+                <Link href={statusHref} className="flex items-center gap-2">
+                  <Clock className="size-4" />
+                  View progress
+                </Link>
               </Button>
-              <Button asChild variant="secondary">
-                <Link href="/">Zur Startseite</Link>
+              <Button asChild variant="secondary" size="lg">
+                <Link href="/">Home</Link>
               </Button>
             </div>
           </CardContent>

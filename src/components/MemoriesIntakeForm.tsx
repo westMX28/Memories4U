@@ -293,195 +293,208 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
   }
 
   return (
-    <Card className="border-white/90 bg-white/82">
-      <CardHeader className="space-y-4">
-        <Badge className="w-fit accent-chip">dein Briefing</Badge>
-        <div className="space-y-2">
-          <CardTitle className="max-w-[17ch] text-[clamp(2rem,4vw,3rem)]">Erzähl uns genau so viel, dass sich das Geschenk persönlich anfühlt.</CardTitle>
-          <CardDescription className="max-w-[52ch] text-base">
-            Das Formular bleibt bewusst klein: klarere Hierarchie, besserer Rhythmus und keine zusätzlichen Entscheidungen jenseits des aktuellen Checkout-First-Ablaufs.
+    <Card className="border-white/70 bg-white/80 shadow-lg">
+      <CardHeader className="space-y-7 pb-6">
+        <Badge className="w-fit accent-chip">Dein Briefing</Badge>
+        <div className="space-y-3">
+          <CardTitle className="max-w-[18ch] text-[clamp(2.2rem,5vw,3.2rem)] font-display">
+            Erzähl uns das, das Geschenk braucht.
+          </CardTitle>
+          <CardDescription className="max-w-[55ch] text-base leading-relaxed">
+            Keine langen Formulare. Keine komplexen Felder. Einfach Bilder, deine E-Mail, und eine kurze emotionale Richtung.
           </CardDescription>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-[24px] border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700">
-            <ImagePlus className="mb-3 size-4 text-sky-700" />
-            ein oder zwei Bilddateien
-          </div>
-          <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700">
-            <Mail className="mb-3 size-4 text-sky-700" />
-            eine Zustell-E-Mail
-          </div>
-          <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700 accent-chip">
-            <LockKeyhole className="mb-3 size-4 text-sky-700" />
-            denselben Auftrag später öffnen
-          </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        <form className="intake-form" onSubmit={handleSubmit}>
-          <div>
-            <div className="eyebrow">dein briefing</div>
-            <h3>Erzähl uns kurz, wie sich dieser Geburtstag anfühlen soll.</h3>
-            <p className="copy">
-              {orderingAvailable
-                ? 'Wir speichern deine Angaben sofort und leiten dich danach direkt in die Bezahlung. Für den Start brauchst du nur deine Bilder als PNG oder JPG, eine E-Mail und einen kurzen Erinnerungsmoment. Den Stand deiner Bestellung kannst du später jederzeit wieder aufrufen.'
-                : 'Neue Bestellungen sind in dieser Umgebung gerade pausiert. Bestehende Aufträge kannst du weiterhin über die Statusseite aufrufen.'}
-            </p>
-          </div>
-
+      <CardContent className="space-y-8">
+        <form className="space-y-8" onSubmit={handleSubmit}>
           {!orderingAvailable ? (
-            <div className="rounded-[24px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
-              Die Bestellstrecke bleibt gesperrt, bis die Bezahlung wieder verfügbar ist. Nutze in der Zwischenzeit die Statusseite für bestehende Aufträge.
+            <div className="rounded-[28px] border border-amber-200 bg-amber-50/85 px-6 py-5 text-sm leading-7 text-amber-950">
+              <strong className="block mb-1">Bestellungen sind derzeit pausiert.</strong>
+              <p className="mb-0">Bestehende Aufträge kannst du über die Statusseite weiterhin verfolgen.</p>
             </div>
           ) : null}
 
-          <div className="grid gap-6 rounded-[30px] border border-sky-100/90 bg-[linear-gradient(180deg,rgba(250,253,255,0.96),rgba(240,247,255,0.9))] p-5 sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <div className="mini-kicker">deine Angaben</div>
-                <p className="mb-0 text-sm leading-7 text-slate-600">Gerade genug Information, um den Auftrag zu sichern und die Zustellung nachvollziehbar zu halten.</p>
-              </div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-sky-800 accent-chip">
-                <Sparkles className="size-3.5" />
-                wenig Reibung
-              </span>
+          {/* Personal Details Section */}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="font-display text-xl leading-tight text-slate-900">Deine Kontaktdaten</h3>
+              <p className="text-sm leading-relaxed text-slate-600">
+                Damit wir den Auftrag zuordnen und dir die private Statusseite schicken können.
+              </p>
             </div>
 
-            <div className="form-grid">
+            <div className="grid gap-5 sm:gap-4">
               <label className="field">
-                <span>Name für diesen Anlass</span>
+                <span className="block text-sm font-semibold text-slate-900 mb-2">Name für diesen Anlass</span>
                 <Input
                   value={form.customerName}
                   onChange={(event) => updateField('customerName', event.target.value)}
-                  placeholder="z. B. Nina für Leo"
+                  placeholder="z. B. Tina für Leo"
+                  className="text-base"
                 />
+                <p className="text-xs text-slate-500 mt-2">Optional, macht die Bestellung persönlicher.</p>
               </label>
 
               <label className="field">
-                <span>E-Mail für die Zustellung</span>
+                <span className="block text-sm font-semibold text-slate-900 mb-2">E-Mail für die Zustellung</span>
                 <Input
                   type="email"
                   required
                   value={form.email}
                   onChange={(event) => updateField('email', event.target.value)}
                   placeholder="du@example.com"
+                  className="text-base"
                 />
+                <p className="text-xs text-slate-500 mt-2">Hier kommt dein privater Statuslink an.</p>
               </label>
             </div>
           </div>
 
-          <div className="grid gap-6 rounded-[30px] border border-sky-100/90 bg-white/82 p-5 sm:p-6">
-            <div>
-              <div className="mini-kicker">Bilder</div>
-              <p className="mb-0 text-sm leading-7 text-slate-600">PNG und JPG werden unterstützt. Ein Bild ist Pflicht, ein zweites ist optional.</p>
+          <Separator className="bg-slate-200" />
+
+          {/* Image Upload Section */}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="font-display text-xl leading-tight text-slate-900">Deine Bilder</h3>
+              <p className="text-sm leading-relaxed text-slate-600">
+                PNG oder JPG. Ein Bild ist genug, zwei sind auch okay.
+              </p>
             </div>
 
-            <div className="upload-grid">
-              <label className="upload-field">
-                <span className="upload-label">Erstes Bild</span>
+            <div className="space-y-5">
+              <label className="upload-field rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50/80 to-white/80">
+                <span className="upload-label text-sm font-semibold text-slate-900">Erstes Bild</span>
                 <Input
                   ref={image1InputRef}
                   type="file"
                   accept=".png,.jpg,.jpeg,image/png,image/jpeg"
                   onChange={(event) => handleFileSelection('image1', event.target.files?.[0] || null)}
+                  className="mt-3 text-sm cursor-pointer"
                 />
-                <p className="copy text-sm">Pflichtfeld. Akzeptiert PNG, JPG und JPEG.</p>
                 {image1File ? (
-                  <div className="upload-file-row">
-                    <strong className="upload-file-name">
-                      {image1File.name} · {formatFileSize(image1File.size)}
+                  <div className="upload-file-row mt-3 flex items-center justify-between gap-3">
+                    <strong className="upload-file-name text-xs text-slate-700">
+                      ✓ {image1File.name} ({formatFileSize(image1File.size)})
                     </strong>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => clearFile('image1')}>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => clearFile('image1')} className="text-xs">
                       Entfernen
                     </Button>
                   </div>
                 ) : (
-                  <p className="copy text-sm">Noch kein Bild ausgewählt.</p>
+                  <p className="text-xs text-slate-500 mt-2">Noch nicht ausgewählt</p>
                 )}
               </label>
 
-              <label className="upload-field">
-                <span className="upload-label">Zweites Bild (optional)</span>
+              <label className="upload-field rounded-[24px] border border-slate-200 bg-white/70">
+                <span className="upload-label text-sm font-semibold text-slate-900">Zweites Bild (optional)</span>
                 <Input
                   ref={image2InputRef}
                   type="file"
                   accept=".png,.jpg,.jpeg,image/png,image/jpeg"
                   onChange={(event) => handleFileSelection('image2', event.target.files?.[0] || null)}
+                  className="mt-3 text-sm cursor-pointer"
                 />
-                <p className="copy text-sm">Optional für eine zweite Perspektive oder den anderen Menschen.</p>
                 {image2File ? (
-                  <div className="upload-file-row">
-                    <strong className="upload-file-name">
-                      {image2File.name} · {formatFileSize(image2File.size)}
+                  <div className="upload-file-row mt-3 flex items-center justify-between gap-3">
+                    <strong className="upload-file-name text-xs text-slate-700">
+                      ✓ {image2File.name} ({formatFileSize(image2File.size)})
                     </strong>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => clearFile('image2')}>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => clearFile('image2')} className="text-xs">
                       Entfernen
                     </Button>
                   </div>
                 ) : (
-                  <p className="copy text-sm">Optional. Du kannst auch mit nur einem Bild bestellen.</p>
+                  <p className="text-xs text-slate-500 mt-2">Optional. Eine andere Perspektive oder Person.</p>
                 )}
               </label>
             </div>
           </div>
 
-          <div className="grid gap-6 rounded-[30px] border border-sky-100/90 bg-white/82 p-5 sm:p-6">
-            <div>
-              <div className="mini-kicker">Richtung der Story</div>
-              <p className="mb-0 text-sm leading-7 text-slate-600">Eine kleine emotionale Richtung hilft mehr als ein komplexes Briefing.</p>
+          <Separator className="bg-slate-200" />
+
+          {/* Story Direction Section */}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="font-display text-xl leading-tight text-slate-900">Das Gefühl für die Story</h3>
+              <p className="text-sm leading-relaxed text-slate-600">
+                Ein Satz oder zwei. Was soll diese Geschichte spürbar machen?
+              </p>
             </div>
 
-            <label className="field">
-              <span>Gemeinsamer Moment</span>
+            <label className="field space-y-2">
+              <span className="block text-sm font-semibold text-slate-900">Eine Erinnerung oder ein Gefühl</span>
               <Textarea
                 required
-                rows={5}
+                rows={4}
                 value={form.storyPrompt}
                 onChange={(event) => updateField('storyPrompt', event.target.value)}
-                placeholder="Was sollen wir spürbar machen?"
+                placeholder="Z. B.: Das Lachen wenn wir Witze reißen. Oder: Das Gefühl von Geborgenheit mit dieser Person."
+                className="text-base rounded-[20px] border-slate-200 bg-white/90 placeholder:text-slate-400"
               />
+              <p className="text-xs text-slate-500">Das ist der emotionale Kern, aus dem alles wächst.</p>
             </label>
 
-            <label className="field">
-              <span>Wofür ist die Story gedacht?</span>
+            <label className="field space-y-2">
+              <span className="block text-sm font-semibold text-slate-900">Anlass (optional)</span>
               <Input
                 value={form.occasion}
                 onChange={(event) => updateField('occasion', event.target.value)}
+                placeholder="z. B. Geburtstag, Hochzeitstag, Abschied"
+                className="text-base"
               />
+              <p className="text-xs text-slate-500 mt-2">Optional. Hilft beim Kontext.</p>
             </label>
           </div>
 
-          <Separator className="bg-sky-100/90" />
+          {/* Messaging & Actions */}
+          <Separator className="bg-slate-200 my-2" />
 
-          {error ? <p className="form-error">{error}</p> : null}
+          {error ? (
+            <div className="rounded-[24px] border border-red-200 bg-red-50/85 px-6 py-5 text-sm leading-6 text-red-900">
+              <strong className="block mb-1">Ein Problem ist aufgetreten:</strong>
+              <p className="mb-0">{error}</p>
+            </div>
+          ) : null}
 
           {recoveryState ? (
-            <div className="rounded-[24px] border border-sky-200 bg-sky-50/85 px-5 py-4 text-sm leading-7 text-slate-700">
-              <strong className="block text-slate-900">Dein Auftrag ist bereits gespeichert.</strong>
-              <span className="block">
-                Falls der Checkout nicht geladen hat, kannst du dieselbe Bestellung über die Statusseite wieder öffnen und die Bezahlung später fortsetzen.
-              </span>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Button asChild variant="secondary">
+            <div className="rounded-[24px] border border-blue-200 bg-blue-50/80 px-6 py-5 text-sm leading-6">
+              <strong className="block text-slate-900 mb-2">✓ Dein Auftrag ist gespeichert und sicher.</strong>
+              <p className="text-slate-700 mb-4">
+                Falls die Bezahlung unterbrochen wurde, kehre über deine private Statusseite zurück und zahle jederzeit.
+                Der Auftrag wartet. Nichts ist verloren.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild size="sm" className="text-xs">
                   <Link href={getStatusHref(recoveryState.jobId, recoveryState.accessToken)}>
-                    Status mit diesem Auftrag öffnen
+                    Zur Statusseite
                   </Link>
                 </Button>
               </div>
             </div>
           ) : null}
 
-          <div className="btn-row">
-            <Button type="submit" disabled={isPending || !orderingAvailable}>
+          {/* Submit Section */}
+          <div className="space-y-3 pt-2">
+            <Button
+              type="submit"
+              disabled={isPending || !orderingAvailable}
+              size="lg"
+              className="w-full h-12 text-base font-semibold"
+            >
               {!orderingAvailable
-                ? 'Bestellung aktuell pausiert'
+                ? 'Bestellungen sind gerade pausiert'
                 : isPending
-                  ? 'Weiter zum Checkout...'
-                  : 'Weiter zur Bezahlung'}
+                  ? 'Dein Auftrag wird gespeichert...'
+                  : 'Zum Bezahlen'}
             </Button>
-            <Button asChild variant="secondary">
-              <Link href="/status">Bestehende Bestellung ansehen</Link>
+            <Button
+              asChild
+              variant="secondary"
+              size="lg"
+              className="w-full h-12 text-base"
+            >
+              <Link href="/status">Bestehende Bestellung öffnen</Link>
             </Button>
           </div>
         </form>
