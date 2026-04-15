@@ -128,9 +128,9 @@ export default function MemoriesPage() {
                   </p>
                 </div>
                 <div className="rounded-[24px] border border-blue-100 bg-blue-50/50 p-4">
-                  <div className="mini-kicker">2. You checkout</div>
+                  <div className="mini-kicker">2. Secure with payment</div>
                   <p className="mb-0 text-sm leading-6 text-slate-700">
-                    You're guided directly to payment. Secure. Clear. No extra steps.
+                    Your order is already saved. Payment completes it. Same link, same order, same path forward.
                   </p>
                 </div>
                 <div className="rounded-[24px] border border-white/70 bg-white p-4">
@@ -141,7 +141,7 @@ export default function MemoriesPage() {
                 </div>
                 <Separator className="bg-blue-100" />
                 <p className="mb-0 text-xs leading-6 text-slate-600">
-                  <strong className="text-slate-700">The guarantee:</strong> One link, forever. Whether you pause before payment or come back after delivery—it's always the same secure path.
+                  <strong className="text-slate-700">The guarantee:</strong> One link, forever. Whether payment is interrupted, paused, or already complete—return anytime using the same link. The order never disappears.
                 </p>
               </CardContent>
             </Card>

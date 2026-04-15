@@ -459,9 +459,10 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
 
           {recoveryState ? (
             <div className="rounded-[24px] border border-blue-200 bg-blue-50/80 px-6 py-5 text-sm leading-6">
-              <strong className="block text-slate-900 mb-2">✓ Dein Auftrag ist gespeichert.</strong>
+              <strong className="block text-slate-900 mb-2">✓ Dein Auftrag ist gespeichert und sicher.</strong>
               <p className="text-slate-700 mb-4">
-                Falls die Bezahlung nicht geladen hat, kannst du dieselbe Bestellung über die Statusseite jederzeit fortsetzen.
+                Falls die Bezahlung unterbrochen wurde, kehre über deine private Statusseite zurück und zahle jederzeit.
+                Der Auftrag wartet. Nichts ist verloren.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="sm" className="text-xs">
@@ -484,8 +485,8 @@ export function MemoriesIntakeForm({ orderingAvailable }: MemoriesIntakeFormProp
               {!orderingAvailable
                 ? 'Bestellungen sind gerade pausiert'
                 : isPending
-                  ? 'Wird vorbereitet...'
-                  : 'Weiter zur Bezahlung'}
+                  ? 'Dein Auftrag wird gespeichert...'
+                  : 'Zum Bezahlen'}
             </Button>
             <Button
               asChild

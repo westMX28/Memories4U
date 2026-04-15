@@ -21,7 +21,7 @@ const steps = [
     step: '03',
     icon: Lock,
     title: 'Secure your order',
-    outcome: 'Checkout. Your private link is created instantly.',
+    outcome: 'Payment is guided. Your link exists already. Everything stays with you.',
   },
   {
     step: '04',
@@ -108,6 +108,26 @@ export default function HowItWorksPage() {
             <div className="pt-4 border-t border-blue-200">
               <p className="text-sm text-slate-600">
                 <strong className="text-slate-800">The promise:</strong> By the time you see the preview, you'll know this gift honors what you shared.
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Checkout Continuity */}
+        <Card className="border-white/70 bg-white/76 p-8">
+          <div className="max-w-2xl mx-auto space-y-5">
+            <div className="space-y-2">
+              <h3 className="font-display text-xl leading-tight text-slate-900">Payment is part of the same order.</h3>
+              <p className="text-base text-slate-700">
+                When you move into payment, you're not starting something new. Your order is already saved. Your private link already exists.
+                Payment is the final step that activates your order—but everything stays connected.
+              </p>
+            </div>
+            <div className="space-y-3 pt-3 border-t border-slate-200">
+              <p className="text-sm font-medium text-slate-900">If payment is interrupted:</p>
+              <p className="text-sm text-slate-700">
+                Your order remains saved in your account-free status page. Use your private link to return and complete payment anytime.
+                No lost data. No starting over. Same order, same link, same path.
               </p>
             </div>
           </div>
