@@ -114,44 +114,50 @@ export default function MemoriesPage() {
 
           {/* Side Information */}
           <div className="space-y-4">
-            {/* What Happens Next */}
+            {/* What Happens After Submit */}
             <Card className="border-white/70 bg-white/76">
               <CardHeader>
-                <Badge className="w-fit accent-chip" variant="secondary">Your access</Badge>
-                <CardTitle className="text-lg">Everything stays private. Everything stays yours.</CardTitle>
+                <Badge className="w-fit accent-chip" variant="secondary">The flow</Badge>
+                <CardTitle className="text-lg">Here's exactly what happens next.</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-[24px] border border-blue-100 bg-blue-50/70 p-4">
-                  <div className="mini-kicker">After you submit & pay</div>
+                  <div className="mini-kicker">1. You submit</div>
                   <p className="mb-0 text-sm leading-6 text-slate-700">
-                    You get a private link immediately. No account, no login. Save it or share it.
+                    Your order is saved instantly. You immediately get a unique private link.
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-blue-100 bg-blue-50/50 p-4">
+                  <div className="mini-kicker">2. You checkout</div>
+                  <p className="mb-0 text-sm leading-6 text-slate-700">
+                    You're guided directly to payment. Secure. Clear. No extra steps.
                   </p>
                 </div>
                 <div className="rounded-[24px] border border-white/70 bg-white p-4">
-                  <div className="mini-kicker">If you need to step away</div>
+                  <div className="mini-kicker">3. You always have access</div>
                   <p className="mb-0 text-sm leading-6 text-slate-700">
-                    Your order is saved. Come back anytime using the same link. No rushing.
+                    The same private link works forever. Track progress, access delivery, see everything. No expiration, no account needed.
                   </p>
                 </div>
                 <Separator className="bg-blue-100" />
                 <p className="mb-0 text-xs leading-6 text-slate-600">
-                  This is designed for your peace of mind. Flexible. Private. Always accessible.
+                  <strong className="text-slate-700">The guarantee:</strong> One link, forever. Whether you pause before payment or come back after delivery—it's always the same secure path.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Reassurance Note */}
+            {/* Trust Guarantee */}
             <Card className="border-white/70 bg-gradient-to-br from-slate-950 to-blue-950 text-white">
               <CardContent className="space-y-4 p-6">
-                <Badge className="border-white/15 bg-white/10 text-white" variant="dark">You&apos;re covered</Badge>
-                <h3 className="font-display text-lg leading-tight">You won&apos;t need to write much.</h3>
+                <Badge className="border-white/15 bg-white/10 text-white" variant="dark">No pressure. No complexity.</Badge>
+                <h3 className="font-display text-lg leading-tight">Simple form. Secure process. Always your link.</h3>
                 <p className="mb-0 text-sm leading-6 text-slate-200">
-                  Just your photos and a sentence or two about the feeling. That&apos;s the input we craft from.
-                  No long descriptions. No overthinking. We listen for emotion, not perfection.
+                  The form is intentionally short. You don't need to write much—just photos and a feeling.
+                  Everything is saved. Everything is private. Nothing disappears.
                 </p>
                 <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-slate-100 font-medium">
                   <Sparkles className="size-4 text-blue-300" />
-                  Designed to be friction-light
+                  Built for peace of mind
                 </div>
               </CardContent>
             </Card>
