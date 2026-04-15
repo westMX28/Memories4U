@@ -28,43 +28,43 @@ const reassuranceNotes = [
 const flowSteps = [
   {
     step: '01',
-    title: 'Share the memory signals',
-    copy: 'Start with one or two photos, the recipient name, and a short note about the moment or tone you want to capture.',
+    title: 'Share your memory',
+    copy: 'Photos, recipient name, and a short note. That\'s all we need.',
   },
   {
     step: '02',
-    title: 'Secure the order',
-    copy: 'The order is created first, then moved into checkout without turning the experience into a long configurator.',
+    title: 'Checkout',
+    copy: 'Quick, simple, and clear. No extra steps.',
   },
   {
     step: '03',
-    title: 'Return through the same private path',
-    copy: 'If payment is interrupted or you want to check progress later, the same private status link remains your way back.',
+    title: 'Your private link',
+    copy: 'Track progress, return anytime. One link, always yours.',
   },
 ];
 
 const promiseCards = [
   {
     icon: Gift,
-    title: 'Designed for the moment that matters',
-    copy: 'A birthday gift should feel thoughtful, not complicated. We built this specifically for capturing and sharing memories.',
+    title: 'Built for birthdays',
+    copy: 'Simple, thoughtful, and designed specifically for memory-based gifts.',
   },
   {
     icon: WandSparkles,
-    title: 'Effortless emotional storytelling',
-    copy: 'Two photos and a memory are all you need. We transform your moments into a polished, premium digital story.',
+    title: 'Minimal input',
+    copy: 'Two photos and a memory. That\'s enough. We do the rest.',
   },
   {
     icon: LockKeyhole,
-    title: 'Your gift stays private',
-    copy: 'Everything stays within a single private path—no account needed, no data collection. Just you, the gift, and the recipient.',
+    title: 'Completely private',
+    copy: 'No account, no tracking, no data. Just your gift, your way.',
   },
 ];
 
 const featureNotes = [
-  'Designed to feel like a premium service, not a tool',
-  'See pricing upfront—no surprises',
-  'Built for warmth and intention, not speed',
+  'Premium and thoughtful',
+  'Pricing upfront, always',
+  'Private and simple',
 ];
 
 const faqItems = [
@@ -94,15 +94,14 @@ export default function HomePage() {
         <div className="container">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:items-center">
             <div className="space-y-8">
-              <div className="space-y-6">
-                <Badge className="w-fit accent-chip">A gift for memories that matter</Badge>
-                <div className="space-y-6">
+              <div className="space-y-5">
+                <Badge className="w-fit accent-chip">Premium birthday gifts</Badge>
+                <div className="space-y-4">
                   <h1 className="h1 max-w-[10ch]">
-                    Turn your favorite memory into a premium birthday gift.
+                    Memories into gifts.
                   </h1>
-                  <p className="lead max-w-[58ch]">
-                    Share a photo and a memory. We'll craft it into a beautiful, personalized birthday story.
-                    Simple, private, and thoughtful.
+                  <p className="lead max-w-[50ch]">
+                    Share a photo and a moment. We craft it into a beautiful, personalized story.
                   </p>
                 </div>
               </div>
@@ -190,7 +189,7 @@ export default function HomePage() {
       <section className="promise-section">
         <div className="container">
           <div className="promise-header">
-            <h2 className="h2">Why choose Memories4U</h2>
+            <h2 className="h2">Why Memories4U</h2>
           </div>
           <div className="promise-grid">
             {promiseCards.map(({ icon: Icon, title, copy }) => (
@@ -214,13 +213,12 @@ export default function HomePage() {
         <div className="container">
           <div className="workflow-header">
             <div className="workflow-header-content">
-              <Badge className="w-fit accent-chip" variant="secondary">How it works</Badge>
-              <h2 className="h2 max-w-[13ch]">
-                A simple, meaningful path to create your gift.
+              <Badge className="w-fit accent-chip" variant="secondary">Process</Badge>
+              <h2 className="h2 max-w-[10ch]">
+                Three steps.
               </h2>
-              <p className="lead max-w-[42ch]">
-                We've designed the entire experience to be thoughtful and intuitive,
-                from your first memory to the final delivery.
+              <p className="lead max-w-[36ch]">
+                From memory to gift, simple and thoughtful.
               </p>
             </div>
           </div>
@@ -247,13 +245,12 @@ export default function HomePage() {
           <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
             <CardContent className="space-y-6 p-6 lg:p-8">
               <div className="space-y-3">
-                <Badge className="w-fit accent-chip" variant="secondary">The experience</Badge>
-                <CardTitle className="max-w-[13ch] text-[clamp(2rem,4vw,3rem)]">
-                  Designed to feel premium, not complicated.
+                <Badge className="w-fit accent-chip" variant="secondary">Design</Badge>
+                <CardTitle className="max-w-[10ch] text-[clamp(1.6rem,3vw,2.2rem)]">
+                  Premium, simple.
                 </CardTitle>
-                <CardDescription className="max-w-[48ch] text-base">
-                  Every detail—from the layout to the language—is crafted to make the gift-giving
-                  experience feel warm, intentional, and special.
+                <CardDescription className="max-w-[40ch] text-sm">
+                  Thoughtfully designed with every detail in mind.
                 </CardDescription>
               </div>
 
@@ -289,32 +286,29 @@ export default function HomePage() {
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_64px_rgba(86,117,166,0.08)]">
             <CardHeader>
-              <Badge className="w-fit accent-chip">Built for trust</Badge>
-              <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
-                Honest about what we do.
+              <Badge className="w-fit accent-chip">Honest</Badge>
+              <CardTitle className="max-w-[12ch] text-[clamp(1.6rem,3vw,2.2rem)]">
+                Clear & straightforward.
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="rounded-[26px] bg-sky-50/75 p-5">
-                <div className="mini-kicker">what's included</div>
-                <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
-                  Birthday-specific design, transparent pricing, a simple briefing form, seamless checkout,
-                  and a private link that's yours from start to finish.
+                <div className="mini-kicker">included</div>
+                <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
+                  Transparent pricing, simple briefing, secure checkout, private link.
                 </p>
               </div>
               <div className="rounded-[26px] bg-white p-5">
-                <div className="mini-kicker">what we don't promise</div>
-                <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
-                  No live preview, no AI writing assistance, no guaranteed turnaround time,
-                  and no account logins needed.
+                <div className="mini-kicker">not included</div>
+                <p className="mb-0 mt-3 text-sm leading-6 text-slate-700">
+                  No preview, no writing assistance, no timelines, no account needed.
                 </p>
               </div>
               <div className="rounded-[30px] bg-slate-950 px-5 py-6 text-white">
                 <div className="flex items-start gap-3">
                   <Mail className="mt-1 size-5 text-sky-300" />
-                  <p className="mb-0 text-sm leading-7 text-slate-200">
-                    We speak like a service, not software. Clear, warm, and focused on making
-                    your gift feel special.
+                  <p className="mb-0 text-sm leading-6 text-slate-200">
+                    Service language, not software. Clear and warm.
                   </p>
                 </div>
               </div>
@@ -328,12 +322,11 @@ export default function HomePage() {
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_70px_rgba(86,117,166,0.08)]">
             <CardHeader>
               <Badge className="w-fit accent-chip" variant="secondary">Pricing</Badge>
-              <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
-                Transparent pricing for a premium gift.
+              <CardTitle className="max-w-[12ch] text-[clamp(1.6rem,3vw,2.4rem)]">
+                Clear pricing.
               </CardTitle>
-              <CardDescription className="max-w-[44ch] text-base">
-                See the investment upfront. No surprises, no hidden fees. Just a clear price for
-                a gift that truly matters.
+              <CardDescription className="max-w-[40ch] text-sm">
+                See the price upfront. No surprises, no hidden fees.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -349,9 +342,8 @@ export default function HomePage() {
                     starting price
                   </span>
                 </div>
-                <p className="mb-0 mt-5 max-w-[38ch] text-sm leading-7 text-slate-200">
-                  One-time investment for a gift that's personal, premium, and meaningful.
-                  No recurring charges.
+                <p className="mb-0 mt-5 max-w-[38ch] text-sm leading-6 text-slate-200">
+                  One-time, no recurring charges.
                 </p>
               </div>
             </CardContent>
@@ -359,8 +351,8 @@ export default function HomePage() {
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_70px_rgba(86,117,166,0.08)]">
             <CardHeader>
-              <Badge className="w-fit accent-chip">Questions</Badge>
-              <CardTitle>Everything you need to know about getting started.</CardTitle>
+              <Badge className="w-fit accent-chip">FAQ</Badge>
+              <CardTitle className="text-[clamp(1.6rem,3vw,2rem)]">Questions answered.</CardTitle>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
@@ -382,13 +374,13 @@ export default function HomePage() {
             <CardContent className="flex flex-col gap-5 p-6 lg:flex-row lg:items-center lg:justify-between lg:p-8">
               <div className="space-y-2">
                 <Badge className="w-fit border-white/15 bg-white/10 text-white" variant="dark">
-                  Let's create your gift
+                  Get started
                 </Badge>
-                <h2 className="font-[family-name:var(--font-display)] text-[clamp(2rem,4vw,3rem)] leading-[1.02]">
-                  Turn a memory into something unforgettable.
+                <h2 className="font-[family-name:var(--font-display)] text-[clamp(1.6rem,3vw,2.6rem)] leading-[1.1]">
+                  Share. We craft.
                 </h2>
-                <p className="max-w-[44ch] text-base leading-7 text-slate-200">
-                  The process is simple. Just share what matters. We'll handle the rest.
+                <p className="max-w-[40ch] text-sm leading-6 text-slate-200">
+                  Simple process. Just share what matters.
                 </p>
               </div>
 
