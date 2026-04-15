@@ -86,97 +86,92 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="hero hero-home">
         <div className="container">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] lg:items-center">
-            <div className="space-y-8">
-              <div className="space-y-5">
-                <Badge className="w-fit accent-chip">Premium birthday gifts</Badge>
-                <div className="space-y-4">
-                  <h1 className="h1 max-w-[11ch]">
-                    Birthdays deserve real gifts.
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)] lg:items-center">
+            <div className="space-y-10">
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <h1 className="h1 max-w-[13ch]">
+                    Turn a memory into a gift.
                   </h1>
-                  <p className="lead max-w-[55ch]">
-                    Share a memory. We create something beautiful. A thoughtful, handcrafted digital gift 
-                    that honors what makes this birthday special.
+                  <p className="text-lg leading-relaxed text-slate-700 max-w-[52ch]">
+                    Upload your favorite photos. Share what they mean to you. We craft a personalized,
+                    handmade story that celebrates this person on their birthday. Premium. Private. Done.
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Button asChild size="lg">
-                  <Link href={orderingAvailable ? '/memories' : '/status'}>
-                    {orderingAvailable ? 'Start creating' : 'Check status'}
-                    <ArrowRight className="size-5" />
+              <div className="flex items-center gap-4 flex-wrap">
+                <Button asChild size="lg" className="px-8 h-12">
+                  <Link href={orderingAvailable ? '/memories' : '/status'} className="text-base font-semibold">
+                    {orderingAvailable ? 'Create your gift' : 'Check order'}
+                    <ArrowRight className="size-5 ml-2" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="secondary">
-                  <Link href="/how-it-works">See how it works</Link>
-                </Button>
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <CheckCircle2 className="size-4 text-blue-600" />
+                  <span>Starting at <strong>$299</strong></span>
+                </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                {trustPoints.map(({ icon: Icon, title }) => (
-                  <div key={title} className="flex items-center gap-2 text-sm text-slate-700">
-                    <Icon className="size-4 text-blue-600 flex-shrink-0" />
-                    <span>{title}</span>
-                  </div>
-                ))}
+              <div className="space-y-4 pt-4 border-t border-slate-200">
+                <p className="text-xs uppercase tracking-widest font-semibold text-blue-700">Why choose us</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {[
+                    { label: 'No account needed', desc: 'Private link, permanent access' },
+                    { label: 'Truly personalized', desc: 'Shaped by your words, your photos' },
+                    { label: 'Handcrafted', desc: 'Not generic, not templated' },
+                    { label: 'Transparent pricing', desc: 'See cost before you decide' }
+                  ].map((item) => (
+                    <div key={item.label} className="text-sm">
+                      <p className="font-semibold text-slate-900">{item.label}</p>
+                      <p className="text-slate-600 text-xs">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Hero Showcase Card */}
-            <Card className="hero-showcase-card">
+            {/* Hero Visual Card */}
+            <Card className="hero-showcase-card h-fit sticky top-20">
               <div className="hero-showcase-glow" />
               <CardContent className="hero-showcase-content">
-                <div className="hero-showcase-header">
-                  <Badge variant="secondary" className="accent-chip">Starting at $299</Badge>
-                  <div className="hero-showcase-label">
-                    One beautiful gift
-                  </div>
+                <div className="relative w-full overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-900 to-blue-950 aspect-square flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent" />
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets%2Ff3b9c9acc55f45cfb82a19e78ec506ff%2F443ebb909efb4130bffe3cf94f6ed157?format=webp&width=800&height=1200"
+                    alt="Two people celebrating together while enjoying a gift"
+                    className="w-full h-full object-cover rounded-[28px]"
+                  />
+                  <div className="absolute inset-0 rounded-[28px] bg-gradient-to-t from-slate-950/40 via-transparent to-transparent" />
                 </div>
 
-                <div className="hero-showcase-preview">
-                  <p className="hero-showcase-subtitle">
-                    Sample birthday gift
-                  </p>
-                  <h2 className="hero-showcase-title">
-                    For the person who made the ordinary moments feel like home.
-                  </h2>
-                  <p className="hero-showcase-description">
-                    A handcrafted digital story shaped around your photos, your tone, and the feelings 
-                    you want to celebrate.
-                  </p>
-                </div>
-
-                <div className="hero-showcase-grid">
-                  <div className="hero-showcase-detail">
-                    <div className="mini-kicker">You provide</div>
-                    <div className="hero-showcase-bullets">
-                      <div className="hero-showcase-bullet">
-                        <span className="hero-showcase-dot" />
-                        <span>One or two meaningful photos</span>
-                      </div>
-                      <div className="hero-showcase-bullet">
-                        <span className="hero-showcase-dot" />
-                        <span>Recipient&apos;s name and your email</span>
-                      </div>
-                      <div className="hero-showcase-bullet">
-                        <span className="hero-showcase-dot" />
-                        <span>A short memory or feeling to capture</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="hero-showcase-price">
-                    <div className="hero-showcase-price-label">
-                      Starting price
-                    </div>
-                    <div className="hero-showcase-price-value">
-                      <span className="hero-showcase-price-amount">299</span>
-                      <span className="hero-showcase-price-currency">$</span>
-                    </div>
-                    <p className="hero-showcase-price-note">
-                      Clear, upfront pricing. No hidden fees or surprises.
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-widest font-semibold text-blue-400 mb-2">The result</p>
+                    <h2 className="text-2xl font-display leading-tight text-white mb-3">
+                      A celebration of the moments that matter.
+                    </h2>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      A premium digital gift shaped around your photos and memories. Ready to download and celebrate.
                     </p>
+                  </div>
+
+                  <div className="rounded-[20px] bg-white/10 border border-white/20 p-4 backdrop-blur-sm">
+                    <div className="text-xs uppercase tracking-widest text-blue-200 font-semibold mb-2">Simple process</div>
+                    <ul className="space-y-2 text-sm text-slate-200">
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 flex-shrink-0">→</span>
+                        <span>Upload 1-2 photos & brief memory</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 flex-shrink-0">→</span>
+                        <span>See price, checkout, get link</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 flex-shrink-0">→</span>
+                        <span>Download when ready, share the joy</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </CardContent>
