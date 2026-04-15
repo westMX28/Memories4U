@@ -60,68 +60,68 @@ type ActionPanel = {
 
 const statusContent: Record<MemoryStatus, StatusContent> = {
   created: {
-    badge: 'Zahlung offen',
-    title: 'Dein Auftrag ist gespeichert, aber die Zahlung ist noch offen.',
-    detail: 'Deine Auftragsdaten sind sicher gespeichert. Die Produktion startet, sobald die Zahlung abgeschlossen ist.',
-    nextStepTitle: 'Schließe die Zahlung ab, wenn du bereit bist.',
-    nextStepDetail: 'Öffne den Checkout erneut, um mit genau diesem Auftrag weiterzumachen. Du musst nicht neu beginnen.',
-    infoNote: 'Dein privater Link bleibt gültig, solange die Zahlung noch offen ist.',
+    badge: 'Zahlung erforderlich',
+    title: 'Dein Auftrag ist gespeichert. Zahlung vollendet es.',
+    detail: 'Alles, was du erzählt hast, ist sicher hier. Wenn du bereit bist zu zahlen, wird deine Story sofort in Produktion gehen.',
+    nextStepTitle: 'Zahlung abschließen.',
+    nextStepDetail: 'Kehre zum Checkout zurück und bezahle mit diesem privaten Link. Dein Auftrag wartet genau dort, wo du ihn verlassen hast.',
+    infoNote: 'Dieser Link bleibt gültig, bis du die Zahlung abschließt.',
   },
   unlocked: {
-    badge: 'Vorbereitung',
-    title: 'Dein Auftrag ist bezahlt und wird vorbereitet.',
-    detail: 'Die Zahlung ist bestätigt, und der Auftrag geht jetzt in die Produktion über.',
-    nextStepTitle: 'Im Moment brauchst du nichts weiter zu tun.',
-    nextStepDetail: 'Wir haben alles, was wir brauchen, und halten diese Seite aktuell, während der Auftrag weiterläuft.',
-    infoNote: 'Die Zahlung wurde erfolgreich bestätigt, und die Produktion kann normal weitergehen.',
+    badge: 'Zahlung bestätigt',
+    title: 'Bezahlt. Deine Story wird jetzt erstellt.',
+    detail: 'Die Zahlung ist erfolgreich, und dein Auftrag ist jetzt in Produktion.',
+    nextStepTitle: 'Vertrau dem Prozess.',
+    nextStepDetail: 'Diese Seite wird sich von selbst aktualisieren, während deine Story entsteht. Du musst nichts weiter tun—nur hierher zurückkehren, um Fortschritt zu sehen.',
+    infoNote: 'Dein privater Link bleibt dein permanenter Zugang.',
   },
   queued: {
-    badge: 'In Warteschlange',
-    title: 'Dein Auftrag steht in der Warteschlange.',
-    detail: 'Alles Nötige für die Story ist vorhanden. Jetzt wartet der Auftrag auf seinen Produktionsslot.',
-    nextStepTitle: 'Im Moment brauchst du nichts weiter zu tun.',
-    nextStepDetail: 'Diese Seite aktualisiert sich, solange der Auftrag noch unterwegs ist.',
-    infoNote: 'Dein Auftrag wartet auf die Erstellung der Story.',
+    badge: 'In der Warteschlange',
+    title: 'Dein Auftrag steht in der Schlange. Er wird bald bearbeitet.',
+    detail: 'Alle deine Bilder und Notizen sind da. Jetzt wartet dein Auftrag auf seinen Produktionsslot.',
+    nextStepTitle: 'Es geht weiter. Komm einfach bald wieder vorbei.',
+    nextStepDetail: 'Diese Seite zeigt dir den Moment, in dem deine Story in Produktion geht. Lesezeichen speichern, um zurückzukommen.',
+    infoNote: 'Die Story-Erstellung beginnt bald. Diese Seite aktualisiert sich laufend.',
   },
   processing: {
-    badge: 'In Arbeit',
-    title: 'Deine Story wird gerade erstellt.',
-    detail: 'Die Story befindet sich aktiv in der Produktion. Diese Seite aktualisiert sich weiter, solange daran gearbeitet wird.',
-    nextStepTitle: 'Im Moment brauchst du nichts weiter zu tun.',
-    nextStepDetail: 'Du kannst jederzeit hierher zurückkehren, während die Story entsteht.',
-    infoNote: 'Der Auftrag befindet sich aktiv in der Produktion.',
+    badge: 'In Erstellung',
+    title: 'Deine Story entsteht gerade jetzt.',
+    detail: 'Aktiv in Produktion. Diese Seite aktualisiert sich von allein, während wir daran arbeiten.',
+    nextStepTitle: 'Schau vorbei und verfolge den Fortschritt.',
+    nextStepDetail: 'Die Seite wird sich aktualisieren, während die Story entsteht. Kein Grund, ständig zu refreshen—wir kümmern uns um den Rest.',
+    infoNote: 'Die Story wird gerade aktiv erstellt.',
   },
   preview_ready: {
-    badge: 'Finalisierung',
-    title: 'Dein Auftrag ist auf der Zielgeraden.',
-    detail: 'Die Story ist fast fertig, und die finale Version wird gerade vorbereitet.',
-    nextStepTitle: 'Wenn eine Vorschau erzeugt wurde, ist sie hier bereits verfügbar.',
-    nextStepDetail: 'Du kannst die aktuelle Vorschau unten ansehen, falls sie vorhanden ist. Die finale Zustellung ist noch nicht abgeschlossen.',
-    infoNote: 'Der Auftrag ist fast bereit, aber die finale Zustellung ist noch nicht erfolgt.',
+    badge: 'Fast fertig',
+    title: 'Deine Story nimmt Form an. Eine Vorschau wartet.',
+    detail: 'Die Story ist unterwegs zur Finalisierung. Wenn eine Vorschau verfügbar ist, kannst du sie hier schon sehen.',
+    nextStepTitle: 'Schau dir die Vorschau an, wenn sie verfügbar ist.',
+    nextStepDetail: 'Die Vorschau gibt dir das Gefühl, dass es funktioniert. Die finale Version wird gleich danach folgen.',
+    infoNote: 'Wenn eine Vorschau verfügbar ist, wird sie unten angezeigt.',
   },
   completed: {
-    badge: 'Bereit',
-    title: 'Deine finale Story ist bereit.',
-    detail: 'Die fertige Story kann schon verfügbar sein, bevor eine Zustellbestätigung erfasst wurde.',
-    nextStepTitle: 'Der finale Zugriff erscheint hier, sobald der Asset-Link vorliegt.',
-    nextStepDetail: 'Direkter Zugriff und E-Mail-Zustellung werden getrennt erfasst, daher kann diese Seite das finale Asset schon zeigen, bevor ein Zustellereignis erscheint.',
-    infoNote: 'Das finale Asset ist bereit, auch wenn die Zustellbestätigung noch nicht verbucht wurde.',
+    badge: 'Fertig',
+    title: 'Deine Story ist fertig.',
+    detail: 'Das finale Asset ist bereit. Es wartet auf dieser privaten Seite auf dich.',
+    nextStepTitle: 'Dein Asset ist bereit zum Herunterladen oder Anschauen.',
+    nextStepDetail: 'Du kannst es jederzeit von hier aus abrufen. Kein Durchsuchen von E-Mails nötig—es bleibt hier, privat und zugänglich.',
+    infoNote: 'Das finale Asset wird unten angezeigt und bleibt über diesen Link verfügbar.',
   },
   delivered: {
     badge: 'Zugestellt',
-    title: 'Deine finale Story wurde zugestellt.',
-    detail: 'Die Zustellung ist erfasst, und das finale Asset bleibt über diese private Seite erreichbar.',
-    nextStepTitle: 'Nutze den finalen Asset-Link unten, sobald er verfügbar ist.',
-    nextStepDetail: 'Wenn nötig, kannst du hier direkt auf das Asset zugreifen, statt dein Postfach zu durchsuchen.',
-    infoNote: 'Die Zustellung wurde für das hinterlegte Ziel erfasst.',
+    title: 'Deine Story ist zugestellt. Sie bleibt hier bei dir.',
+    detail: 'Die Zustellung ist erfasst. Das finale Asset bleibt über diese private Seite erreichbar.',
+    nextStepTitle: 'Nutze das Asset hier oben oder über deine E-Mail.',
+    nextStepDetail: 'Egal wie du es brauchst—hier auf dieser Seite oder in deiner E-Mail. Es gibt mehrere Wege, es zu bekommen.',
+    infoNote: 'Das finale Asset ist verfügbar und bleibt auf dieser Seite erreichbar.',
   },
   failed: {
-    badge: 'Braucht Aufmerksamkeit',
-    title: 'Dein Auftrag braucht Aufmerksamkeit.',
-    detail: 'Etwas hat die Produktion unterbrochen. Bitte lege keinen doppelten Auftrag an, während wir das prüfen.',
-    nextStepTitle: 'Bewahre diesen privaten Statuslink auf und warte auf die Prüfung des Auftrags.',
-    nextStepDetail: 'Wenn sich dieser Status längere Zeit nicht ändert, nutze diesen privaten Link für den Support statt neu zu bestellen.',
-    infoNote: 'Der Auftrag ist zur Prüfung pausiert. Ein doppelter Auftrag würde Verwirrung schaffen, nicht Tempo.',
+    badge: 'Benötigt Unterstützung',
+    title: 'Etwas in der Produktion braucht Aufmerksamkeit.',
+    detail: 'Bitte lege keinen neuen Auftrag an. Wir schauen uns das an.',
+    nextStepTitle: 'Behalte diesen Link. Er ist dein Zugang für den Support.',
+    nextStepDetail: 'Nutze diesen privaten Link, wenn du mit uns Kontakt aufnimmst. So können wir deinen Auftrag genau sehen und helfen.',
+    infoNote: 'Dein Auftrag wartet auf Prüfung. Dieser Link bleibt dein Kanal zum Team.',
   },
 };
 
@@ -176,40 +176,42 @@ function getStoredJobEmail(jobId: string) {
 
 function getStageDescription(stage: StageDefinition, result: MemoryStatusResponse) {
   switch (stage.title) {
+    case 'Auftrag gespeichert':
+      return 'Deine Erinnerungen und Gedanken sind gespeichert. Sie warten hier, privat und sicher.';
     case 'Bezahlt und freigegeben':
       return result.unlocked
-        ? 'Die Zahlung ist bestätigt und der Auftrag kann weiterlaufen.'
-        : 'Die Zahlung ist noch offen, daher hat die Produktion noch nicht begonnen.';
+        ? 'Zahlung erfolgreich. Die Story ist jetzt in Produktion.'
+        : 'Zahlung ausstehend. Sobald bezahlt, geht alles in Produktion.';
     case 'Story-Erstellung':
       if (result.status === 'queued') {
-        return 'Der Auftrag wartet in der Produktionsschlange.';
+        return 'Dein Auftrag wartet auf seinen Produktionsslot. Es geht bald los.';
       }
 
       if (result.status === 'processing') {
-        return 'Die Story wird gerade aktiv erstellt.';
+        return 'Die Story wird gerade erstellt. Sie nimmt Gestalt an.';
       }
 
       if (result.status === 'preview_ready') {
-        return 'Die Erstellung ist fast abgeschlossen, und der Auftrag wird finalisiert.';
+        return 'Fast fertig. Die Vorschau ist verfügbar, die finale Version kommt in Kürze.';
       }
 
       if (result.status === 'failed') {
-        return 'Die Produktion wurde unterbrochen und wartet auf Prüfung.';
+        return 'Etwas braucht Aufmerksamkeit. Wir schauen uns das an.';
       }
 
       return stage.description;
     case 'Bereit und zugestellt':
       if (result.status === 'completed') {
-        return 'Die finale Story ist bereit, auch wenn die Zustellbestätigung noch aussteht.';
+        return 'Die Story ist bereit. Sie wartet auf dieser privaten Seite auf dich.';
       }
 
       if (result.status === 'delivered') {
         return result.delivery
-          ? `Die Zustellung wurde an ${result.delivery.recipient} erfasst.`
-          : 'Die Zustellung wurde für diesen Auftrag erfasst.';
+          ? `Zugestellt an ${result.delivery.recipient}. Auch hier verfügbar.`
+          : 'Zugestellt. Die Story bleibt auf dieser privaten Seite erreichbar.';
       }
 
-      return 'Diese Phase wird erst erreicht, wenn die finale Story bereit ist.';
+      return 'Diese Phase wird erreicht, sobald die Story fertig ist.';
     default:
       return stage.description;
   }
@@ -223,10 +225,10 @@ function getActionPanel(
 
   if (result.status === 'created') {
     return {
-      badge: 'Aktion verfügbar',
-      title: content.nextStepTitle,
-      detail: content.nextStepDetail,
-      primaryLabel: 'Checkout fortsetzen',
+      badge: 'Zahlung erforderlich',
+      title: 'Zahle jetzt, um deine Story zu starten.',
+      detail: 'Dein Auftrag ist gespeichert und wartet. Die Zahlung beginnt die Produktion sofort.',
+      primaryLabel: 'Zum Zahlen',
       primaryOnClick: onCheckout,
       primaryIcon: CreditCard,
     };
@@ -234,10 +236,10 @@ function getActionPanel(
 
   if (result.status === 'preview_ready' && result.previewAsset) {
     return {
-      badge: 'Vorschau verfügbar',
-      title: 'Eine Vorschau ist bereits verfügbar.',
-      detail: 'Du kannst die Vorschau jetzt ansehen, während die finale Version noch vorbereitet wird.',
-      primaryLabel: 'Vorschau öffnen',
+      badge: 'Vorschau bereit',
+      title: 'Deine Story nimmt Gestalt an. Schau dir die Vorschau an.',
+      detail: 'Die Vorschau ist verfügbar, während die finale Version finalisiert wird. Das sollte bald folgen.',
+      primaryLabel: 'Vorschau ansehen',
       primaryHref: result.previewAsset.url,
       primaryIcon: Eye,
     };
@@ -245,17 +247,17 @@ function getActionPanel(
 
   if ((result.status === 'completed' || result.status === 'delivered') && result.finalAsset) {
     return {
-      badge: result.status === 'delivered' ? 'zugestelltes Asset' : 'finales Asset bereit',
-      title: content.nextStepTitle,
+      badge: result.status === 'delivered' ? 'Zugestellt' : 'Fertig',
+      title: 'Deine Story ist bereit.',
       detail:
         result.status === 'delivered' && result.delivery
-          ? `Die Zustellung wurde an ${result.delivery.recipient} erfasst. Du kannst die finale Story hier weiterhin direkt öffnen oder herunterladen.`
-          : content.nextStepDetail,
-      primaryLabel: 'Finale Story herunterladen',
+          ? `Zugestellt an ${result.delivery.recipient}. Nutze den Link unten, um deine Story jederzeit zu öffnen oder herunterzuladen.`
+          : 'Die finale Story ist bereit zum Herunterladen oder Anschauen.',
+      primaryLabel: 'Herunterladen',
       primaryHref: result.finalAsset.url,
       primaryDownload: true,
       primaryIcon: ArrowDownToLine,
-      secondaryLabel: 'Finale Story öffnen',
+      secondaryLabel: 'Öffnen',
       secondaryHref: result.finalAsset.url,
       secondaryDownload: false,
       secondaryIcon: ExternalLink,
@@ -460,43 +462,43 @@ export function StatusLookup({
     <div className="stack">
       <Card className="border-white/90 bg-white/82">
         <CardHeader className="space-y-4">
-          <Badge className="w-fit accent-chip">Statuszugriff</Badge>
+          <Badge className="w-fit accent-chip">Dein privater Raum</Badge>
           <div className="space-y-2">
             <CardTitle className="max-w-[16ch] text-[clamp(2rem,4vw,3rem)]">
-              Privaten Auftrag wieder öffnen, ohne neu zu beginnen.
+              Kehre zu deinem Auftrag zurück, ohne neu zu beginnen.
             </CardTitle>
             <CardDescription className="max-w-[48ch] text-base">
-              Gib Auftrags-ID und Zugriffstoken aus deiner ursprünglichen Bestätigung ein, um Zahlung, Fortschritt und Asset-Verfügbarkeit an einem Ort zu sehen.
+              Nutze deine Auftrags-ID und dein Zugriffstoken, um alles zu sehen: Zahlung, Fortschritt, Assets. Alles an einem Ort.
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {checkoutCancelled ? (
             <div className="rounded-[24px] border border-amber-200 bg-amber-50/90 px-5 py-4 text-sm leading-7 text-amber-950">
-              Der Checkout wurde nicht abgeschlossen. Dein Auftrag ist hier weiterhin gespeichert und kann ohne neue Bestellung fortgesetzt werden.
+              Der Checkout wurde nicht abgeschlossen. Dein Auftrag wartet noch. Zahle jetzt ab, um ihn zu vollenden.
             </div>
           ) : null}
 
           <form className="intake-form" onSubmit={handleSubmit}>
             <div className="form-grid">
               <label className="field">
-                <span>Private Auftrags-ID</span>
+                <span>Deine Auftrags-ID</span>
                 <Input
                   required
                   value={jobId}
                   onChange={(event) => setJobId(event.target.value)}
-                  placeholder="uuid..."
+                  placeholder="z.B. a1b2c3d4..."
                 />
               </label>
 
               <label className="field">
-                <span>Privates Zugriffstoken</span>
+                <span>Dein Zugriffstoken</span>
                 <Input
                   type="password"
                   required
                   value={accessToken}
                   onChange={(event) => setAccessToken(event.target.value)}
-                  placeholder="token..."
+                  placeholder="aus deiner Bestätigung..."
                 />
               </label>
             </div>
@@ -524,15 +526,15 @@ export function StatusLookup({
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-[24px] border border-sky-100 bg-sky-50/70 p-4 text-sm leading-6 text-slate-700">
               <ShieldCheck className="mb-3 size-4 text-sky-700" />
-              nur private Zugangsdaten
+              Nur dein Link. Keine Konten.
             </div>
             <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700">
               <Clock3 className="mb-3 size-4 text-sky-700" />
-              automatische Aktualisierung während des Auftrags
+              Aktualisiert sich von selbst alle 10 Sekunden
             </div>
             <div className="rounded-[24px] border border-sky-100 bg-white p-4 text-sm leading-6 text-slate-700 accent-chip">
               <CreditCard className="mb-3 size-4 text-sky-700" />
-              Checkout-Wiedereinstieg nur bei offener Zahlung
+              Zahlung fortsetzen, wenn nötig
             </div>
           </div>
         </CardContent>
@@ -542,9 +544,9 @@ export function StatusLookup({
         <Card className="recent-jobs-card border-white/90 bg-white/82">
           <CardHeader>
             <Badge className="w-fit" variant="secondary">
-              letzte Aufträge
+              Deine Aufträge
             </Badge>
-            <CardTitle>Kürzlich genutzten privaten Auftrag direkt öffnen.</CardTitle>
+            <CardTitle>Komm schnell zu einem früheren Auftrag zurück.</CardTitle>
           </CardHeader>
           <CardContent className="recent-jobs-list">
             {recentJobs.map((recentJob) => (
@@ -570,7 +572,7 @@ export function StatusLookup({
           <CardContent className="space-y-6 p-6 sm:p-8">
             <div className="status-detail-head">
               <div>
-                <div className="eyebrow">aktueller Status</div>
+                <div className="eyebrow">Hier steht dein Auftrag</div>
                 <h3>{activeStatus?.title}</h3>
                 <p className="copy">{activeStatus?.detail}</p>
               </div>
@@ -580,7 +582,7 @@ export function StatusLookup({
             </div>
 
             <div className="space-y-3">
-                <div className="eyebrow">Fortschritt</div>
+                <div className="eyebrow">Dein Weg durch den Prozess</div>
               <div className="grid gap-4 lg:grid-cols-2">
                 {statusStages.map((stage) => {
                   const active = stage.matches.includes(result.status);
@@ -618,7 +620,7 @@ export function StatusLookup({
               <Card className="inset-card">
                 <CardHeader>
                   <Badge className="w-fit" variant="secondary">
-                    {actionPanel ? actionPanel.badge : 'Nächster Schritt'}
+                    {actionPanel ? actionPanel.badge : 'Was jetzt?'}
                   </Badge>
                   <CardTitle>
                     {actionPanel ? actionPanel.title : activeStatus?.nextStepTitle}
@@ -664,7 +666,7 @@ export function StatusLookup({
 
             {previewAssetVisible || finalAssetVisible ? (
               <div className="space-y-3">
-                <div className="eyebrow">Sichtbare Assets</div>
+                <div className="eyebrow">Deine Story</div>
                 <div className="grid gap-4 lg:grid-cols-2">
                   {previewAssetVisible ? (
                     <MemoryAssetPreview asset={result.previewAsset!} variant="preview" />

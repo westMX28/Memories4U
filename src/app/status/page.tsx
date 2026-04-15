@@ -22,19 +22,18 @@ export default async function StatusPage({
         <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
           <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
             <div className="space-y-6">
-              <Badge className="w-fit accent-chip">Private order tracking</Badge>
+              <Badge className="w-fit accent-chip">Dein privater Auftragsraum</Badge>
               <div className="space-y-4">
-                <h1 className="h2 max-w-[12ch]">Your order, always with you.</h1>
+                <h1 className="h2 max-w-[14ch]">Dein Auftrag. Dein Raum. Dein Weg.</h1>
                 <p className="lead max-w-[60ch]">
-                  A calm place to track progress, continue checkout if needed, or download your 
-                  gift when it&apos;s ready. One private link, always secure.
+                  Ein ruhiger Ort zum Verfolgen des Fortschritts, zum Bezahlen, wenn du bereit bist, oder zum Herunterladen deiner Story. Alles über einen privaten Link. Für immer.
                 </p>
               </div>
 
               {checkoutCancelled ? (
                 <div className="rounded-[24px] border border-amber-200 bg-amber-50/90 px-6 py-4 text-sm leading-7 text-amber-900">
-                  <p className="mb-0 font-semibold">Checkout was interrupted.</p>
-                  <p className="mb-0 mt-1">Your order is saved and ready to complete. You can resume payment below.</p>
+                  <p className="mb-0 font-semibold">Der Checkout wurde unterbrochen.</p>
+                  <p className="mb-0 mt-1">Dein Auftrag wartet. Zahle unten ab, um ihn zu vollenden.</p>
                 </div>
               ) : null}
             </div>
@@ -43,10 +42,10 @@ export default async function StatusPage({
             <div className="grid gap-4">
               <Card className="border-white/70 bg-white/80 shadow-lg">
                 <CardHeader>
-                  <Badge className="w-fit accent-chip" variant="secondary">How this works</Badge>
-                  <CardTitle className="text-lg">No account. No login. Just your link.</CardTitle>
+                  <Badge className="w-fit accent-chip" variant="secondary">Wie das funktioniert</Badge>
+                  <CardTitle className="text-lg">Kein Konto. Kein Login. Nur dein Link.</CardTitle>
                   <CardDescription className="text-sm">
-                    Keep this page bookmarked. Share it if you need to. It stays yours forever.
+                    Speichere diese Seite. Teile sie, wenn nötig. Sie bleibt für immer dein.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -57,9 +56,9 @@ export default async function StatusPage({
                     <Lock className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base leading-tight font-semibold">Secure access</h3>
+                    <h3 className="font-display text-base leading-tight font-semibold">Privat und sicher</h3>
                     <p className="text-sm text-slate-600 mb-0 mt-1">
-                      Your order ID and token ensure privacy without requiring an account.
+                      Deine Auftrags-ID und dein Token sind dein Zugang. Keine Datenverfolgung.
                     </p>
                   </div>
                 </CardContent>
@@ -71,9 +70,9 @@ export default async function StatusPage({
                     <RefreshCcw className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base leading-tight font-semibold">Live updates</h3>
+                    <h3 className="font-display text-base leading-tight font-semibold">Echtzeit-Aktualisierungen</h3>
                     <p className="text-sm text-slate-600 mb-0 mt-1">
-                      Real-time progress tracking while your gift is being created.
+                      Diese Seite zeigt dir den Fortschritt live, während deine Story entsteht.
                     </p>
                   </div>
                 </CardContent>
@@ -85,9 +84,9 @@ export default async function StatusPage({
                     <Zap className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base leading-tight font-semibold">Quick resume</h3>
+                    <h3 className="font-display text-base leading-tight font-semibold">Jederzeit fortfahren</h3>
                     <p className="text-sm text-slate-600 mb-0 mt-1">
-                      If checkout was interrupted, you can complete payment right here.
+                      Zahlung unterbrochen? Kehre mit diesem Link zurück, wenn du bereit bist.
                     </p>
                   </div>
                 </CardContent>
@@ -107,11 +106,10 @@ export default async function StatusPage({
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="border-white/70 bg-white/76">
             <CardHeader>
-              <Badge className="w-fit accent-chip" variant="secondary">Transparency</Badge>
-              <CardTitle>Real status, honestly reported.</CardTitle>
+              <Badge className="w-fit accent-chip" variant="secondary">Ehrlichkeit</Badge>
+              <CardTitle>Status, wie er ist.</CardTitle>
               <CardDescription>
-                We don&apos;t invent progress states. What you see reflects your order&apos;s actual stage: 
-                saved, paid, in creation, or delivered.
+                Keine erfundenen Fortschrittsstufen. Was du siehst, ist echt: gespeichert, bezahlt, in Erstellung, zugestellt. Nichts mehr, nichts weniger.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -119,19 +117,19 @@ export default async function StatusPage({
           <Card className="border-white/70 bg-white/76">
             <CardContent className="flex h-full flex-col justify-between gap-6 p-8">
               <div>
-                <div className="mini-kicker">Next steps</div>
+                <div className="mini-kicker">Nächste Schritte</div>
                 <p className="text-sm leading-7 text-slate-700 mt-2">
-                  Start a new gift order or return to explore more. Your current order status remains secure and always accessible.
+                  Ein weiteres Geschenk bestellen oder nach Hause zurückkehren. Dein aktueller Auftrag bleibt sicher und immer erreichbar.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="sm">
                   <Link href="/memories">
-                    {orderingAvailable ? 'New order' : 'Pause notice'}
+                    {orderingAvailable ? 'Neuen Auftrag erstellen' : 'Bestellungen pausiert'}
                   </Link>
                 </Button>
                 <Button asChild variant="secondary" size="sm">
-                  <Link href="/">Home</Link>
+                  <Link href="/">Startseite</Link>
                 </Button>
               </div>
             </CardContent>
