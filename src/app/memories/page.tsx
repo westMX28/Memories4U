@@ -8,26 +8,26 @@ import { Separator } from '@/components/ui/separator';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
 const whatYouNeed = [
-  'One or two photos (PNG or JPG—any size)',
-  'Their name and your email (so we know who and where)',
-  'A sentence or two about the feeling (that\'s enough)',
+  'One or two photos of them',
+  'Their name and where to send your private link',
+  'A brief note about what makes them special',
 ];
 
 const nextSteps = [
   {
     icon: Images,
-    title: 'We listen, not judge',
-    description: 'Your photos and feelings shape the whole thing. No perfectionism required.',
+    title: 'We actually read what you send',
+    description: 'Your photos and story become the whole gift. No templates, no preset layouts.',
   },
   {
     icon: CreditCard,
-    title: 'One price, no surprises',
-    description: '$299, all-in. See the price before you checkout. Nothing hidden.',
+    title: 'Clear price from the start',
+    description: '$299. Final price. You see it before you pay, and you can leave if you want.',
   },
   {
     icon: LockKeyhole,
-    title: 'Your private link forever',
-    description: 'Download anytime. No account login. It\'s yours to keep and share.',
+    title: 'Your link, your control',
+    description: 'Download whenever. Share it, keep it, come back to it. No expiration, no login required.',
   },
 ];
 
@@ -43,10 +43,9 @@ export default function MemoriesPage() {
             <div className="space-y-6">
               <Badge className="w-fit accent-chip">Create your gift</Badge>
               <div className="space-y-4">
-                <h1 className="h2 max-w-[12ch]">Just share what matters.</h1>
+                <h1 className="h2 max-w-[12ch]">Quick and honest.</h1>
                 <p className="lead max-w-[60ch]">
-                  Two photos. A name. A feeling. That's genuinely all we need. No long forms, no complex descriptions.
-                  You won't need to write a lot.
+                  Photos. Their name. A memory or feeling. That's everything we need to create something thoughtful. No long forms, no complex questions.
                 </p>
               </div>
 

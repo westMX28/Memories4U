@@ -8,26 +8,26 @@ const steps = [
   {
     step: '01',
     icon: Upload,
-    title: 'Share what you love',
-    outcome: 'Your photos and feelings become the foundation.',
+    title: 'Share your moment',
+    outcome: 'Photos, their name, a feeling. That becomes the whole gift.',
   },
   {
     step: '02',
     icon: Eye,
-    title: 'See the price',
-    outcome: '$299. One-time cost. Everything included.',
+    title: 'Confirm the price',
+    outcome: '$299. You see it all before paying. No surprises.',
   },
   {
     step: '03',
     icon: Lock,
-    title: 'Secure your order',
-    outcome: 'Payment is guided. Your link exists already. Everything stays with you.',
+    title: 'Your order is saved',
+    outcome: 'Checkout is next. Your link exists now. Everything stays private and safe.',
   },
   {
     step: '04',
     icon: CheckCircle2,
-    title: 'Get your gift',
-    outcome: 'Track progress. Download when ready. Share the joy.',
+    title: 'Receive and enjoy',
+    outcome: 'Track your order. Download when ready. Share or keep it private.',
   },
 ];
 
@@ -39,9 +39,9 @@ export default function HowItWorksPage() {
         <div className="space-y-8 text-center max-w-3xl mx-auto">
           <Badge className="w-fit accent-chip mx-auto">How it works</Badge>
           <div className="space-y-4">
-            <h1 className="h2">Four moments. One gift.</h1>
+            <h1 className="h2">Four steps. Total clarity.</h1>
             <p className="lead max-w-[60ch] mx-auto">
-              Simple, clear, and designed so you feel confident at every step. No surprises. No complexity.
+              No hidden processes. No technical confusion. Just straightforward steps that get you from moment to gift.
             </p>
           </div>
         </div>
@@ -70,14 +70,13 @@ export default function HowItWorksPage() {
         <Card className="card-soft p-8 lg:p-10 bg-gradient-to-br from-blue-50/90 to-blue-50/70">
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="space-y-3">
-              <Badge className="accent-chip">Before the final delivery</Badge>
+              <Badge className="accent-chip">Mid-creation</Badge>
               <h2 className="font-display text-2xl leading-tight text-slate-900">
-                You'll see the direction taking shape.
+                You get to see it coming together.
               </h2>
             </div>
             <p className="text-base leading-relaxed text-slate-700 max-w-2xl">
-              Between your order and final delivery, you get a preview moment. Not a rough draft. Not a proof of concept.
-              A carefully crafted glimpse that shows you the emotional tone, the visual direction, and the overall feeling of the gift.
+              Before the final version, you get a preview. Not a rough draft. A polished glimpse that shows you how the story is being told, the mood we're capturing, and whether it feels right.
             </p>
             <div className="grid gap-4 sm:grid-cols-2 mt-6">
               <div className="space-y-2">

@@ -22,18 +22,18 @@ export default async function StatusPage({
         <Card className="overflow-hidden card-hero">
           <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
             <div className="space-y-6">
-              <Badge className="w-fit accent-chip">Dein privater Auftragsraum</Badge>
+              <Badge className="w-fit accent-chip">Your private order space</Badge>
               <div className="space-y-4">
-                <h1 className="h2 max-w-[14ch]">Dein Auftrag. Dein Raum. Dein Weg.</h1>
+                <h1 className="h2 max-w-[14ch]">Your order. Your control. Your link.</h1>
                 <p className="lead max-w-[60ch]">
-                  Ein ruhiger Ort zum Verfolgen des Fortschritts, zum Bezahlen, wenn du bereit bist, oder zum Herunterladen deiner Story. Alles über einen privaten Link. Für immer.
+                  A calm place to track progress, complete payment if needed, or download your gift. Everything through one private link. Permanently.
                 </p>
               </div>
 
               {checkoutCancelled ? (
                 <div className="rounded-[24px] border border-amber-200 bg-amber-50/90 px-6 py-4 text-sm leading-7 text-amber-900">
-                  <p className="mb-0 font-semibold">Der Checkout wurde unterbrochen.</p>
-                  <p className="mb-0 mt-1">Dein Auftrag wartet. Zahle unten ab, um ihn zu vollenden.</p>
+                  <p className="mb-0 font-semibold">Payment was interrupted.</p>
+                  <p className="mb-0 mt-1">Your gift is waiting. Complete payment below to finish your order.</p>
                 </div>
               ) : null}
             </div>
@@ -42,10 +42,10 @@ export default async function StatusPage({
             <div className="grid gap-4">
               <Card className="card-neutral">
                 <CardHeader>
-                  <Badge className="w-fit accent-chip" variant="secondary">Wie das funktioniert</Badge>
-                  <CardTitle className="text-lg">Kein Konto. Kein Login. Nur dein Link.</CardTitle>
+                  <Badge className="w-fit accent-chip" variant="secondary">How this works</Badge>
+                  <CardTitle className="text-lg">No account. No login. Just your link.</CardTitle>
                   <CardDescription className="text-sm">
-                    Speichere diese Seite. Teile sie, wenn nötig. Sie bleibt für immer dein.
+                    Bookmark this page. Share it if needed. It's yours forever.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -56,9 +56,9 @@ export default async function StatusPage({
                     <Lock className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base leading-tight font-semibold">Privat und sicher</h3>
+                    <h3 className="font-display text-base leading-tight font-semibold">Private and secure</h3>
                     <p className="text-sm text-slate-600 mb-0 mt-1">
-                      Deine Auftrags-ID und dein Token sind dein Zugang. Keine Datenverfolgung.
+                      Your order ID and token are your access. No tracking, no data sales.
                     </p>
                   </div>
                 </CardContent>
@@ -70,9 +70,9 @@ export default async function StatusPage({
                     <RefreshCcw className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base leading-tight font-semibold">Echtzeit-Aktualisierungen</h3>
+                    <h3 className="font-display text-base leading-tight font-semibold">Live updates</h3>
                     <p className="text-sm text-slate-600 mb-0 mt-1">
-                      Diese Seite zeigt dir den Fortschritt live, während deine Story entsteht.
+                      This page shows real-time progress while your gift is being created.
                     </p>
                   </div>
                 </CardContent>
@@ -84,9 +84,9 @@ export default async function StatusPage({
                     <Zap className="size-5" />
                   </span>
                   <div>
-                    <h3 className="font-display text-base leading-tight font-semibold">Jederzeit fortfahren</h3>
+                    <h3 className="font-display text-base leading-tight font-semibold">Come back anytime</h3>
                     <p className="text-sm text-slate-600 mb-0 mt-1">
-                      Zahlung unterbrochen? Kehre mit diesem Link zurück, wenn du bereit bist.
+                      Payment interrupted? Return with this link whenever you're ready.
                     </p>
                   </div>
                 </CardContent>
@@ -106,10 +106,10 @@ export default async function StatusPage({
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="card-subtle">
             <CardHeader>
-              <Badge className="w-fit accent-chip" variant="secondary">Ehrlichkeit</Badge>
-              <CardTitle>Status, wie er ist.</CardTitle>
+              <Badge className="w-fit accent-chip" variant="secondary">Honesty</Badge>
+              <CardTitle>Real status, plainly stated.</CardTitle>
               <CardDescription>
-                Keine erfundenen Fortschrittsstufen. Was du siehst, ist echt: gespeichert, bezahlt, in Erstellung, zugestellt. Nichts mehr, nichts weniger.
+                No invented progress stages. What you see is true: saved, paid, in creation, delivered. Nothing more, nothing less.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -117,19 +117,19 @@ export default async function StatusPage({
           <Card className="card-subtle">
             <CardContent className="flex h-full flex-col justify-between gap-6 p-8">
               <div>
-                <div className="mini-kicker">Nächste Schritte</div>
+                <div className="mini-kicker">Next steps</div>
                 <p className="text-sm leading-7 text-slate-700 mt-2">
-                  Ein weiteres Geschenk bestellen oder nach Hause zurückkehren. Dein aktueller Auftrag bleibt sicher und immer erreichbar.
+                  Order another gift, or return home. Your current order stays safe and always accessible.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="sm">
                   <Link href="/memories">
-                    {orderingAvailable ? 'Neuen Auftrag erstellen' : 'Bestellungen pausiert'}
+                    {orderingAvailable ? 'Create another' : 'Ordering paused'}
                   </Link>
                 </Button>
                 <Button asChild variant="secondary" size="sm">
-                  <Link href="/">Startseite</Link>
+                  <Link href="/">Home</Link>
                 </Button>
               </div>
             </CardContent>

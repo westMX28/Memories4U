@@ -22,59 +22,59 @@ import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 const trustPoints = [
   {
     icon: LockKeyhole,
-    title: 'Completely private',
-    description: 'No account required. Your order and memories stay with you through a private link.',
+    title: 'Your memories stay yours',
+    description: 'No account, no logins, no tracking. A private link that\'s yours forever.',
   },
   {
     icon: WandSparkles,
-    title: 'Emotionally crafted',
-    description: 'Each gift is carefully created around the feelings and moments you share.',
+    title: 'Built on what you tell us',
+    description: 'We listen to your photos, your words, what matters. That becomes the whole thing.',
   },
   {
     icon: Gift,
-    title: 'Beautifully delivered',
-    description: 'A handcrafted digital story presented with the intention it deserves.',
+    title: 'Made with care',
+    description: 'More thought than a template. More intention than a click. Real effort.',
   },
 ];
 
 const processSteps = [
   {
     step: '01',
-    title: 'Share your moment',
-    description: 'One or two photos, the recipient\'s name, and a short memory or feeling. That\'s all.',
+    title: 'Share what matters',
+    description: 'Photos. A name. How you feel about this person. That\'s the whole brief.',
   },
   {
     step: '02',
-    title: 'Secure and continue',
-    description: 'Clear pricing upfront. Quick, simple checkout. No surprises, no hidden fees.',
+    title: 'See the cost, pay once',
+    description: '$299. Everything included. No surprises, no recurring charges.',
   },
   {
     step: '03',
-    title: 'Follow your order',
-    description: 'A private link stays with you. Track progress anytime, return as needed. Always yours.',
+    title: 'Get a link you control',
+    description: 'Track your order, download when ready, return anytime. It\'s yours to keep.',
   },
 ];
 
 const faqItems = [
   {
-    question: 'What exactly do I need to start?',
+    question: 'What do I actually need to provide?',
     answer:
-      'Just one or two photos of the person, their name, your email, and a brief note about a memory or the feeling you want the gift to capture. That\'s genuinely enough for us to create something meaningful.',
+      'One or two photos. Their name. Your email. And a sentence or two about what the moment means to you. That\'s everything we need. You\'re not writing a novel—just sharing the feeling.',
   },
   {
-    question: 'Can I come back to finish later?',
+    question: 'What if I don\'t finish right away?',
     answer:
-      'Yes. Your order is stored and linked to your email. If checkout is interrupted, you\'ll receive a link to continue exactly where you left off—no need to start over.',
+      'Your order is saved and waiting. If payment gets interrupted, you get a private link to come back and finish exactly where you left off. No starting over, no lost information.',
   },
   {
-    question: 'What\'s included in the price?',
+    question: 'What do I actually get?',
     answer:
-      'Everything. The handcrafted story, the design, the digital delivery, and your private status page for tracking. Starting at $299. No recurring charges, no surprises.',
+      'A finished digital image file. High quality. Ready to download, print, display, or share. Plus a private page where you can track progress and access it anytime. No expirations, no account logins.',
   },
   {
-    question: 'Is this actually AI-generated?',
+    question: 'Is this AI-made?',
     answer:
-      'It uses AI as a tool, but it\'s shaped by your input and intention. The result is a thoughtful, personalized piece that feels human because it\'s built around what you share and how you feel about this person.',
+      'It uses AI as one tool, but the real work is understanding your photos, your story, what this person means to you. The tool helps us translate that into something visual. It\'s not generic because your moment isn\'t.',
   },
 ];
 
@@ -91,11 +91,10 @@ export default function HomePage() {
               <div className="space-y-6">
                 <div className="space-y-3">
                   <h1 className="h1 max-w-[13ch]">
-                    Turn a memory into a gift.
+                    A gift built on who they are.
                   </h1>
                   <p className="text-lg leading-relaxed text-slate-700 max-w-[52ch]">
-                    Upload your favorite photos. Share what they mean to you. We craft a personalized,
-                    handmade story that celebrates this person on their birthday. Premium. Private. Done.
+                    Tell us about the person and the moment. We create a thoughtful gift from your photos and memories. Private. Personal. Ready to share or keep.
                   </p>
                 </div>
               </div>
@@ -114,13 +113,13 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-200">
-                <p className="text-xs uppercase tracking-widest font-semibold text-blue-700">Why choose us</p>
+                <p className="text-xs uppercase tracking-widest font-semibold text-blue-700">Why it works differently</p>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
-                    { label: 'No account needed', desc: 'Private link, permanent access' },
-                    { label: 'Truly personalized', desc: 'Shaped by your words, your photos' },
-                    { label: 'Handcrafted', desc: 'Not generic, not templated' },
-                    { label: 'Transparent pricing', desc: 'See cost before you decide' }
+                    { label: 'No login, ever', desc: 'A private link that\'s yours forever' },
+                    { label: 'Real personalization', desc: 'Built from your photos, your story' },
+                    { label: 'Edited, not templated', desc: 'Each one is made separately, with care' },
+                    { label: 'One price, all-in', desc: 'See everything before you decide' }
                   ].map((item) => (
                     <div key={item.label} className="text-sm">
                       <p className="font-semibold text-slate-900">{item.label}</p>
@@ -147,29 +146,29 @@ export default function HomePage() {
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest font-semibold text-slate-400 mb-2">The result</p>
+                    <p className="text-xs uppercase tracking-widest font-semibold text-slate-400 mb-2">What you get</p>
                     <h2 className="text-2xl font-display leading-tight text-slate-100 mb-3">
-                      A celebration of the moments that matter.
+                      Something real to celebrate with.
                     </h2>
                     <p className="text-sm text-slate-400 leading-relaxed">
-                      A premium digital gift shaped around your photos and memories. Ready to download and celebrate.
+                      A finished image file made with care. Download it, print it, share it. Or keep it private. It's yours.
                     </p>
                   </div>
 
                   <div className="rounded-[20px] bg-white/10 border border-white/20 p-4 backdrop-blur-sm">
-                    <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-2">Simple process</div>
+                    <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-2">How it works</div>
                     <ul className="space-y-2 text-sm text-slate-300">
                       <li className="flex gap-2">
                         <span className="text-slate-500 flex-shrink-0">→</span>
-                        <span>Upload 1-2 photos & brief memory</span>
+                        <span>Share your photos and a moment</span>
                       </li>
                       <li className="flex gap-2">
                         <span className="text-slate-500 flex-shrink-0">→</span>
-                        <span>See price, checkout, get link</span>
+                        <span>Confirm price, pay, get your link</span>
                       </li>
                       <li className="flex gap-2">
                         <span className="text-slate-500 flex-shrink-0">→</span>
-                        <span>Download when ready, share the joy</span>
+                        <span>Download and celebrate</span>
                       </li>
                     </ul>
                   </div>
@@ -185,12 +184,12 @@ export default function HomePage() {
         <div className="container">
           <div className="workflow-header">
             <div className="workflow-header-content">
-              <Badge className="w-fit accent-chip" variant="secondary">Three simple steps</Badge>
+              <Badge className="w-fit accent-chip" variant="secondary">Three steps</Badge>
               <h2 className="h2 max-w-[12ch]">
-                So easy, you can do it in minutes.
+                Quick. Clear. Done.
               </h2>
               <p className="lead max-w-[50ch]">
-                Everything from photos to checkout is designed to be fast, clear, and intuitive.
+                Designed so you're not guessing at any point. Share, confirm, download.
               </p>
             </div>
           </div>
@@ -217,29 +216,29 @@ export default function HomePage() {
         <div className="container">
           <div className="space-y-12">
             <div className="text-center space-y-4 max-w-3xl mx-auto">
-              <Badge className="w-fit accent-chip mx-auto">What you receive</Badge>
-              <h2 className="h2">A handcrafted digital story. Not a template. Not generic.</h2>
+              <Badge className="w-fit accent-chip mx-auto">What you're getting</Badge>
+              <h2 className="h2">A real gift shaped by real moments.</h2>
               <p className="lead">
-                Every gift is custom-created by combining your photos, your emotions, and skilled editorial craftsmanship. The result is a premium digital piece that feels personal because it <em>is</em> personal.
+                We don't use templates. We take your photos and what you tell us and create something custom. The difference is noticeable.
               </p>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
               {[
                 {
-                  title: 'Personalized composition',
-                  description: 'We arrange your photos with intentional design—not in a preset layout. Every visual decision reflects the story you shared.',
-                  details: ['Custom visual flow', 'Editorial design treatment', 'Optimized for the moment']
+                  title: 'Custom arrangement',
+                  description: 'We design the layout for your specific photos and moment. Not a preset template. Each one is arranged differently based on what you shared.',
+                  details: ['Thoughtful visual flow', 'Reflects your story', 'Edited with care']
                 },
                 {
-                  title: 'Narrative framing',
-                  description: 'Your memory becomes the emotional anchor. The final piece celebrates this person through moments only you would choose.',
-                  details: ['Unique to your relationship', 'Captures tone and feeling', 'Tells a meaningful story']
+                  title: 'Emotional framing',
+                  description: 'We focus on what you told us matters. The final piece celebrates this person the way you see them.',
+                  details: ['Built on your perspective', 'Captures what you feel', 'Meaningful to you both']
                 },
                 {
-                  title: 'Finished digital asset',
-                  description: 'A high-quality image file ready to download, share, display, or frame. No account logins, no expiration dates.',
-                  details: ['Download immediately', 'Share or print anytime', 'Yours to keep forever']
+                  title: 'Digital file you own',
+                  description: 'High-quality image. Ready to download, print, display. No logins, no subscriptions, no expiry.',
+                  details: ['Download and keep it', 'Share or display', 'Stays yours']
                 }
               ].map((item) => (
                 <Card key={item.title} className="border-white/70 bg-white/76 p-6">
@@ -262,53 +261,53 @@ export default function HomePage() {
                 <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
                   <div className="space-y-4">
                     <h3 className="font-display text-2xl leading-tight text-slate-900">
-                      Why this is worth more than a generic gift.
+                      Why someone notices the difference.
                     </h3>
                     <p className="text-slate-700 leading-relaxed">
-                      A template-based gift says "I used a service." A personalized gift says "I chose you, remembered this moment, and wanted to celebrate it in a way only you would understand."
+                      A templated gift says "I found a service online." A real gift says "I took time to think about you, picked photos that mean something, and created this specifically."
                     </p>
                     <p className="text-slate-700 leading-relaxed">
-                      The $299 price reflects the human attention, editorial craftsmanship, and intentional design that goes into creating something that feels <em>made for them</em>, not just made <em>by a machine</em>.
+                      $299 covers the actual work: understanding your photos, your story, your relationship. Then designing something that reflects that. That's not a machine doing it alone—it's someone reading what you shared and translating it into something visual.
                     </p>
                     <p className="text-sm text-slate-600 border-l-4 border-blue-600 pl-4 mt-6">
-                      "You're not paying for AI. You're paying for the art of translating what matters to you into something beautiful enough to celebrate with. That's work. That's skill. That's premium."
+                      "You're paying for thoughtfulness, not for AI. For custom design, not a template. For something that couldn't exist without you. That takes time. That has value."
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="rounded-[28px] bg-white/80 p-6 border border-white/70">
-                      <div className="mini-kicker mb-3">Comparison</div>
+                      <div className="mini-kicker mb-3">The difference</div>
                       <div className="space-y-4">
                         <div>
-                          <p className="font-semibold text-slate-900 mb-1 text-sm">Generic photo gift</p>
-                          <p className="text-xs text-slate-600">Template layout, stock design, no personalization</p>
+                          <p className="font-semibold text-slate-900 mb-1 text-sm">Standard photo gift</p>
+                          <p className="text-xs text-slate-600">Pre-made layout, your photos inserted, one design fits all</p>
                         </div>
                         <div className="h-px bg-slate-200"></div>
                         <div>
-                          <p className="font-semibold text-blue-700 mb-1 text-sm">Memories4U gift</p>
-                          <p className="text-xs text-slate-700">Custom composition, intentional narrative, editorial quality</p>
+                          <p className="font-semibold text-blue-700 mb-1 text-sm">This gift</p>
+                          <p className="text-xs text-slate-700">Custom layout designed for your photos, edited with care, unique to your moment</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="rounded-[28px] bg-white/80 p-6 border border-white/70">
-                      <div className="mini-kicker mb-3">What makes it premium</div>
+                      <div className="mini-kicker mb-3">What that means</div>
                       <ul className="space-y-2">
                         <li className="flex gap-2 text-xs text-slate-700">
                           <span className="text-blue-600 flex-shrink-0">✓</span>
-                          <span>Shaped by your memories</span>
+                          <span>Built from your story, not a template</span>
                         </li>
                         <li className="flex gap-2 text-xs text-slate-700">
                           <span className="text-blue-600 flex-shrink-0">✓</span>
-                          <span>Handcrafted, not templated</span>
+                          <span>Design decisions made for your moment</span>
                         </li>
                         <li className="flex gap-2 text-xs text-slate-700">
                           <span className="text-blue-600 flex-shrink-0">✓</span>
-                          <span>Professional design treatment</span>
+                          <span>Feels thoughtful, not mass-produced</span>
                         </li>
                         <li className="flex gap-2 text-xs text-slate-700">
                           <span className="text-blue-600 flex-shrink-0">✓</span>
-                          <span>Delivered with intention</span>
+                          <span>Shows you put real thought in</span>
                         </li>
                       </ul>
                     </div>
@@ -324,9 +323,9 @@ export default function HomePage() {
       <section className="promise-section">
         <div className="container">
           <div className="promise-header">
-            <h2 className="h2">Why this feels personal and safe</h2>
+            <h2 className="h2">Built for trust and ownership</h2>
             <p className="lead max-w-[60ch] mx-auto mt-3">
-              Private by design. Personal by intention. Premium in every detail.
+              Your memories are yours alone. Private by default. No logins, no tracking, no surprises.
             </p>
           </div>
           <div className="promise-grid">
@@ -353,12 +352,12 @@ export default function HomePage() {
           <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
             <CardContent className="space-y-6 p-8 lg:p-10">
               <div className="space-y-3">
-                <Badge className="w-fit accent-chip" variant="secondary">What you share</Badge>
+                <Badge className="w-fit accent-chip" variant="secondary">What to share</Badge>
                 <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
-                  Minimal. Emotional. Enough.
+                  Just the essentials.
                 </CardTitle>
                 <p className="text-slate-700 text-base leading-relaxed">
-                  No long forms, no detailed descriptions. Just share the heart of it.
+                  Photos. Names. How you feel about this person. That's the whole brief. We don't need novels.
                 </p>
               </div>
 
@@ -400,9 +399,9 @@ export default function HomePage() {
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_64px_rgba(86,117,166,0.08)]">
             <CardHeader>
-              <Badge className="w-fit accent-chip">The result</Badge>
+              <Badge className="w-fit accent-chip">The final gift</Badge>
               <CardTitle className="text-[clamp(1.6rem,3vw,2.4rem)] max-w-[12ch]">
-                A handcrafted gift.
+                Ready to celebrate.
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">

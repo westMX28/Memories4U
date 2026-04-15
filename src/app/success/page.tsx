@@ -31,30 +31,30 @@ export default async function SuccessPage({
             <div className="inline-flex mb-6">
               <Badge className="success-badge flex items-center gap-2">
                 <CheckCircle className="size-5" />
-                {paymentConfirmed ? 'Die Reise beginnt' : 'Auftrag gespeichert'}
+                {paymentConfirmed ? 'On the way' : 'Order saved'}
               </Badge>
             </div>
 
             <h1 className="h2 max-w-[18ch] mx-auto">
               {paymentConfirmed
-                ? 'Deine Story wird gerade erstellt.'
-                : 'Dein Auftrag ist sicher. Zahle ab, wenn du bereit bist.'}
+                ? 'Your gift is being created.'
+                : 'Your gift is ready for payment.'}
             </h1>
 
             <p className="lead mx-auto max-w-[60ch] mt-6">
               {paymentConfirmed
                 ? liveStatus?.finalAsset
-                  ? 'Die fertige Story wartet. Lade sie herunter und feiere diesen Menschen.'
+                  ? 'It\'s ready. Download it and celebrate with them.'
                   : liveStatus?.previewAsset
-                    ? 'Eine Vorschau ist schon verfügbar. Die finale Version wird gerade finalisiert.'
-                    : 'Die Erstellung hat begonnen. Du bekommst Updates, während wir daran arbeiten. Kehre jederzeit zu deiner Statusseite zurück.'
-                : 'Deine Informationen sind sicher gespeichert. Kehre auf diese private Seite zurück, wenn du bereit zum Zahlen bist.'}
+                    ? 'You\'ll see a preview soon to make sure it feels right.'
+                    : 'We\'re working on it now. Check your private status page for updates, or come back here anytime.'
+                : 'Everything you shared is saved. Your private link is waiting. Complete payment whenever you\'re ready.'}
             </p>
 
             {params.email ? (
               <div className="success-meta mx-auto max-w-3xl mt-8">
                 <div className="rounded-[24px] bg-white/80 border border-blue-100 p-5">
-                  <div className="text-sm uppercase tracking-widest text-blue-700 font-semibold">Zustelladresse</div>
+                  <div className="text-sm uppercase tracking-widest text-blue-700 font-semibold">Being delivered to</div>
                   <p className="mb-0 text-base mt-2 text-slate-700">{params.email}</p>
                 </div>
               </div>
@@ -66,20 +66,20 @@ export default async function SuccessPage({
                   <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div className="space-y-4">
                       <Badge className="w-fit accent-chip" variant="secondary">
-                        {liveStatus?.finalAsset ? 'Bereit' : 'Vorschau verfügbar'}
+                        {liveStatus?.finalAsset ? 'Ready' : 'Preview available'}
                       </Badge>
                       <div>
                         <h2 className="text-3xl leading-tight font-display mb-3">
                           {liveStatus?.finalAsset
-                            ? 'Deine Story ist fertig.'
-                            : 'Eine Vorschau ist schon sichtbar.'}
+                            ? 'Your gift is ready.'
+                            : 'Preview is ready.'}
                         </h2>
                         <p className="text-slate-700 mb-0 max-w-[56ch] leading-relaxed">
                           {liveStatus?.delivery
-                            ? `Das Geschenk ist fertig für ${liveStatus.delivery.recipient}.`
+                            ? `Delivered to ${liveStatus.delivery.recipient}. You can download it here anytime.`
                             : liveStatus?.finalAsset
-                              ? 'Lade es herunter und teile es. Feiere diesen Menschen mit dem, was du zusammen erschaffen hast.'
-                              : 'Die finale Version wird gerade perfektioniert. Du kannst die Vorschau jetzt ansehen oder auf die fertige Version warten.'}
+                              ? 'Download it, share it, celebrate with them. It\'s yours now.'
+                              : 'Get a look at how it\'s coming together. Let us know if anything needs adjusting, or we\'ll move to the final version.'}
                         </p>
                       </div>
                     </div>
@@ -118,11 +118,11 @@ export default async function SuccessPage({
             <Card className="mx-auto mt-12 max-w-3xl card-soft">
               <CardContent className="p-8 sm:p-10">
                 <div className="space-y-4">
-                  <h2 className="text-xl font-display font-semibold text-slate-900">Die Reise geht weiter.</h2>
+                  <h2 className="text-xl font-display font-semibold text-slate-900">What's next.</h2>
                   <p className="text-slate-700 leading-relaxed mb-0">
                     {paymentConfirmed
-                      ? 'Dein Auftrag ist jetzt in Produktion. Kehre jederzeit zu deiner privaten Statusseite zurück, um den Fortschritt zu verfolgen, die Vorschau anzuschauen oder die fertige Story herunterzuladen. Alles bleibt über denselben Link erreichbar.'
-                      : 'Dein Auftrag wartet sicher auf dich. Wenn du bereit zum Bezahlen bist, kannst du sofort von deiner privaten Statusseite aus zum Checkout zurückkehren. Kein Neubeginn, keine verlorenen Informationen.'}
+                      ? 'Your gift is now being created. Return to your private status page anytime to check progress, see the preview, or download the final version. Everything stays secure and private.'
+                      : 'Your gift is here, waiting for payment. When you\'re ready to pay, return to your private page and complete checkout. No information is lost, no starting over needed.'}
                   </p>
                   {paymentConfirmed && (
                     <div className="mt-6 flex items-start gap-4 p-4 rounded-[24px] bg-white/70 border border-blue-200">
@@ -130,8 +130,8 @@ export default async function SuccessPage({
                         <Clock className="size-5" />
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900 mb-1">Live-Verfolgung</p>
-                        <p className="text-sm text-slate-700 mb-0">Deine Statusseite aktualisiert sich alle 10 Sekunden mit den neuesten Informationen.</p>
+                        <p className="font-semibold text-slate-900 mb-1">Live tracking</p>
+                        <p className="text-sm text-slate-700 mb-0">Your status page updates in real-time as we work on your gift.</p>
                       </div>
                     </div>
                   )}
@@ -146,9 +146,9 @@ export default async function SuccessPage({
                     <Lock className="size-5" />
                   </span>
                   <div>
-                    <div className="mini-kicker">Dein Auftrag</div>
+                    <div className="mini-kicker">Your gift</div>
                     <p className="mb-0 text-sm leading-6 text-slate-700">
-                      Privat gespeichert und vollständig sicher. Dein alleiniger Zugang.
+                      Saved privately. Fully secure. Only your link can access it.
                     </p>
                   </div>
                 </CardContent>
@@ -159,11 +159,11 @@ export default async function SuccessPage({
                     <Sparkles className="size-5" />
                   </span>
                   <div>
-                    <div className="mini-kicker">Was jetzt geschieht</div>
+                    <div className="mini-kicker">What's happening</div>
                     <p className="mb-0 text-sm leading-6 text-slate-700">
                       {paymentConfirmed
-                        ? 'Die Story wird erstellt. Du bekommst Live-Updates auf deiner Seite.'
-                        : 'Zahle ab, wann immer du bereit bist. Dein Auftrag wartet sicher.'}
+                        ? 'Your gift is being created. Live updates on your status page.'
+                        : 'Pay when you\'re ready. Your gift is safe and waiting.'}
                     </p>
                   </div>
                 </CardContent>
@@ -174,9 +174,9 @@ export default async function SuccessPage({
                     <Clock className="size-5" />
                   </span>
                   <div>
-                    <div className="mini-kicker">Dein Weg zur Story</div>
+                    <div className="mini-kicker">Your access point</div>
                     <p className="mb-0 text-sm leading-6 text-slate-700">
-                      Eine private Seite für alles: Fortschritt, Updates, und die fertige Story.
+                      One private page for everything: progress, updates, and your final gift.
                     </p>
                   </div>
                 </CardContent>
@@ -187,11 +187,11 @@ export default async function SuccessPage({
               <Button asChild size="lg">
                 <Link href={statusHref} className="flex items-center gap-2">
                   <Clock className="size-4" />
-                  Zum Fortschritt
+                  View progress
                 </Link>
               </Button>
               <Button asChild variant="secondary" size="lg">
-                <Link href="/">Zur Startseite</Link>
+                <Link href="/">Home</Link>
               </Button>
             </div>
           </CardContent>
