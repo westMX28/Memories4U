@@ -270,94 +270,106 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 20;
-  backdrop-filter: blur(22px);
-  background: linear-gradient(180deg, rgba(247, 249, 255, 0.84), rgba(247, 249, 255, 0.62));
+  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, rgba(247, 249, 255, 0.92), rgba(247, 249, 255, 0.78));
+  border-bottom: 1px solid rgba(128, 155, 189, 0.12);
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 82px;
-  gap: 18px;
+  min-height: 72px;
+  gap: 32px;
 }
 
-.nav-links {
-  display: flex;
-  gap: 24px;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.nav-links a:hover,
-.footer-links a:hover {
-  color: var(--accent-strong);
-}
-
-.brand {
+.header-brand {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
 }
 
-.brand-mark {
-  position: relative;
-  width: 46px;
-  height: 46px;
-  display: inline-flex;
+.header-brand:hover {
+  opacity: 0.8;
+}
+
+.header-logo {
+  display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(128, 155, 189, 0.18);
-  border-radius: 16px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.96), #d9e8ff);
-  box-shadow: 0 18px 36px rgba(58, 83, 118, 0.12);
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
 }
 
-.brand-mark-core {
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  box-shadow: 0 0 0 6px rgba(96, 174, 252, 0.14);
+.header-logo svg {
+  width: 100%;
+  height: 100%;
 }
 
-.brand-mark-spark {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border: 1px solid rgba(128, 155, 189, 0.18);
-  border-radius: 999px;
-  background: white;
-}
-
-.brand-mark-spark-top {
-  top: 8px;
-  right: 8px;
-}
-
-.brand-mark-spark-bottom {
-  left: 8px;
-  bottom: 8px;
-}
-
-.brand-copy {
+.header-branding {
   display: grid;
   gap: 2px;
 }
 
-.brand-name {
-  font-size: 1.45rem;
-  line-height: 1;
+.header-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
-.brand-tagline {
+.header-tagline {
+  font-size: 0.65rem;
   color: var(--muted);
-  font-family: var(--font-body), sans-serif;
-  font-size: 0.69rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-weight: 500;
+}
+
+.header-nav {
+  display: flex;
+  gap: 32px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 auto;
+}
+
+.header-nav a {
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+.header-nav a:hover {
+  color: var(--accent-strong);
+}
+
+.header-cta {
+  display: flex;
+  gap: 8px;
+}
+
+.header-btn {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(128, 155, 189, 0.16) !important;
+  color: var(--accent-strong) !important;
+  border-radius: 20px !important;
+  padding: 8px 16px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-btn:hover {
+  background: white !important;
+  border-color: rgba(96, 174, 252, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(96, 174, 252, 0.12) !important;
 }
 
 .nav-cta {
@@ -1514,8 +1526,7 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .nav-links,
-  .nav-cta {
+  .header-nav {
     display: none;
   }
 
@@ -1530,6 +1541,15 @@ h3 {
 
   .gift-card-featured {
     grid-column: span 1;
+  }
+
+  .nav {
+    gap: 16px;
+    min-height: 64px;
+  }
+
+  .header-name {
+    font-size: 1rem;
   }
 }
 
