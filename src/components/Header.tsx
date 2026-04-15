@@ -11,47 +11,37 @@ export function Header() {
   return (
     <header className="header">
       <div className="container nav">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="brand">
-            <span className="brand-mark" aria-hidden="true">
-              <span className="brand-mark-core" />
-              <span className="brand-mark-spark brand-mark-spark-top" />
-              <span className="brand-mark-spark brand-mark-spark-bottom" />
-            </span>
-            <span className="brand-copy">
-              <span className="brand-name">Memories4U</span>
-              <span className="brand-tagline">premium birthday stories</span>
-            </span>
-          </Link>
-          <Badge className="hidden xl:inline-flex accent-chip" variant="secondary">
-            calm, premium, direct
-          </Badge>
-        </div>
+        <Link href="/" className="header-brand">
+          <div className="header-logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="32" height="32" rx="8" fill="url(#gradient)" />
+              <path d="M16 8C11.6 8 8 11.6 8 16C8 20.4 11.6 24 16 24C20.4 24 24 20.4 24 16C24 11.6 20.4 8 16 8ZM14 20L10 16L11.4 14.6L14 17.2L20.6 10.6L22 12L14 20Z" fill="white" />
+              <defs>
+                <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#449cfa" />
+                  <stop offset="100%" stopColor="#0058bc" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div className="header-branding">
+            <span className="header-name">Memories4U</span>
+            <span className="header-tagline">birthday stories</span>
+          </div>
+        </Link>
 
-        <nav className="nav-links">
-          <Link href="/">Home</Link>
-          <Link href="/memories">
-            {orderingAvailable ? 'Order' : 'Ordering pause'}
-          </Link>
+        <nav className="header-nav">
           <Link href="/how-it-works">How it works</Link>
-          <Link href="/status">Private status</Link>
+          <Link href="/memories">
+            {orderingAvailable ? 'Create' : 'Ordering pause'}
+          </Link>
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <div className="flex items-center gap-3 rounded-full border border-white/80 bg-white/78 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 shadow-[0_18px_44px_rgba(148,163,184,0.16)]">
-            {orderingAvailable ? <Gift className="size-3.5 text-sky-700" /> : <Clock3 className="size-3.5 text-amber-700" />}
-            <span>{orderingAvailable ? 'birthday-first flow' : 'ordering pause'}</span>
-            <span>{orderingAvailable ? 'starting price visible upfront' : 'status still available'}</span>
-            <Separator orientation="vertical" className="h-4 bg-slate-200/80" />
-            <span className={orderingAvailable ? 'text-sky-800' : 'text-amber-800'}>
-              {orderingAvailable ? 'checkout and status stay linked' : 'existing orders still reachable'}
-            </span>
-          </div>
-
-          <Button asChild size="sm" className="nav-cta border-0 px-4">
+        <div className="header-cta">
+          <Button asChild size="sm" className="header-btn">
             <Link href={orderingAvailable ? '/memories' : '/status'}>
-              {orderingAvailable ? 'Start the gift' : 'Track order'}
-              {orderingAvailable ? <Sparkles /> : <ArrowUpRight />}
+              {orderingAvailable ? 'Start' : 'Status'}
+              {orderingAvailable ? <Sparkles className="size-4" /> : <ArrowUpRight className="size-4" />}
             </Link>
           </Button>
         </div>
