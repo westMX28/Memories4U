@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle2, CreditCard, Image as ImageIcon, LockKeyhole, Sparkles } from 'lucide-react';
+import { CheckCircle2, Images, CreditCard, LockKeyhole, Sparkles } from 'lucide-react';
 import { MemoriesIntakeForm } from '@/components/MemoriesIntakeForm';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,27 +7,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
-const formSignals = [
-  'Ein bis zwei Bilder als PNG oder JPG',
-  'Eine E-Mail für Checkout und Lieferung',
-  'Ein kurzer emotionaler Hinweis statt langer Regieanweisung',
+const whatYouNeed = [
+  'One or two photos as PNG or JPG',
+  'The recipient\'s name and your email',
+  'A brief emotional cue instead of detailed instructions',
 ];
 
-const railCards = [
+const nextSteps = [
   {
-    icon: ImageIcon,
-    title: 'Briefing',
-    copy: 'Nur die Angaben, die für eine persönliche Story wirklich nützlich sind.',
+    icon: Images,
+    title: 'Your briefing',
+    description: 'Only the information that truly matters for a personal, meaningful story.',
   },
   {
     icon: CreditCard,
-    title: 'Checkout',
-    copy: 'Der Auftrag wird sofort gesichert, statt dich erst durch weitere Screens zu schicken.',
+    title: 'Quick checkout',
+    description: 'Your order is secured immediately. No extra steps. Clear pricing upfront.',
   },
   {
     icon: LockKeyhole,
-    title: 'Status',
-    copy: 'Dieselbe private Spur bleibt später für Fortschritt und Zustellung erreichbar.',
+    title: 'Your private path',
+    description: 'The same secure link stays with your order for tracking and delivery.',
   },
 ];
 
@@ -37,25 +37,27 @@ export default function MemoriesPage() {
   return (
     <main className="section page-shell">
       <div className="container space-y-8">
-        <Card className="overflow-hidden border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(232,244,255,0.9))]">
-          <CardContent className="grid gap-8 p-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:p-8">
-            <div className="space-y-5">
-              <Badge className="w-fit accent-chip">Auftrags-Briefing</Badge>
+        {/* Hero Section */}
+        <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
+          <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
+            <div className="space-y-6">
+              <Badge className="w-fit accent-chip">Order briefing</Badge>
               <div className="space-y-4">
-                <h1 className="h2 max-w-[14ch]">Ein kurzes Briefing, damit sich das Geschenk trotzdem aufmerksam anfühlt.</h1>
-                <p className="lead max-w-[58ch]">
-                  Diese Seite ist bewusst leichter als ein klassischer Produktkonfigurator. Das Redesign hält sie über Hierarchie, Rhythmus und Service-Gefühl hochwertig statt über zusätzliche Felder.
+                <h1 className="h2 max-w-[12ch]">Share simply. We listen carefully.</h1>
+                <p className="lead max-w-[60ch]">
+                  This form is intentionally minimal. Not because gifts are simple, but because 
+                  your feelings matter more than your specifications.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                {formSignals.map((item) => (
+                {whatYouNeed.map((item) => (
                   <div
-                    className="rounded-[24px] border border-white/90 bg-white/82 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_16px_36px_rgba(148,163,184,0.12)]"
+                    className="rounded-[24px] border border-white/70 bg-white/80 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_12px_32px_rgba(148,163,184,0.08)]"
                     key={item}
                   >
-                    <CheckCircle2 className="mb-3 size-4 text-sky-700" />
-                    {item}
+                    <CheckCircle2 className="mb-2 size-4 text-blue-600 flex-shrink-0" />
+                    <span>{item}</span>
                   </div>
                 ))}
               </div>
@@ -63,37 +65,39 @@ export default function MemoriesPage() {
               <div className="flex flex-wrap gap-3">
                 <Button asChild>
                   <a href={orderingAvailable ? '#intake-form' : '#ordering-status'}>
-                    {orderingAvailable ? 'Zum Briefing springen' : 'Bestellstatus lesen'}
+                    {orderingAvailable ? 'Begin briefing' : 'View status'}
                   </a>
                 </Button>
                 <Button asChild variant="secondary">
                   <Link href={orderingAvailable ? '/status' : '/how-it-works'}>
-                    {orderingAvailable ? 'Bestehenden Auftrag öffnen' : 'Ablauf ansehen'}
+                    {orderingAvailable ? 'Track order' : 'See process'}
                   </Link>
                 </Button>
               </div>
             </div>
 
+            {/* Side Panel */}
             <div className="grid gap-4">
-              <Card className="border-sky-200/70 bg-white/84">
+              <Card className="border-white/70 bg-white/80 shadow-lg">
                 <CardHeader>
-                  <Badge className="w-fit accent-chip" variant="secondary">hochwertig und schnell</Badge>
-                  <CardTitle>Die Seite soll wertig wirken, nicht anstrengend.</CardTitle>
-                  <CardDescription>
-                    Viel Weißraum, gezielte blaue Akzente, weniger Entscheidungen und ein klarer Fortschritt.
+                  <Badge className="w-fit accent-chip" variant="secondary">Designed for intention</Badge>
+                  <CardTitle className="text-lg">Premium experience, not complexity.</CardTitle>
+                  <CardDescription className="text-sm">
+                    Generous spacing, clear hierarchy, and every field has a purpose. 
+                    Nothing more, nothing less.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              {railCards.map(({ icon: Icon, title, copy }) => (
-                <Card key={title} className="border-white/90 bg-white/82">
+              {nextSteps.map(({ icon: Icon, title, description }) => (
+                <Card key={title} className="border-white/70 bg-white/76">
                   <CardContent className="flex gap-4 p-5">
-                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                       <Icon className="size-5" />
                     </span>
                     <div>
-                      <h3 className="mt-1 text-2xl">{title}</h3>
-                      <p className="copy mb-0 mt-2">{copy}</p>
+                      <h3 className="font-display text-base leading-tight font-semibold">{title}</h3>
+                      <p className="text-sm text-slate-600 mb-0 mt-1">{description}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -102,47 +106,52 @@ export default function MemoriesPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        {/* Form & Info Section */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div id={orderingAvailable ? 'intake-form' : 'ordering-status'}>
             <MemoriesIntakeForm orderingAvailable={orderingAvailable} />
           </div>
 
+          {/* Side Information */}
           <div className="space-y-4">
-            <Card className="border-white/90 bg-white/82">
+            {/* What Happens Next */}
+            <Card className="border-white/70 bg-white/76">
               <CardHeader>
-                <Badge className="w-fit accent-chip" variant="secondary">was nach dem Absenden passiert</Badge>
-                <CardTitle>Ein Auftrag. Eine Statusspur. Keine zusätzliche Account-Logik.</CardTitle>
+                <Badge className="w-fit accent-chip" variant="secondary">What happens next</Badge>
+                <CardTitle className="text-lg">One order. One secure link. No account required.</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-[24px] border border-sky-100 bg-sky-50/70 p-4">
-                  <div className="mini-kicker">nach dem Briefing</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">
-                    Der Auftrag wird sofort angelegt und danach in den Checkout übergeben.
+                <div className="rounded-[24px] border border-blue-100 bg-blue-50/70 p-4">
+                  <div className="mini-kicker">After you submit</div>
+                  <p className="mb-0 text-sm leading-6 text-slate-700">
+                    Your order is created immediately and moved to checkout to secure payment.
                   </p>
                 </div>
-                <div className="rounded-[24px] border border-white/90 bg-white p-4">
-                  <div className="mini-kicker">wenn der Checkout abbricht</div>
-                  <p className="mb-0 text-sm leading-7 text-slate-700">
-                    Der gespeicherte Auftrag lässt sich trotzdem über die private Statusseite wieder öffnen.
+                <div className="rounded-[24px] border border-white/70 bg-white p-4">
+                  <div className="mini-kicker">If checkout is interrupted</div>
+                  <p className="mb-0 text-sm leading-6 text-slate-700">
+                    Your saved order remains accessible through the status page using your email.
                   </p>
                 </div>
-                <Separator className="bg-sky-100/90" />
-                <p className="mb-0 text-sm leading-7 text-slate-600">
-                  Das ist der zentrale Conversion-Kompromiss: weniger Stellschrauben, mehr Sicherheit.
+                <Separator className="bg-blue-100" />
+                <p className="mb-0 text-xs leading-6 text-slate-600">
+                  We save everything so you can resume without friction. That&apos;s the design promise.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-white/90 bg-[linear-gradient(180deg,rgba(20,32,52,0.96),rgba(19,78,138,0.94))] text-white">
+            {/* Important Note */}
+            <Card className="border-white/70 bg-gradient-to-br from-slate-950 to-blue-950 text-white">
               <CardContent className="space-y-4 p-6">
-                <Badge className="w-fit border-white/15 bg-white/10 text-white" variant="dark">Hinweis zum Ablauf</Badge>
-                <h3 className="text-[2rem] leading-[1.04]">Die Oberfläche bleibt bewusst einfach.</h3>
-                <p className="mb-0 text-sm leading-7 text-slate-200">
-                  Das Redesign verbessert Schliff und Vertrauen, erfindet aber keine neuen Backend-Zustände oder zusätzliche Kundenschritte.
+                <Badge className="border-white/15 bg-white/10 text-white" variant="dark">Important</Badge>
+                <h3 className="font-display text-lg leading-tight">No previews. No revisions.</h3>
+                <p className="mb-0 text-sm leading-6 text-slate-200">
+                  We craft based on your briefing alone. This isn&apos;t a collaborative tool—
+                  it&apos;s a commissioned gift. Trust in your words.
                 </p>
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-slate-100">
-                  <Sparkles className="size-4 text-sky-300" />
-                  abgestimmt auf den aktuellen Geburtstags-Flow
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-slate-100 font-medium">
+                  <Sparkles className="size-4 text-blue-300" />
+                  Intentionally simplified
                 </div>
               </CardContent>
             </Card>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Clock3, RefreshCcw, ShieldCheck } from 'lucide-react';
+import { Lock, RefreshCcw, Zap } from 'lucide-react';
 import { StatusLookup } from '@/components/StatusLookup';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,57 +18,76 @@ export default async function StatusPage({
   return (
     <main className="section page-shell">
       <div className="container space-y-8">
-        <Card className="overflow-hidden border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(234,244,255,0.9))]">
-          <CardContent className="grid gap-6 p-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:p-8">
-            <div className="space-y-4">
-              <Badge className="w-fit accent-chip">Privater Auftragsstatus</Badge>
-              <h1 className="h2 max-w-[14ch]">Ein ruhiger Ort zum Bezahlen, Warten, Ansehen oder Herunterladen.</h1>
-              <p className="lead max-w-[56ch]">
-                Diese Seite bleibt eng am bestehenden Backend-Vertrag und macht die sichtbare Bedeutung jedes Auftragsstatus klarer und ehrlicher.
-              </p>
+        {/* Hero Section */}
+        <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-white/95 via-white/92 to-blue-50/85">
+          <CardContent className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:p-10">
+            <div className="space-y-6">
+              <Badge className="w-fit accent-chip">Private order tracking</Badge>
+              <div className="space-y-4">
+                <h1 className="h2 max-w-[12ch]">Your order, always with you.</h1>
+                <p className="lead max-w-[60ch]">
+                  A calm place to track progress, continue checkout if needed, or download your 
+                  gift when it&apos;s ready. One private link, always secure.
+                </p>
+              </div>
+
               {checkoutCancelled ? (
-                <div className="rounded-[24px] border border-amber-200 bg-amber-50/90 px-5 py-4 text-sm leading-7 text-amber-950">
-                  Der Checkout wurde nicht abgeschlossen. Der Auftrag ist weiterhin gespeichert und kann von hier aus fortgesetzt werden.
+                <div className="rounded-[24px] border border-amber-200 bg-amber-50/90 px-6 py-4 text-sm leading-7 text-amber-900">
+                  <p className="mb-0 font-semibold">Checkout was interrupted.</p>
+                  <p className="mb-0 mt-1">Your order is saved and ready to complete. You can resume payment below.</p>
                 </div>
               ) : null}
             </div>
 
+            {/* Info Cards */}
             <div className="grid gap-4">
-              <Card className="border-white/90 bg-white/84">
+              <Card className="border-white/70 bg-white/80 shadow-lg">
+                <CardHeader>
+                  <Badge className="w-fit accent-chip" variant="secondary">How this works</Badge>
+                  <CardTitle className="text-lg">No account. No login. Just your link.</CardTitle>
+                  <CardDescription className="text-sm">
+                    Keep this page bookmarked. Share it if you need to. It stays yours forever.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="border-white/70 bg-white/76">
                 <CardContent className="flex gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
-                    <ShieldCheck className="size-5" />
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    <Lock className="size-5" />
                   </span>
                   <div>
-                    <h3 className="mt-1 text-2xl">Privater Zugriff</h3>
-                    <p className="copy mb-0 mt-2">
-                      Auftrags-ID und Zugriffstoken machen den Auftrag nachvollziehbar, ohne ein Konto zu erzwingen.
+                    <h3 className="font-display text-base leading-tight font-semibold">Secure access</h3>
+                    <p className="text-sm text-slate-600 mb-0 mt-1">
+                      Your order ID and token ensure privacy without requiring an account.
                     </p>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-white/90 bg-white/84">
+
+              <Card className="border-white/70 bg-white/76">
                 <CardContent className="flex gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <RefreshCcw className="size-5" />
                   </span>
                   <div>
-                    <h3 className="mt-1 text-2xl">Live-Aktualisierung</h3>
-                    <p className="copy mb-0 mt-2">
-                      Die Seite aktualisiert sich automatisch, solange der Auftrag noch in Bewegung ist.
+                    <h3 className="font-display text-base leading-tight font-semibold">Live updates</h3>
+                    <p className="text-sm text-slate-600 mb-0 mt-1">
+                      Real-time progress tracking while your gift is being created.
                     </p>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-white/90 bg-white/84">
+
+              <Card className="border-white/70 bg-white/76">
                 <CardContent className="flex gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
-                    <Clock3 className="size-5" />
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    <Zap className="size-5" />
                   </span>
                   <div>
-                    <h3 className="mt-1 text-2xl">Schneller Wiedereinstieg</h3>
-                    <p className="copy mb-0 mt-2">
-                      Wenn die Zahlung unterbrochen wurde, ist das hier derselbe Weg für einen sauberen Wiedereinstieg.
+                    <h3 className="font-display text-base leading-tight font-semibold">Quick resume</h3>
+                    <p className="text-sm text-slate-600 mb-0 mt-1">
+                      If checkout was interrupted, you can complete payment right here.
                     </p>
                   </div>
                 </CardContent>
@@ -77,40 +96,42 @@ export default async function StatusPage({
           </CardContent>
         </Card>
 
+        {/* Status Lookup Component */}
         <StatusLookup
           initialJobId={params.jobId}
           initialAccessToken={params.accessToken}
           checkoutCancelled={checkoutCancelled}
         />
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card className="border-white/90 bg-white/82">
+        {/* Bottom Info */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="border-white/70 bg-white/76">
             <CardHeader>
-              <Badge className="w-fit" variant="secondary">
-                Gut zu wissen
-              </Badge>
-              <CardTitle>Diese Ansicht berichtet den Auftrag ehrlich. Sie erfindet keine Zustände.</CardTitle>
+              <Badge className="w-fit accent-chip" variant="secondary">Transparency</Badge>
+              <CardTitle>Real status, honestly reported.</CardTitle>
               <CardDescription>
-                Zahlung, Asset-Verfügbarkeit und Zustellereignisse kommen weiterhin aus dem Backend. Das Frontend übersetzt diesen Ablauf nur in eine klarere Kundensicht.
+                We don&apos;t invent progress states. What you see reflects your order&apos;s actual stage: 
+                saved, paid, in creation, or delivered.
               </CardDescription>
             </CardHeader>
           </Card>
-          <Card className="border-white/90 bg-white/82">
-            <CardContent className="flex h-full flex-col justify-between gap-4 p-6">
+
+          <Card className="border-white/70 bg-white/76">
+            <CardContent className="flex h-full flex-col justify-between gap-6 p-8">
               <div>
-                <div className="mini-kicker">Direktlinks</div>
-                <p className="mb-0 text-sm leading-7 text-slate-600">
-                  Starte einen neuen Auftrag oder gehe zurück zur Startseite, ohne den aktuellen Statuspfad aus dem Blick zu verlieren.
+                <div className="mini-kicker">Next steps</div>
+                <p className="text-sm leading-7 text-slate-700 mt-2">
+                  Start a new gift order or return to explore more. Your current order status remains secure and always accessible.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button asChild>
+                <Button asChild size="sm">
                   <Link href="/memories">
-                    {orderingAvailable ? 'Neuen Auftrag starten' : 'Bestellpause'}
+                    {orderingAvailable ? 'New order' : 'Pause notice'}
                   </Link>
                 </Button>
-                <Button asChild variant="secondary">
-                  <Link href="/">Startseite</Link>
+                <Button asChild variant="secondary" size="sm">
+                  <Link href="/">Home</Link>
                 </Button>
               </div>
             </CardContent>

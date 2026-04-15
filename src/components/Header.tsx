@@ -26,13 +26,13 @@ export function Header() {
           </div>
           <div className="header-branding">
             <span className="header-name">Memories4U</span>
-            <span className="header-tagline">birthday stories</span>
+            <span className="header-tagline">Premium birthday gifts</span>
           </div>
         </Link>
 
         <nav className="header-nav">
-          <Link href="/how-it-works">How it works</Link>
-          <Link href="/memories">
+          <Link href="/how-it-works" className="header-nav-link">How it works</Link>
+          <Link href="/memories" className="header-nav-link">
             {orderingAvailable ? 'Create' : 'Ordering pause'}
           </Link>
         </nav>
@@ -40,7 +40,7 @@ export function Header() {
         <div className="header-cta">
           <Button asChild size="sm" className="header-btn">
             <Link href={orderingAvailable ? '/memories' : '/status'}>
-              {orderingAvailable ? 'Start' : 'Status'}
+              {orderingAvailable ? 'Start gifting' : 'Check order'}
               {orderingAvailable ? <Sparkles className="size-4" /> : <ArrowUpRight className="size-4" />}
             </Link>
           </Button>
