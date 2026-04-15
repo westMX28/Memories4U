@@ -20,9 +20,9 @@ import {
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
 const reassuranceNotes = [
-  'A slim, private order path from first details through final delivery',
-  'One or two photos and a short memory cue are enough to begin',
-  'Birthday-specific, premium, and intentionally simple from the first screen',
+  'Private, secure, and designed to feel personal—not corporate',
+  'Minimal input, maximum emotional impact',
+  'A gift experience that honors the memory, not the complexity',
 ];
 
 const flowSteps = [
@@ -46,25 +46,25 @@ const flowSteps = [
 const promiseCards = [
   {
     icon: Gift,
-    title: 'Birthday-first positioning',
-    copy: 'This is not a generic AI tool. It is a focused birthday gift flow designed to feel warm, premium, and easy to trust.',
+    title: 'Designed for the moment that matters',
+    copy: 'A birthday gift should feel thoughtful, not complicated. We built this specifically for capturing and sharing memories.',
   },
   {
     icon: WandSparkles,
-    title: 'Small effort, high emotional return',
-    copy: 'The front-end asks for the minimum emotional inputs needed to start a polished digital story without friction.',
+    title: 'Effortless emotional storytelling',
+    copy: 'Two photos and a memory are all you need. We transform your moments into a polished, premium digital story.',
   },
   {
     icon: LockKeyhole,
-    title: 'Private by default',
-    copy: 'Checkout recovery, order progress, and delivery access stay connected through one private route instead of an account system.',
+    title: 'Your gift stays private',
+    copy: 'Everything stays within a single private path—no account needed, no data collection. Just you, the gift, and the recipient.',
   },
 ];
 
 const featureNotes = [
-  'Editorial composition with generous whitespace and a premium tone',
-  'Clear pricing before the buyer invests effort',
-  'A calm service feel instead of dashboard density or startup clutter',
+  'Designed to feel like a premium service, not a tool',
+  'See pricing upfront—no surprises',
+  'Built for warmth and intention, not speed',
 ];
 
 const faqItems = [
@@ -92,29 +92,30 @@ export default function HomePage() {
     <main className="pb-16">
       <section className="hero hero-home">
         <div className="container">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.03fr)_minmax(360px,0.97fr)] lg:items-center">
-            <div className="space-y-7">
-              <Badge className="w-fit accent-chip">Birthday Stories v1</Badge>
-              <div className="space-y-5">
-                <h1 className="h1 max-w-[10.5ch]">
-                  A premium birthday gift, built from the memories that already matter.
-                </h1>
-                <p className="lead max-w-[58ch]">
-                  Memories4U turns a small set of emotional inputs into a polished birthday story
-                  flow. Start with one or two photos, a short cue, and a private path that stays
-                  with the order from checkout to delivery.
-                </p>
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:items-center">
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <Badge className="w-fit accent-chip">A gift for memories that matter</Badge>
+                <div className="space-y-6">
+                  <h1 className="h1 max-w-[10ch]">
+                    Turn your favorite memory into a premium birthday gift.
+                  </h1>
+                  <p className="lead max-w-[58ch]">
+                    Share a photo and a memory. We'll craft it into a beautiful, personalized birthday story.
+                    Simple, private, and thoughtful.
+                  </p>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
                   <Link href={orderingAvailable ? '/memories' : '/status'}>
-                    {orderingAvailable ? 'Start a birthday story' : 'Open order status'}
+                    {orderingAvailable ? 'Create your gift' : 'Check order status'}
                     <ArrowRight />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/how-it-works">See how it works</Link>
+                  <Link href="/how-it-works">See the process</Link>
                 </Button>
               </div>
 
@@ -122,66 +123,61 @@ export default function HomePage() {
                 {featureNotes.map((item) => (
                   <div
                     key={item}
-                    className="rounded-[24px] bg-white/76 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_20px_40px_rgba(66,94,138,0.08)]"
+                    className="hero-feature-card"
                   >
-                    <CheckCircle2 className="mb-3 size-4 text-sky-700" />
-                    {item}
+                    <CheckCircle2 className="hero-feature-icon" />
+                    <p className="hero-feature-text">{item}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <Card className="relative overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(228,240,255,0.92))] p-2 shadow-[0_40px_120px_rgba(76,114,168,0.18)]">
-              <div className="absolute inset-x-10 top-2 h-36 rounded-full bg-sky-200/35 blur-3xl" />
-              <CardContent className="relative grid gap-6 p-6 sm:p-8">
-                <div className="flex items-start justify-between gap-4">
-                  <Badge variant="secondary" className="accent-chip">Starting at 299</Badge>
-                  <div className="text-right text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    calm editorial surface
+            <Card className="hero-showcase-card">
+              <div className="hero-showcase-glow" />
+              <CardContent className="hero-showcase-content">
+                <div className="hero-showcase-header">
+                  <Badge variant="secondary" className="accent-chip">Starting at $299</Badge>
+                  <div className="hero-showcase-label">
+                    one beautiful gift
                   </div>
                 </div>
 
-                <div className="rounded-[34px] bg-[linear-gradient(160deg,#ffffff,rgba(241,247,255,0.98))] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]">
-                  <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-sky-800">
-                    Sample birthday treatment
+                <div className="hero-showcase-preview">
+                  <p className="hero-showcase-subtitle">
+                    Sample birthday gift
                   </p>
-                  <h2 className="font-[family-name:var(--font-display)] text-[clamp(2.15rem,4vw,3.45rem)] leading-[0.98] text-slate-950">
+                  <h2 className="hero-showcase-title">
                     For Lena, the person who made ordinary afternoons feel like part of the story.
                   </h2>
-                  <p className="mb-0 mt-5 max-w-[34ch] text-base leading-7 text-slate-600">
-                    A premium digital birthday piece shaped around your photos, your tone, and a
-                    memory cue that still feels personal when time is short.
+                  <p className="hero-showcase-description">
+                    A handcrafted digital piece shaped around your photos, your tone, and your memory.
+                    Delivered beautifully.
                   </p>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-                  <div className="rounded-[28px] bg-[rgba(255,255,255,0.8)] p-5 shadow-[0_16px_38px_rgba(91,123,170,0.1)]">
-                    <div className="mini-kicker">what the buyer sees first</div>
-                    <div className="mt-4 grid gap-3">
+                <div className="hero-showcase-grid">
+                  <div className="hero-showcase-detail">
+                    <div className="mini-kicker">what you share</div>
+                    <div className="hero-showcase-bullets">
                       {reassuranceNotes.map((item) => (
-                        <div key={item} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
-                          <span className="mt-2 size-2 rounded-full bg-sky-600" />
+                        <div key={item} className="hero-showcase-bullet">
+                          <span className="hero-showcase-dot" />
                           <span>{item}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="rounded-[28px] bg-slate-950 px-5 py-6 text-white shadow-[0_22px_50px_rgba(15,23,42,0.2)]">
-                    <div className="text-sm uppercase tracking-[0.18em] text-sky-200">
-                      current price
+                  <div className="hero-showcase-price">
+                    <div className="hero-showcase-price-label">
+                      starting price
                     </div>
-                    <div className="mt-3 flex items-end gap-2">
-                      <span className="font-[family-name:var(--font-display)] text-6xl leading-none">
-                        299
-                      </span>
-                      <span className="pb-2 text-sm uppercase tracking-[0.18em] text-slate-300">
-                        one-time
-                      </span>
+                    <div className="hero-showcase-price-value">
+                      <span className="hero-showcase-price-amount">299</span>
+                      <span className="hero-showcase-price-currency">$</span>
                     </div>
-                    <p className="mb-0 mt-4 text-sm leading-7 text-slate-200">
-                      Visible before the order begins, so the product feels premium and honest
-                      instead of gated behind extra steps.
+                    <p className="hero-showcase-price-note">
+                      See our price upfront. No surprises, no hidden fees.
                     </p>
                   </div>
                 </div>
@@ -191,63 +187,58 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section section-tight">
-        <div className="container grid gap-5 lg:grid-cols-3">
-          {promiseCards.map(({ icon: Icon, title, copy }) => (
-            <Card key={title} className="border-white/80 bg-white/74 shadow-[0_18px_38px_rgba(78,112,161,0.08)]">
-              <CardHeader className="space-y-4">
-                <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-                  <Icon className="size-5" />
-                </span>
-                <div className="space-y-2">
-                  <CardTitle>{title}</CardTitle>
-                  <CardDescription>{copy}</CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
+      <section className="promise-section">
+        <div className="container">
+          <div className="promise-header">
+            <h2 className="h2">Why choose Memories4U</h2>
+          </div>
+          <div className="promise-grid">
+            {promiseCards.map(({ icon: Icon, title, copy }) => (
+              <Card key={title} className="promise-card">
+                <CardHeader className="promise-card-header">
+                  <span className="promise-card-icon">
+                    <Icon className="promise-card-icon-inner" />
+                  </span>
+                  <div className="promise-card-content">
+                    <CardTitle className="promise-card-title">{title}</CardTitle>
+                    <CardDescription className="promise-card-description">{copy}</CardDescription>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="workflow-section">
         <div className="container">
-          <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(236,244,255,0.92))] shadow-[0_32px_100px_rgba(79,109,158,0.12)]">
-            <CardContent className="grid gap-8 p-6 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:p-8">
-              <div className="space-y-4">
-                <Badge className="w-fit accent-chip" variant="secondary">How it works</Badge>
-                <h2 className="h2 max-w-[11ch]">
-                  A clear path for people who want the gift to feel thoughtful, not rushed.
-                </h2>
-                <p className="lead max-w-[40ch]">
-                  The structure stays simple on purpose: emotional signal first, checkout next,
-                  private status throughout.
-                </p>
-              </div>
+          <div className="workflow-header">
+            <div className="workflow-header-content">
+              <Badge className="w-fit accent-chip" variant="secondary">How it works</Badge>
+              <h2 className="h2 max-w-[13ch]">
+                A simple, meaningful path to create your gift.
+              </h2>
+              <p className="lead max-w-[42ch]">
+                We've designed the entire experience to be thoughtful and intuitive,
+                from your first memory to the final delivery.
+              </p>
+            </div>
+          </div>
 
-              <div className="grid gap-4">
-                {flowSteps.map((item, index) => (
-                  <Card
-                    key={item.step}
-                    className={
-                      index === 1
-                        ? 'border-sky-200/70 bg-white/88 shadow-[0_18px_40px_rgba(85,117,166,0.08)]'
-                        : 'border-white/80 bg-white/74'
-                    }
-                  >
-                    <CardContent className="flex gap-4 p-5 sm:p-6">
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] text-sm font-semibold text-white">
-                        {item.step}
-                      </div>
-                      <div>
-                        <h3 className="mt-1 text-2xl">{item.title}</h3>
-                        <p className="copy mb-0 mt-3">{item.copy}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+          <div className="workflow-steps">
+            {flowSteps.map((item, index) => (
+              <div
+                key={item.step}
+                className={`workflow-step ${index === 1 ? 'workflow-step-featured' : ''}`}
+              >
+                <div className="workflow-step-number">{item.step}</div>
+                <div className="workflow-step-content">
+                  <h3 className="workflow-step-title">{item.title}</h3>
+                  <p className="workflow-step-copy">{item.copy}</p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -256,14 +247,13 @@ export default function HomePage() {
           <Card className="overflow-hidden border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,243,255,0.9))] shadow-[0_28px_80px_rgba(87,120,170,0.12)]">
             <CardContent className="space-y-6 p-6 lg:p-8">
               <div className="space-y-3">
-                <Badge className="w-fit accent-chip" variant="secondary">Product preview</Badge>
-                <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
-                  The page should suggest craft before the buyer sees any production detail.
+                <Badge className="w-fit accent-chip" variant="secondary">The experience</Badge>
+                <CardTitle className="max-w-[13ch] text-[clamp(2rem,4vw,3rem)]">
+                  Designed to feel premium, not complicated.
                 </CardTitle>
-                <CardDescription className="max-w-[46ch] text-base">
-                  This section is intentionally teaser-like. It signals quality, composition, and
-                  warmth without pretending the live app already includes a pre-purchase preview
-                  workflow.
+                <CardDescription className="max-w-[48ch] text-base">
+                  Every detail—from the layout to the language—is crafted to make the gift-giving
+                  experience feel warm, intentional, and special.
                 </CardDescription>
               </div>
 
@@ -299,32 +289,32 @@ export default function HomePage() {
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_64px_rgba(86,117,166,0.08)]">
             <CardHeader>
-              <Badge className="w-fit accent-chip">What this page promises</Badge>
+              <Badge className="w-fit accent-chip">Built for trust</Badge>
               <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
-                Strong claims only where the current product actually supports them.
+                Honest about what we do.
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="rounded-[26px] bg-sky-50/75 p-5">
-                <div className="mini-kicker">included now</div>
+                <div className="mini-kicker">what's included</div>
                 <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
-                  Birthday-specific positioning, visible price, slim briefing, checkout handoff,
-                  and a private status path that stays with the order.
+                  Birthday-specific design, transparent pricing, a simple briefing form, seamless checkout,
+                  and a private link that's yours from start to finish.
                 </p>
               </div>
               <div className="rounded-[26px] bg-white p-5">
-                <div className="mini-kicker">not implied here</div>
+                <div className="mini-kicker">what we don't promise</div>
                 <p className="mb-0 mt-3 text-sm leading-7 text-slate-700">
-                  No live preview promise, no assisted writing promise, no timing guarantee, and no
-                  account-based workflow that the product does not actually implement.
+                  No live preview, no AI writing assistance, no guaranteed turnaround time,
+                  and no account logins needed.
                 </p>
               </div>
               <div className="rounded-[30px] bg-slate-950 px-5 py-6 text-white">
                 <div className="flex items-start gap-3">
                   <Mail className="mt-1 size-5 text-sky-300" />
                   <p className="mb-0 text-sm leading-7 text-slate-200">
-                    The product language stays service-like and calm so the buyer understands the
-                    path quickly without feeling pushed into generic software UX.
+                    We speak like a service, not software. Clear, warm, and focused on making
+                    your gift feel special.
                   </p>
                 </div>
               </div>
@@ -339,11 +329,11 @@ export default function HomePage() {
             <CardHeader>
               <Badge className="w-fit accent-chip" variant="secondary">Pricing</Badge>
               <CardTitle className="max-w-[12ch] text-[clamp(2rem,4vw,3rem)]">
-                Clear enough to trust before the order starts.
+                Transparent pricing for a premium gift.
               </CardTitle>
               <CardDescription className="max-w-[44ch] text-base">
-                This slice keeps pricing explicit on the landing page instead of revealing it later
-                in the flow.
+                See the investment upfront. No surprises, no hidden fees. Just a clear price for
+                a gift that truly matters.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -360,8 +350,8 @@ export default function HomePage() {
                   </span>
                 </div>
                 <p className="mb-0 mt-5 max-w-[38ch] text-sm leading-7 text-slate-200">
-                  The buyer sees the price before committing time, which fits the premium positioning
-                  better than a hidden or deferred reveal.
+                  One-time investment for a gift that's personal, premium, and meaningful.
+                  No recurring charges.
                 </p>
               </div>
             </CardContent>
@@ -369,8 +359,8 @@ export default function HomePage() {
 
           <Card className="border-white/80 bg-white/74 shadow-[0_24px_70px_rgba(86,117,166,0.08)]">
             <CardHeader>
-              <Badge className="w-fit accent-chip">FAQ</Badge>
-              <CardTitle>Questions that should not slow down the gift decision.</CardTitle>
+              <Badge className="w-fit accent-chip">Questions</Badge>
+              <CardTitle>Everything you need to know about getting started.</CardTitle>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
@@ -392,26 +382,25 @@ export default function HomePage() {
             <CardContent className="flex flex-col gap-5 p-6 lg:flex-row lg:items-center lg:justify-between lg:p-8">
               <div className="space-y-2">
                 <Badge className="w-fit border-white/15 bg-white/10 text-white" variant="dark">
-                  One clear next step
+                  Let's create your gift
                 </Badge>
                 <h2 className="font-[family-name:var(--font-display)] text-[clamp(2rem,4vw,3rem)] leading-[1.02]">
-                  Start the birthday gift while the memory still feels close.
+                  Turn a memory into something unforgettable.
                 </h2>
                 <p className="max-w-[44ch] text-base leading-7 text-slate-200">
-                  The product should feel like a premium service with a short runway: begin the
-                  order, move into checkout, and return through the same private path when needed.
+                  The process is simple. Just share what matters. We'll handle the rest.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
                   <Link href={orderingAvailable ? '/memories' : '/status'}>
-                    {orderingAvailable ? 'Begin the gift' : 'Open private status'}
+                    {orderingAvailable ? 'Start creating' : 'Check order status'}
                     <Sparkles />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/how-it-works">Review the flow</Link>
+                  <Link href="/how-it-works">See how it works</Link>
                 </Button>
               </div>
             </CardContent>
