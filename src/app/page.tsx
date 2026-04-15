@@ -212,6 +212,114 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Section 2.5: The Product (what they actually get) */}
+      <section className="section">
+        <div className="container">
+          <div className="space-y-12">
+            <div className="text-center space-y-4 max-w-3xl mx-auto">
+              <Badge className="w-fit accent-chip mx-auto">What you receive</Badge>
+              <h2 className="h2">A handcrafted digital story. Not a template. Not generic.</h2>
+              <p className="lead">
+                Every gift is custom-created by combining your photos, your emotions, and skilled editorial craftsmanship. The result is a premium digital piece that feels personal because it <em>is</em> personal.
+              </p>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-3">
+              {[
+                {
+                  title: 'Personalized composition',
+                  description: 'We arrange your photos with intentional design—not in a preset layout. Every visual decision reflects the story you shared.',
+                  details: ['Custom visual flow', 'Editorial design treatment', 'Optimized for the moment']
+                },
+                {
+                  title: 'Narrative framing',
+                  description: 'Your memory becomes the emotional anchor. The final piece celebrates this person through moments only you would choose.',
+                  details: ['Unique to your relationship', 'Captures tone and feeling', 'Tells a meaningful story']
+                },
+                {
+                  title: 'Finished digital asset',
+                  description: 'A high-quality image file ready to download, share, display, or frame. No account logins, no expiration dates.',
+                  details: ['Download immediately', 'Share or print anytime', 'Yours to keep forever']
+                }
+              ].map((item) => (
+                <Card key={item.title} className="border-white/70 bg-white/76 p-6">
+                  <h3 className="font-display text-lg leading-tight mb-3 text-slate-900">{item.title}</h3>
+                  <p className="text-sm leading-6 text-slate-700 mb-4">{item.description}</p>
+                  <ul className="space-y-2">
+                    {item.details.map((detail) => (
+                      <li key={detail} className="flex gap-2 text-sm text-slate-600">
+                        <span className="text-blue-600 font-bold flex-shrink-0">•</span>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              ))}
+            </div>
+
+            <Card className="overflow-hidden border-white/70 bg-gradient-to-br from-blue-50/90 to-slate-50/90">
+              <CardContent className="p-8 lg:p-10">
+                <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+                  <div className="space-y-4">
+                    <h3 className="font-display text-2xl leading-tight text-slate-900">
+                      Why this is worth more than a generic gift.
+                    </h3>
+                    <p className="text-slate-700 leading-relaxed">
+                      A template-based gift says "I used a service." A personalized gift says "I chose you, remembered this moment, and wanted to celebrate it in a way only you would understand."
+                    </p>
+                    <p className="text-slate-700 leading-relaxed">
+                      The $299 price reflects the human attention, editorial craftsmanship, and intentional design that goes into creating something that feels <em>made for them</em>, not just made <em>by a machine</em>.
+                    </p>
+                    <p className="text-sm text-slate-600 border-l-4 border-blue-600 pl-4 mt-6">
+                      "You're not paying for AI. You're paying for the art of translating what matters to you into something beautiful enough to celebrate with. That's work. That's skill. That's premium."
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="rounded-[28px] bg-white/80 p-6 border border-white/70">
+                      <div className="mini-kicker mb-3">Comparison</div>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="font-semibold text-slate-900 mb-1 text-sm">Generic photo gift</p>
+                          <p className="text-xs text-slate-600">Template layout, stock design, no personalization</p>
+                        </div>
+                        <div className="h-px bg-slate-200"></div>
+                        <div>
+                          <p className="font-semibold text-blue-700 mb-1 text-sm">Memories4U gift</p>
+                          <p className="text-xs text-slate-700">Custom composition, intentional narrative, editorial quality</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[28px] bg-white/80 p-6 border border-white/70">
+                      <div className="mini-kicker mb-3">What makes it premium</div>
+                      <ul className="space-y-2">
+                        <li className="flex gap-2 text-xs text-slate-700">
+                          <span className="text-blue-600 flex-shrink-0">✓</span>
+                          <span>Shaped by your memories</span>
+                        </li>
+                        <li className="flex gap-2 text-xs text-slate-700">
+                          <span className="text-blue-600 flex-shrink-0">✓</span>
+                          <span>Handcrafted, not templated</span>
+                        </li>
+                        <li className="flex gap-2 text-xs text-slate-700">
+                          <span className="text-blue-600 flex-shrink-0">✓</span>
+                          <span>Professional design treatment</span>
+                        </li>
+                        <li className="flex gap-2 text-xs text-slate-700">
+                          <span className="text-blue-600 flex-shrink-0">✓</span>
+                          <span>Delivered with intention</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Section 3: Trust (why it's safe & personal) */}
       <section className="promise-section">
         <div className="container">
