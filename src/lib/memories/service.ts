@@ -12,6 +12,7 @@ import type {
   CreateMemoryJobInput,
   CreateMemoryJobResponse,
   DeliveryCommand,
+  LegacyMakeJobStateResponse,
   MakeUpdateEvent,
   MediaCommand,
   MemoryJob,
@@ -513,6 +514,32 @@ function jobToOperatorOrderStatus(job: MemoryJob): OperatorOrderStatusResponse {
   };
 }
 
+function jobToLegacyMakeState(job: MemoryJob): LegacyMakeJobStateResponse {
+  return {
+    id: job.id,
+    jobId: job.id,
+    accessToken: job.accessToken,
+    status: job.status,
+    unlocked: job.unlocked,
+    email: job.email,
+    deliveryEmail: job.delivery?.recipient || job.email,
+    customerName: job.customerName,
+    storyPrompt: job.storyPrompt,
+    sourceImage1Url: job.sourceImages[0]?.url,
+    sourceImage2Url: job.sourceImages[1]?.url || job.sourceImages[0]?.url,
+    paymentReference: job.paymentReference,
+    paymentProvider: job.paymentProvider,
+    previewAssetUrl: job.previewAsset?.url,
+    finalAssetUrl: job.finalAsset?.url,
+    previewAsset: job.previewAsset,
+    finalAsset: job.finalAsset,
+    delivery: job.delivery,
+    lastError: job.lastError,
+    createdAt: job.createdAt,
+    updatedAt: job.updatedAt,
+  };
+}
+
 function assertJobUnlocked(job: MemoryJob, action: string) {
   if (!job.unlocked) {
     throw new HttpError(409, `Job must be unlocked before ${action}.`);
@@ -643,6 +670,11 @@ export async function getMemoryJobStatus(jobId: string, accessToken?: string) {
 export async function getOperatorOrderStatus(jobId: string) {
   const job = await requireJob(jobId);
   return jobToOperatorOrderStatus(job);
+}
+
+export async function getLegacyMakeJobState(jobId: string) {
+  const job = await requireJob(jobId);
+  return jobToLegacyMakeState(job);
 }
 
 export async function unlockMemoryJob(jobId: string, input: UnlockJobInput) {

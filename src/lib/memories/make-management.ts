@@ -38,6 +38,12 @@ export type MakeScenarioFolder = {
   scenariosTotal?: number;
 };
 
+export type MakeScenarioBlueprint = {
+  flow: Array<Record<string, unknown>>;
+  name: string;
+  metadata: Record<string, unknown>;
+};
+
 export type MakeManagementHealth = {
   user: MakeUser;
   organization: MakeOrganization;
@@ -248,6 +254,17 @@ export async function getMakeScenario(scenarioId: number) {
   return makeManagementRequest<MakeScenario>(`/scenarios/${scenarioId}`, 'scenario');
 }
 
+export async function getMakeScenarioBlueprint(scenarioId: number) {
+  const payload = await makeManagementRequest<Record<string, unknown>>(
+    `/scenarios/${scenarioId}/blueprint`,
+    'response',
+  );
+  const record = assertRecord(payload, 'Make scenario blueprint response was not an object.');
+  const blueprint = assertRecord(record.blueprint, 'Make scenario blueprint was not an object.');
+
+  return blueprint as MakeScenarioBlueprint;
+}
+
 export async function createMakeScenarioFolder(name: string) {
   const config = requireMakeManagementConfig();
   return makeManagementRequest<MakeScenarioFolder>('/scenarios-folders', 'scenarioFolder', {
@@ -283,6 +300,7 @@ export async function updateMakeScenario(
     description?: string;
     scheduling?: Record<string, unknown>;
     folderId?: number | null;
+    blueprint?: Record<string, unknown>;
   },
 ) {
   return makeManagementRequest<MakeScenario>(`/scenarios/${scenarioId}`, 'scenario', {
@@ -292,6 +310,7 @@ export async function updateMakeScenario(
       ...(typeof patch.description === 'string' ? { description: patch.description } : {}),
       ...(patch.scheduling ? { scheduling: JSON.stringify(patch.scheduling) } : {}),
       ...(typeof patch.folderId === 'number' || patch.folderId === null ? { folderId: patch.folderId } : {}),
+      ...(patch.blueprint ? { blueprint: JSON.stringify(patch.blueprint) } : {}),
     },
   });
 }

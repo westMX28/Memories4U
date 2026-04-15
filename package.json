@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "make:validate": "node --import tsx scripts/make-validate.ts",
+    "make:migrate-supabase": "node --import tsx scripts/make-migrate-supabase.ts",
     "supabase:validate": "node --import tsx scripts/supabase-validate.ts",
     "test": "node --import tsx --test src/**/*.test.ts"
   },

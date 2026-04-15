@@ -150,6 +150,30 @@ export type OperatorOrderStatusResponse = {
   };
 };
 
+export type LegacyMakeJobStateResponse = {
+  id: string;
+  jobId: string;
+  accessToken: string;
+  status: MemoryStatus;
+  unlocked: boolean;
+  email: string;
+  deliveryEmail: string;
+  customerName?: string;
+  storyPrompt: string;
+  sourceImage1Url?: string;
+  sourceImage2Url?: string;
+  paymentReference?: string;
+  paymentProvider?: 'stripe' | 'manual';
+  previewAssetUrl?: string;
+  finalAssetUrl?: string;
+  previewAsset?: MemoryAsset;
+  finalAsset?: MemoryAsset;
+  delivery?: DeliveryRecord;
+  lastError?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type UnlockJobInput = {
   paymentReference: string;
   provider?: 'stripe' | 'manual';

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { POST as createRoute } from '@/app/api/memories/create/route';
 import { POST as checkoutRoute } from '@/app/api/memories/[jobId]/checkout/route';
 import { POST as deliveryRoute } from '@/app/api/memories/[jobId]/delivery/route';
+import { GET as legacyStateRoute } from '@/app/api/memories/[jobId]/legacy-state/route';
 import { POST as mediaRoute } from '@/app/api/memories/[jobId]/media/route';
 import { GET as operatorStatusRoute } from '@/app/api/memories/[jobId]/operator-status/route';
 import { POST as unlockRoute } from '@/app/api/memories/[jobId]/unlock/route';
@@ -626,6 +627,96 @@ test('media route applies trusted asset completion updates', async () => {
     { params: Promise.resolve({ jobId: created.jobId }) },
   );
 
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'request_generation',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'mark_processing',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'request_generation',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'mark_processing',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'request_generation',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'mark_processing',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
   const response = await mediaRoute(
     new Request(`http://localhost/api/memories/${created.jobId}/media`, {
       method: 'POST',
@@ -702,6 +793,112 @@ test('operator-status route exposes the internal order contract for one job', as
   assert.equal(body.history.mode, 'current_state_only');
   assert.ok(body.history.timestamps.createdAt);
   assert.ok(body.history.timestamps.updatedAt);
+});
+
+test('legacy-state route exposes the canonical job payload for Make compatibility', async () => {
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    customerName: 'Max',
+    storyPrompt: 'A joyful birthday memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/original.jpg' }],
+  });
+
+  await unlockRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/unlock`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        paymentReference: 'pi_123',
+        provider: 'stripe',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'request_generation',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'mark_processing',
+        provider: 'manual',
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  await mediaRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/media`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer internal-secret',
+      },
+      body: JSON.stringify({
+        command: 'mark_completed',
+        provider: 'cloudinary',
+        asset: {
+          url: 'https://cdn.example.com/final.png',
+          publicId: 'Memories/final',
+          format: 'png',
+          width: 1200,
+          height: 1200,
+        },
+      }),
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  const response = await legacyStateRoute(
+    new Request(`http://localhost/api/memories/${created.jobId}/legacy-state`, {
+      method: 'GET',
+      headers: {
+        authorization: 'Bearer internal-secret',
+      },
+    }),
+    { params: Promise.resolve({ jobId: created.jobId }) },
+  );
+
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    jobId: string;
+    deliveryEmail: string;
+    finalAssetUrl?: string;
+    accessToken: string;
+    sourceImage1Url?: string;
+    sourceImage2Url?: string;
+    unlocked: boolean;
+    customerName?: string;
+  };
+  assert.equal(body.jobId, created.jobId);
+  assert.equal(body.deliveryEmail, 'customer@example.com');
+  assert.equal(body.finalAssetUrl, 'https://cdn.example.com/final.png');
+  assert.equal(typeof body.accessToken, 'string');
+  assert.equal(body.sourceImage1Url, 'https://example.com/original.jpg');
+  assert.equal(body.sourceImage2Url, 'https://example.com/original.jpg');
+  assert.equal(body.unlocked, true);
+  assert.equal(body.customerName, 'Max');
 });
 
 test('delivery route records trusted delivery updates', async () => {
@@ -844,6 +1041,20 @@ test('delivery route rejects unauthenticated requests', async () => {
 test('operator-status route rejects unauthenticated requests', async () => {
   const response = await operatorStatusRoute(
     new Request('http://localhost/api/memories/job_123/operator-status', {
+      method: 'GET',
+    }),
+    { params: Promise.resolve({ jobId: 'job_123' }) },
+  );
+
+  assert.equal(response.status, 401);
+  assert.deepEqual((await response.json()) as ErrorResponse, {
+    error: 'Internal authorization failed.',
+  });
+});
+
+test('legacy-state route rejects unauthenticated requests', async () => {
+  const response = await legacyStateRoute(
+    new Request('http://localhost/api/memories/job_123/legacy-state', {
       method: 'GET',
     }),
     { params: Promise.resolve({ jobId: 'job_123' }) },

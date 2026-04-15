@@ -38,3 +38,24 @@ The script will:
 5. Delete the scenario and folder.
 
 That gives future runs a safe write-path check without touching the live Memories scenarios.
+
+## Live migration
+
+Run:
+
+```bash
+npm run make:migrate-supabase
+```
+
+The migration script:
+
+1. Loads the repo `.env*` files through the same runtime env bootstrap as validation.
+2. Inventories the live `Checkout`, `Memories`, `Memories Store Write`, and `Preview Loop` scenarios.
+3. Writes blueprint backups under `tmp/make-backups/`.
+4. Rewrites `Checkout` and `Preview Loop` to read app-owned canonical state through `/api/memories/:jobId/legacy-state`.
+5. Retires the legacy `Memories Store Write` Google Sheets sink explicitly after the direct generation webhook cutover.
+
+Additional requirements:
+
+- `MEMORIES_INTERNAL_API_SECRET` must be injected so the rewritten Make HTTP modules can call the internal compatibility route.
+- The script derives the live app base URL from the active `Memories` scenario callback rather than requiring a separate migration-only env var.
