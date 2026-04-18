@@ -884,6 +884,7 @@ export async function createCheckoutSession(
 
   const stripe = getStripeClient();
   const { appUrl, stripePriceId } = getMemoriesConfig();
+  const fallbackStripePriceId = 'price_1TNbuY0zX5uE0XrSvU4RJXoD';
   const baseUrl = (baseUrlOverride || appUrl).replace(/\/$/, '');
   const statusUrl = new URL('/status', baseUrl);
   statusUrl.searchParams.set('jobId', job.id);
@@ -896,22 +897,60 @@ export async function createCheckoutSession(
   successUrl.searchParams.set('email', job.email);
   successUrl.searchParams.set('checkout', 'success');
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    success_url: successUrl.toString(),
-    cancel_url: statusUrl.toString(),
-    line_items: [
-      {
-        price: stripePriceId,
-        quantity: 1,
-      },
-    ],
-    customer_email: job.email,
-    client_reference_id: job.id,
-    metadata: {
-      jobId: job.id,
-    },
-  });
+  const priceCandidates = Array.from(new Set([stripePriceId, fallbackStripePriceId].filter(Boolean)));
+
+  let session;
+  let lastError: unknown;
+
+  for (const priceId of priceCandidates) {
+    try {
+      session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        success_url: successUrl.toString(),
+        cancel_url: statusUrl.toString(),
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        customer_email: job.email,
+        client_reference_id: job.id,
+        metadata: {
+          jobId: job.id,
+        },
+      });
+
+      break;
+    } catch (error) {
+      lastError = error;
+      const maybeStripeError = error as {
+        type?: string;
+        code?: string;
+        param?: string;
+        message?: string;
+      };
+      const shouldRetryWithFallback =
+        priceId === stripePriceId &&
+        priceId !== fallbackStripePriceId &&
+        maybeStripeError?.type === 'StripeInvalidRequestError' &&
+        (maybeStripeError?.code === 'resource_missing' ||
+          maybeStripeError?.param === 'line_items[0][price]' ||
+          /price/i.test(maybeStripeError?.message || ''));
+
+      if (!shouldRetryWithFallback) {
+        throw error;
+      }
+
+      console.warn(
+        `Configured STRIPE_PRICE_ID ${stripePriceId} failed for checkout session creation; retrying with fallback live price ${fallbackStripePriceId}.`,
+      );
+    }
+  }
+
+  if (!session) {
+    throw lastError;
+  }
 
   if (!session.url) {
     throw new HttpError(502, 'Stripe checkout session did not include a redirect URL.');

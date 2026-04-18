@@ -432,6 +432,52 @@ test('creates a Stripe checkout session for a created job', async () => {
   assert.equal(createdSessions[0]?.customer_email, 'customer@example.com');
 });
 
+test('falls back to the live 1,99 EUR price when configured STRIPE_PRICE_ID is stale', async () => {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_123';
+  process.env.STRIPE_PRICE_ID = 'price_stale';
+
+  const attemptedPrices: string[] = [];
+  setStripeClientForTests({
+    checkout: {
+      sessions: {
+        create: async (payload: Record<string, unknown>) => {
+          const lineItems = payload.line_items as Array<{ price: string; quantity: number }>;
+          attemptedPrices.push(lineItems[0]?.price);
+
+          if (lineItems[0]?.price === 'price_stale') {
+            const error = new Error('No such price: price_stale') as Error & {
+              type?: string;
+              code?: string;
+              param?: string;
+            };
+            error.type = 'StripeInvalidRequestError';
+            error.code = 'resource_missing';
+            error.param = 'line_items[0][price]';
+            throw error;
+          }
+
+          return {
+            id: 'cs_test_fallback',
+            url: 'https://checkout.stripe.com/pay/cs_test_fallback',
+          };
+        },
+      },
+    },
+  } as never);
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  const session = await createCheckoutSession(created.jobId, created.accessToken);
+
+  assert.equal(session.sessionId, 'cs_test_fallback');
+  assert.equal(session.checkoutUrl, 'https://checkout.stripe.com/pay/cs_test_fallback');
+  assert.deepEqual(attemptedPrices, ['price_stale', 'price_1TNbuY0zX5uE0XrSvU4RJXoD']);
+});
+
 test('returns a stable payment-unavailable error when Stripe is not configured', async () => {
   const created = await createMemoryJobRecord({
     email: 'customer@example.com',
