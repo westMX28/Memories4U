@@ -22,6 +22,8 @@ import {
 import { approvedExamples } from '@/lib/memories/examples';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
+const productPrice = '1,99 €';
+
 const trustPoints = [
   {
     icon: LockKeyhole,
@@ -50,7 +52,7 @@ const processSteps = [
   {
     step: '02',
     title: 'See the cost, pay once',
-    description: '$299. Everything included. No surprises, no recurring charges.',
+    description: `${productPrice}. Everything included. No surprises, no recurring charges.`,
   },
   {
     step: '03',
@@ -122,7 +124,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-2 text-sm text-slate-600">
                   <CheckCircle2 className="size-4 text-blue-600" />
                   <span>
-                    Starting at <strong>$299</strong>
+                    Starting at <strong>{productPrice}</strong>
                   </span>
                 </div>
               </div>
@@ -292,7 +294,7 @@ export default function HomePage() {
                       created this specifically.&quot;
                     </p>
                     <p className="leading-relaxed text-slate-700">
-                      $299 covers the actual work: understanding your photos, your story, your
+                      {productPrice} covers the actual work: understanding your photos, your story, your
                       relationship. Then designing something that reflects that. That&apos;s not a
                       machine doing it alone, it&apos;s someone reading what you shared and
                       translating it into something visual.
@@ -559,7 +561,7 @@ export default function HomePage() {
                   Handcrafted story
                 </div>
                 <div className="mt-4 flex items-end gap-2">
-                  <span className="text-6xl font-light leading-none">299</span>
+                  <span className="text-6xl font-light leading-none">{productPrice}</span>
                   <span className="pb-1 text-xs uppercase tracking-[0.18em] text-slate-300">
                     Starting
                   </span>
