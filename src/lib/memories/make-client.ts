@@ -54,7 +54,7 @@ function buildGenerationWebhookPayload(job: MemoryJob): GenerationWebhookPayload
 
 function getGenerationWebhookUrl() {
   const { makeWriteWebhookUrl, makeWebhookUrl } = getMemoriesConfig();
-  return makeWriteWebhookUrl || makeWebhookUrl;
+  return makeWebhookUrl || makeWriteWebhookUrl;
 }
 
 export function isMakeConfigured() {

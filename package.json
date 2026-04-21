@@ -5,6 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "health:weekly": "node --import tsx scripts/weekly-health-check.ts",
+    "release:verify-source": "node --import tsx scripts/verify-production-source.ts",
+    "make:qa-overlay-copy": "node --import tsx scripts/make-qa-overlay-copy.ts",
+    "make:upgrade-birthday-generation": "node --import tsx scripts/make-upgrade-birthday-generation.ts",
     "start": "next start",
     "lint": "next lint",
     "make:validate": "node --import tsx scripts/make-validate.ts",

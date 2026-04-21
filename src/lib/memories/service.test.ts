@@ -17,6 +17,7 @@ import {
   parseCreateMemoryJobFormData,
   parseCreateMemoryJobInput,
   parseMediaCommand,
+  reconcileStripeCheckoutSuccess,
   recordDelivery,
   unlockMemoryJob,
 } from '@/lib/memories/service';
@@ -30,6 +31,7 @@ beforeEach(async () => {
   }
 
   tempRoot = await mkdtemp(path.join(os.tmpdir(), 'memories-service-'));
+  process.env.MEMORIES_ALLOW_LOCAL_FILE_STORE = '1';
   process.env.MEMORIES_DATA_FILE = path.join(tempRoot, 'jobs.json');
   process.env.MEMORIES_APP_URL = 'http://localhost:3000';
   process.env.MEMORIES_SUPABASE_URL = '';
@@ -528,6 +530,110 @@ test('finalizes Stripe checkout through the existing unlock flow', async () => {
   assert.equal(status.unlocked, true);
 });
 
+test('checkout success url carries the Stripe session placeholder for reconciliation', async () => {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_123';
+  process.env.STRIPE_PRICE_ID = 'price_123';
+
+  const createdSessions: Array<Record<string, unknown>> = [];
+  setStripeClientForTests({
+    checkout: {
+      sessions: {
+        create: async (input: Record<string, unknown>) => {
+          createdSessions.push(input);
+          return {
+            id: 'cs_test_999',
+            url: 'https://checkout.stripe.com/pay/cs_test_999',
+          };
+        },
+      },
+    },
+  } as never);
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  await createCheckoutSession(created.jobId, created.accessToken);
+
+  const successUrl = String(createdSessions[0]?.success_url);
+  assert.match(successUrl, /session_id=%7BCHECKOUT_SESSION_ID%7D/);
+});
+
+test('reconciles a paid Stripe checkout session from the success redirect when the webhook path missed', async () => {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_123';
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  setStripeClientForTests({
+    checkout: {
+      sessions: {
+        retrieve: async (sessionId: string) => {
+          assert.equal(sessionId, 'cs_test_reconcile');
+          return {
+            id: sessionId,
+            payment_status: 'paid',
+            payment_intent: 'pi_test_reconcile',
+            client_reference_id: created.jobId,
+            metadata: {
+              jobId: created.jobId,
+            },
+          };
+        },
+      },
+    },
+  } as never);
+
+  const status = await reconcileStripeCheckoutSuccess(
+    created.jobId,
+    created.accessToken,
+    'cs_test_reconcile',
+  );
+
+  assert.equal(status.status, 'unlocked');
+  assert.equal(status.unlocked, true);
+});
+
+test('does not unlock a job when the Stripe success session resolves to a different job', async () => {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_123';
+
+  const created = await createMemoryJobRecord({
+    email: 'customer@example.com',
+    storyPrompt: 'A memory.',
+    sourceImages: [{ storage: 'remote_url', url: 'https://example.com/a.jpg' }],
+  });
+
+  setStripeClientForTests({
+    checkout: {
+      sessions: {
+        retrieve: async () => ({
+          id: 'cs_test_other',
+          payment_status: 'paid',
+          payment_intent: 'pi_test_other',
+          client_reference_id: 'other-job-id',
+          metadata: {
+            jobId: 'other-job-id',
+          },
+        }),
+      },
+    },
+  } as never);
+
+  const status = await reconcileStripeCheckoutSuccess(
+    created.jobId,
+    created.accessToken,
+    'cs_test_other',
+  );
+
+  assert.equal(status.status, 'created');
+  assert.equal(status.unlocked, false);
+});
+
 test('finalizes Stripe checkout through client_reference_id when metadata.jobId is absent', async () => {
   const created = await createMemoryJobRecord({
     email: 'customer@example.com',
@@ -736,7 +842,7 @@ test('keeps non-current Supabase lifecycle timestamps empty while a job is only 
   assert.equal(generationJob.failed_at, null);
 });
 
-test('prefers the write-specific Make webhook for unlock handoff when both aliases are configured', async () => {
+test('prefers the direct Memories generation webhook for unlock handoff when both aliases are configured', async () => {
   process.env.MEMORIES_SUPABASE_URL = 'https://demo-project.supabase.co';
   process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
   delete process.env.MEMORIES_MAKE_WEBHOOK_URL;
@@ -756,7 +862,7 @@ test('prefers the write-specific Make webhook for unlock handoff when both alias
 
   assert.equal(unlocked.status, 'queued');
   assert.equal(mock.generationCalls.length, 1);
-  assert.equal(mock.generationCalls[0]?.url, 'https://example.com/make/write');
+  assert.equal(mock.generationCalls[0]?.url, 'https://example.com/make/generic');
   assert.equal(mock.generationCalls[0]?.body.jobId, created.jobId);
   assert.equal(mock.generationCalls[0]?.body.status, 'queued');
 });

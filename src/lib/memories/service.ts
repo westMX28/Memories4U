@@ -672,8 +672,37 @@ export async function getOperatorOrderStatus(jobId: string) {
   return jobToOperatorOrderStatus(job);
 }
 
-export async function getLegacyMakeJobState(jobId: string) {
+async function reconcileStripeCheckoutForJob(jobId: string, sessionId: string) {
   const job = await requireJob(jobId);
+
+  if (job.unlocked || job.status !== 'created') {
+    return job;
+  }
+
+  const stripe = getStripeClient();
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const linkedJobId = session.metadata?.jobId || session.client_reference_id;
+
+  if (linkedJobId !== job.id || session.payment_status !== 'paid') {
+    return job;
+  }
+
+  await finalizeStripeCheckout({
+    id: session.id,
+    payment_status: session.payment_status,
+    payment_intent: session.payment_intent,
+    client_reference_id: session.client_reference_id,
+    metadata: session.metadata,
+  });
+
+  return requireJob(job.id);
+}
+
+export async function getLegacyMakeJobState(jobId: string, sessionId?: string) {
+  const job =
+    typeof sessionId === 'string' && sessionId.trim()
+      ? await reconcileStripeCheckoutForJob(jobId, sessionId.trim())
+      : await requireJob(jobId);
   return jobToLegacyMakeState(job);
 }
 
@@ -896,6 +925,7 @@ export async function createCheckoutSession(
   successUrl.searchParams.set('accessToken', job.accessToken);
   successUrl.searchParams.set('email', job.email);
   successUrl.searchParams.set('checkout', 'success');
+  successUrl.searchParams.set('session_id', '{CHECKOUT_SESSION_ID}');
 
   const priceCandidates = Array.from(new Set([stripePriceId, fallbackStripePriceId].filter(Boolean)));
 
@@ -993,4 +1023,14 @@ export async function finalizeStripeCheckout(
     paymentReference,
     provider: 'stripe',
   });
+}
+
+export async function reconcileStripeCheckoutSuccess(
+  jobId: string,
+  accessToken: string | undefined,
+  sessionId: string,
+) {
+  await verifyAccess(jobId, accessToken);
+  const reconciledJob = await reconcileStripeCheckoutForJob(jobId, sessionId);
+  return jobToStatusResponse(reconciledJob);
 }

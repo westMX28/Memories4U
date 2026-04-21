@@ -31,6 +31,14 @@ function firstNonEmpty(...values: Array<string | undefined>) {
   return values.find((value) => typeof value === 'string' && value.trim()) || '';
 }
 
+function readBooleanEnv(value: string | undefined) {
+  if (!value) {
+    return false;
+  }
+
+  return ['1', 'true', 'yes', 'on'].includes(value.trim().toLowerCase());
+}
+
 function parseLegacyMakeUrl() {
   const raw = process.env.MAKE_URL || '';
   if (!raw) {
@@ -58,6 +66,7 @@ export function getMemoriesConfig() {
 
   return {
     appUrl: process.env.MEMORIES_APP_URL || '',
+    allowLocalFileStore: readBooleanEnv(process.env.MEMORIES_ALLOW_LOCAL_FILE_STORE),
     dataFile: configuredDataFile,
     internalApiSecret: process.env.MEMORIES_INTERNAL_API_SECRET || '',
     supabaseUrl: firstDefined(readEnv('MEMORIES_SUPABASE_URL'), readEnv('SUPABASE_URL')) || '',

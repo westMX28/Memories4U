@@ -26,6 +26,7 @@ beforeEach(async () => {
   }
 
   tempRoot = await mkdtemp(path.join(os.tmpdir(), 'memories-routes-'));
+  process.env.MEMORIES_ALLOW_LOCAL_FILE_STORE = '1';
   process.env.MEMORIES_DATA_FILE = path.join(tempRoot, 'jobs.json');
   process.env.MEMORIES_APP_URL = 'http://localhost:3000';
   process.env.MEMORIES_INTERNAL_API_SECRET = 'internal-secret';

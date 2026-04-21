@@ -7,6 +7,7 @@ beforeEach(() => {
   delete process.env.MEMORIES_SUPABASE_URL;
   delete process.env.MEMORIES_SUPABASE_SERVICE_ROLE_KEY;
   delete process.env.MEMORIES_SUPABASE_TIMEOUT_MS;
+  delete process.env.MEMORIES_ALLOW_LOCAL_FILE_STORE;
   delete process.env.SUPABASE_URL;
   delete process.env.SUPABASE_API;
   delete process.env.MEMORIES_MAKE_WEBHOOK_URL;
@@ -68,6 +69,15 @@ test('exposes Supabase persistence env vars', () => {
 
   assert.equal(config.supabaseUrl, 'https://demo-project.supabase.co');
   assert.equal(config.supabaseServiceRoleKey, 'service-role-key');
+});
+
+test('local file store is disabled by default and only enabled explicitly', () => {
+  let config = getMemoriesConfig();
+  assert.equal(config.allowLocalFileStore, false);
+
+  process.env.MEMORIES_ALLOW_LOCAL_FILE_STORE = 'true';
+  config = getMemoriesConfig();
+  assert.equal(config.allowLocalFileStore, true);
 });
 
 test('accepts SUPABASE_API as the server-side Supabase secret alias', () => {

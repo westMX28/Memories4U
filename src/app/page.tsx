@@ -7,7 +7,6 @@ import {
   Gift,
   LockKeyhole,
   Quote,
-  Sparkles,
   WandSparkles,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +18,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { approvedExamples } from '@/lib/memories/examples';
+import {
+  homepageSupportExamples,
+  leadHomepageExample,
+  lowerHomepageExamples,
+} from '@/lib/memories/examples';
 import { isMemoriesOrderingAvailable } from '@/lib/memories/public-flow';
 
 const productPrice = '1,99 €';
@@ -84,12 +87,10 @@ const faqItems = [
   },
 ];
 
-const [heroExample, supportingExample] = approvedExamples;
-
 const reviewNotes = [
-  'Selected from the current product-cleared proof set, not from a broad gallery.',
-  'Used to show quality and trust direction, not to imply a live preview before purchase.',
-  'Kept intentionally narrow until more relationship families clear the same product bar.',
+  'The homepage uses the approved six-asset curation, but only the homepage-safe subset.',
+  'The lead image stays dominant so the page feels editorial rather than like a gallery wall.',
+  'Examples signal quality and emotional range, not a live preview before purchase.',
 ];
 
 export default function HomePage() {
@@ -103,10 +104,10 @@ export default function HomePage() {
             <div className="space-y-10">
               <div className="space-y-6">
                 <div className="space-y-3">
-                  <h1 className="h1 max-w-[13ch]">A gift built on who they are.</h1>
+                  <h1 className="h1 max-w-[12ch]">A birthday gift shaped from real memories.</h1>
                   <p className="max-w-[52ch] text-lg leading-relaxed text-slate-700">
-                    Tell us about the person and the moment. We create a thoughtful gift from your
-                    photos and memories. Private. Personal. Ready to share or keep.
+                    One or two photos and a short memory cue are enough. We turn them into a
+                    premium birthday image that feels thoughtful, personal, and ready to share.
                   </p>
                 </div>
               </div>
@@ -131,14 +132,14 @@ export default function HomePage() {
 
               <div className="space-y-4 border-t border-slate-200 pt-4">
                 <p className="text-xs font-semibold uppercase tracking-widest text-blue-700">
-                  Why it works differently
+                  Built for birthday gifting
                 </p>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
                     { label: 'No login, ever', desc: "A private link that's yours forever" },
                     { label: 'Real personalization', desc: 'Built from your photos, your story' },
-                    { label: 'Edited, not templated', desc: 'Each one is made separately, with care' },
-                    { label: 'One price, all-in', desc: 'See everything before you decide' },
+                    { label: 'Edited, not templated', desc: 'Each gift is composed separately, with care' },
+                    { label: 'One price, all-in', desc: 'The starting price is visible before you begin' },
                   ].map((item) => (
                     <div key={item.label} className="text-sm">
                       <p className="font-semibold text-slate-900">{item.label}</p>
@@ -159,7 +160,7 @@ export default function HomePage() {
                     </Badge>
                   </div>
                   <Image
-                    src={heroExample.imagePath}
+                    src={leadHomepageExample.imagePath}
                     alt="Approved garden-party birthday story example."
                     fill
                     className="rounded-[28px] object-cover"
@@ -171,14 +172,14 @@ export default function HomePage() {
                 <div className="space-y-4">
                   <div>
                     <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
-                      Current proof direction
+                      Homepage proof direction
                     </p>
                     <h2 className="mb-3 text-2xl leading-tight text-slate-100">
-                      Proof integrated into the stronger premium baseline.
+                      One dominant birthday image, then quieter supporting proof.
                     </h2>
                     <p className="text-sm leading-relaxed text-slate-400">
-                      The restored homepage leads with the approved example set instead of relying
-                      on generic preview framing.
+                      The lead example does the trust work above the fold. Supporting imagery
+                      expands the range without turning the page into a gallery.
                     </p>
                   </div>
 
@@ -187,13 +188,37 @@ export default function HomePage() {
                       Why this image leads
                     </div>
                     <ul className="space-y-2 text-sm text-slate-300">
-                      {heroExample.whyItPasses.slice(0, 3).map((item) => (
+                      {leadHomepageExample.whyItPasses.slice(0, 3).map((item) => (
                         <li key={item} className="flex gap-2">
                           <span className="flex-shrink-0 text-slate-500">→</span>
                           <span>{item}</span>
                         </li>
                       ))}
                     </ul>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {homepageSupportExamples.map((example) => (
+                      <div
+                        key={example.slug}
+                        className="overflow-hidden rounded-[18px] border border-white/15 bg-white/10"
+                      >
+                        <div className="relative aspect-[4/5]">
+                          <Image
+                            src={example.imagePath}
+                            alt={`${example.shortTitle} supporting birthday story example.`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="space-y-1 p-3">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                            {example.shortTitle}
+                          </p>
+                          <p className="text-xs leading-5 text-slate-400">{example.editorialLead}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </CardContent>
@@ -294,10 +319,10 @@ export default function HomePage() {
                       created this specifically.&quot;
                     </p>
                     <p className="leading-relaxed text-slate-700">
-                      {productPrice} covers the actual work: understanding your photos, your story, your
-                      relationship. Then designing something that reflects that. That&apos;s not a
-                      machine doing it alone, it&apos;s someone reading what you shared and
-                      translating it into something visual.
+                      {productPrice} covers the actual work: understanding your photos, your
+                      story, your relationship. Then designing something that reflects that.
+                      That&apos;s not a machine doing it alone, it&apos;s someone reading what you
+                      shared and translating it into something visual.
                     </p>
                     <p className="mt-6 border-l-4 border-blue-600 pl-4 text-sm text-slate-600">
                       &quot;You&apos;re paying for thoughtfulness, not for AI. For custom design,
@@ -391,11 +416,11 @@ export default function HomePage() {
                   Curated proof
                 </Badge>
                 <CardTitle className="max-w-[14ch] text-[clamp(1.8rem,3vw,2.7rem)]">
-                  Approved examples, integrated into the correct premium homepage state.
+                  Approved imagery carries more of the proof work now.
                 </CardTitle>
                 <CardDescription className="max-w-[48ch] text-base">
-                  One lead image supports the homepage. One supporting image widens the mood. The
-                  proof surface stays selective until more scenario families pass the same bar.
+                  The homepage now draws from the approved birthday set across romantic, reunion,
+                  and social lanes while keeping the lead image unmistakably in control.
                 </CardDescription>
               </div>
 
@@ -403,7 +428,7 @@ export default function HomePage() {
                 <div className="overflow-hidden rounded-[28px] border border-white/80 bg-white/90 shadow-[0_18px_40px_rgba(85,117,166,0.08)]">
                   <div className="relative aspect-[4/3]">
                     <Image
-                      src={heroExample.imagePath}
+                      src={leadHomepageExample.imagePath}
                       alt="Approved garden-party birthday story example."
                       fill
                       className="object-cover"
@@ -415,10 +440,12 @@ export default function HomePage() {
                         Homepage lead
                       </Badge>
                       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        {heroExample.label}
+                        {leadHomepageExample.label}
                       </span>
                     </div>
-                    <p className="mb-0 text-sm leading-7 text-slate-700">{heroExample.summary}</p>
+                    <p className="mb-0 text-sm leading-7 text-slate-700">
+                      {leadHomepageExample.summary}
+                    </p>
                   </div>
                 </div>
 
@@ -447,31 +474,65 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="overflow-hidden rounded-[24px] border border-white/80 bg-white/90 shadow-[0_18px_40px_rgba(85,117,166,0.08)]">
-                    <div className="relative aspect-[4/3]">
-                      <Image
-                        src={supportingExample.imagePath}
-                        alt="Approved supporting beach-sunset birthday story example."
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="grid gap-2 p-5">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <Badge className="accent-chip" variant="secondary">
-                          Supporting proof
-                        </Badge>
-                        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                          {supportingExample.label}
-                        </span>
+                  <div className="grid gap-3">
+                    {homepageSupportExamples.map((example) => (
+                      <div
+                        key={example.slug}
+                        className="overflow-hidden rounded-[24px] border border-white/80 bg-white/90 shadow-[0_18px_40px_rgba(85,117,166,0.08)]"
+                      >
+                        <div className="grid gap-4 p-4 sm:grid-cols-[120px_minmax(0,1fr)] sm:items-center">
+                          <div className="relative aspect-[4/3] overflow-hidden rounded-[18px]">
+                            <Image
+                              src={example.imagePath}
+                              alt={`${example.shortTitle} supporting birthday story example.`}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <div className="flex flex-wrap items-center gap-3">
+                              <Badge className="accent-chip" variant="secondary">
+                                Supporting proof
+                              </Badge>
+                              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                                {example.shortTitle}
+                              </span>
+                            </div>
+                            <p className="mb-0 text-sm leading-7 text-slate-700">
+                              {example.editorialLead}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <p className="mb-0 text-sm leading-7 text-slate-700">
-                        {supportingExample.summary}
-                      </p>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
+
+              {lowerHomepageExamples.length > 0 ? (
+                <div className="grid gap-4 rounded-[28px] border border-white/80 bg-white/72 p-5 shadow-[0_18px_40px_rgba(85,117,166,0.06)] sm:grid-cols-[180px_minmax(0,1fr)] sm:items-center">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[20px]">
+                    <Image
+                      src={lowerHomepageExamples[0].imagePath}
+                      alt={`${lowerHomepageExamples[0].shortTitle} lower-page birthday story example.`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <Badge className="w-fit accent-chip" variant="secondary">
+                      Broader social proof
+                    </Badge>
+                    <p className="mb-0 text-base leading-7 text-slate-700">
+                      {lowerHomepageExamples[0].summary}
+                    </p>
+                    <p className="mb-0 text-sm leading-6 text-slate-600">
+                      Used below the main proof band so the page stays premium and selective while
+                      still showing that birthday gifting is not limited to romantic scenes.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="secondary">

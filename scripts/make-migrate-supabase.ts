@@ -9,7 +9,10 @@ import {
   listMakeScenarios,
   updateMakeScenario,
 } from '@/lib/memories/make-management';
-import { buildCheckoutBlueprint } from '@/lib/memories/make-scenario-migration';
+import {
+  buildCheckoutBlueprint,
+  buildPreviewLoopBlueprint,
+} from '@/lib/memories/make-scenario-migration';
 import { loadMemoriesRuntimeEnv } from '@/lib/memories/runtime-env';
 
 type ScenarioSnapshot = {
@@ -72,18 +75,17 @@ function normalizeBaseUrl(raw: string) {
   return raw.replace(/\/$/, '');
 }
 
-function escapeJsonString(value: string) {
-  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-}
-
-function deriveAppBaseUrl(memoriesBlueprint: Record<string, unknown>) {
-  const flow = requireFlow(memoriesBlueprint);
+function deriveAppBaseUrl(
+  blueprint: Record<string, unknown>,
+  scenarioName: string,
+) {
+  const flow = requireFlow(blueprint);
   const callbackModule = flow.find(
     (entry) => entry.module === 'http:ActionSendData' && entry.mapper && typeof entry.mapper === 'object',
   );
 
   if (!callbackModule) {
-    throw new HttpError(500, 'Memories blueprint did not include the canonical app callback module.');
+    throw new HttpError(500, `${scenarioName} blueprint did not include the canonical app callback module.`);
   }
 
   const mapper = assertRecord(callbackModule.mapper, 'Memories callback mapper was not an object.');
@@ -94,146 +96,33 @@ function deriveAppBaseUrl(memoriesBlueprint: Record<string, unknown>) {
   return mapper.url.split('/api/')[0] || '';
 }
 
-function createHttpJsonGetModule(input: {
-  id: number;
-  designer?: Record<string, unknown>;
-  url: string;
-  internalSecret: string;
-}) {
-  return {
-    id: input.id,
-    module: 'http:ActionSendData',
-    version: 3,
-    mapper: {
-      ca: '',
-      qs: [],
-      url: input.url,
-      data: '',
-      gzip: true,
-      method: 'get',
-      headers: [
-        {
-          name: 'Authorization',
-          value: `Bearer ${input.internalSecret}`,
-        },
-      ],
-      timeout: '',
-      authPass: '',
-      authUser: '',
-      bodyType: 'raw',
-      contentType: 'application/json',
-      shareCookies: false,
-      parseResponse: false,
-      followRedirect: true,
-      useQuerystring: false,
-      rejectUnauthorized: true,
-    },
-    metadata: {
-      designer: input.designer || { x: 0, y: 0 },
-    },
-    parameters: {
-      handleErrors: false,
-    },
-  };
-}
-
-function createWebhookRespondModule(input: {
-  id: number;
-  designer?: Record<string, unknown>;
-  body: string;
-}) {
-  return {
-    id: input.id,
-    module: 'gateway:WebhookRespond',
-    version: 1,
-    mapper: {
-      body: input.body,
-      status: '200',
-      headers: [
-        {
-          key: 'Content-Type',
-          value: 'application/json',
-        },
-      ],
-    },
-    metadata: {
-      designer: input.designer || { x: 0, y: 0 },
-    },
-    parameters: {},
-  };
-}
-
-function createJsonParseModule(input: {
-  id: number;
-  designer?: Record<string, unknown>;
-  source: string;
-}) {
-  return {
-    id: input.id,
-    module: 'json:ParseJSON',
-    version: 1,
-    mapper: {
-      json: input.source,
-    },
-    metadata: {
-      designer: input.designer || { x: 0, y: 0 },
-      parameters: [
-        {
-          name: 'type',
-          type: 'udt',
-          label: 'Data structure',
-        },
-      ],
-    },
-    parameters: {
-      type: '',
-    },
-  };
-}
-
-function buildPreviewLoopBlueprint(
-  currentBlueprint: Record<string, unknown>,
-  appBaseUrl: string,
-  internalSecret: string,
+function resolveAppBaseUrl(
+  snapshots: ScenarioSnapshot[],
+  configuredAppUrl: string,
 ) {
-  const flow = requireFlow(currentBlueprint);
-  const trigger = cloneModule(requireModule(flow, 1, 'Preview Loop'));
-  const oldLookup = requireModule(flow, 5, 'Preview Loop');
-  const router = requireModule(flow, 6, 'Preview Loop');
-  const routes = Array.isArray(router.routes) ? router.routes : [];
-  const successRoute = routes[0];
-  const successFlow = successRoute && typeof successRoute === 'object' && Array.isArray((successRoute as { flow?: unknown[] }).flow)
-    ? (successRoute as { flow: unknown[] }).flow
-    : [];
-  const responseModule = successFlow[0]
-    ? asFlowModule(successFlow[0], 'Preview Loop success response module was not an object.')
-    : null;
+  const candidates = ['Memories', 'Preview Loop', 'Checkout'] as const;
 
-  const legacyUrl =
-    `${normalizeBaseUrl(appBaseUrl)}/api/memories/{{ifempty(1.jobId; ifempty(1.id; 1.job_id))}}/legacy-state`;
+  for (const name of candidates) {
+    const snapshot = snapshots.find((scenario) => scenario.name === name);
+    if (!snapshot) {
+      continue;
+    }
 
-  return {
-    ...cloneModule(currentBlueprint),
-    flow: [
-      trigger,
-      createHttpJsonGetModule({
-        id: 5,
-        designer: assertRecord(oldLookup.metadata, 'Preview Loop module 5 metadata was not an object.')
-          .designer as Record<string, unknown>,
-        url: legacyUrl,
-        internalSecret,
-      }),
-      createWebhookRespondModule({
-        id: responseModule?.id && typeof responseModule.id === 'number' ? responseModule.id : 4,
-        designer:
-          responseModule && responseModule.metadata && typeof responseModule.metadata === 'object'
-            ? (assertRecord(responseModule.metadata, 'Preview Loop response metadata was not an object.')
-                .designer as Record<string, unknown>)
-            : { x: 586, y: 1 },
-        body: '{{5.data}}',
-      }),
-    ],
-  };
+    try {
+      return deriveAppBaseUrl(snapshot.blueprint, name);
+    } catch {
+      continue;
+    }
+  }
+
+  if (configuredAppUrl.trim()) {
+    return normalizeBaseUrl(configuredAppUrl);
+  }
+
+  throw new HttpError(
+    500,
+    'Could not derive the Memories app base URL from the live Make blueprints, and MEMORIES_APP_URL is not configured.',
+  );
 }
 
 function buildDeprecatedStoreWriteBlueprint(currentBlueprint: Record<string, unknown>) {
@@ -275,10 +164,6 @@ async function main() {
   loadMemoriesRuntimeEnv();
 
   const config = getMemoriesConfig();
-  if (!config.internalApiSecret) {
-    throw new HttpError(503, 'MEMORIES_INTERNAL_API_SECRET is required for the Make migration.');
-  }
-
   const scenarios = await listMakeScenarios();
   const activeScenarios = scenarios.filter((scenario) =>
     activeScenarioNames.includes(scenario.name as (typeof activeScenarioNames)[number]),
@@ -315,7 +200,7 @@ async function main() {
     throw new HttpError(500, 'Memories scenario was missing from the live inventory.');
   }
 
-  const appBaseUrl = deriveAppBaseUrl(memories.blueprint);
+  const appBaseUrl = resolveAppBaseUrl(before, config.appUrl);
   const targets: ScenarioTarget[] = [
     {
       expectedName: 'Checkout',
@@ -323,21 +208,20 @@ async function main() {
       blueprint: buildCheckoutBlueprint(
         before.find((scenario) => scenario.name === 'Checkout')!.blueprint,
         appBaseUrl,
-        config.internalApiSecret,
+        memories.blueprint,
       ),
       description:
-        'Canonical checkout follow-up: Stripe event -> app-owned legacy state lookup -> delivery email -> delivered callback. Google Sheets removed from this path.',
+        'Canonical checkout follow-up: Stripe event -> native Supabase order lookup -> status email only. App-owned checkout creation and Stripe webhook payment confirmation stay upstream; final delivery remains owned by downstream completion truth.',
     },
     {
       expectedName: 'Preview Loop',
       scenarioId: byName['Preview Loop'].id,
       blueprint: buildPreviewLoopBlueprint(
         before.find((scenario) => scenario.name === 'Preview Loop')!.blueprint,
-        appBaseUrl,
-        config.internalApiSecret,
+        memories.blueprint,
       ),
       description:
-        'Canonical preview/status compatibility loop backed by app-owned job state. Google Sheets removed from this path.',
+        'Canonical preview/status compatibility loop backed directly by native Supabase order state. App-owned legacy-state route removed from this path.',
     },
     {
       expectedName: 'Memories Store Write',

@@ -60,11 +60,22 @@ async function queueWrite<T>(operation: () => Promise<T>) {
   return next;
 }
 
+function assertFileStoreAllowed() {
+  const { allowLocalFileStore } = getMemoriesConfig();
+  if (!allowLocalFileStore) {
+    throw new HttpError(
+      503,
+      'Supabase is required for the canonical Memories store. Set MEMORIES_ALLOW_LOCAL_FILE_STORE=1 only for local development or tests.',
+    );
+  }
+}
+
 export async function createJob(job: MemoryJob) {
   if (isSupabaseConfigured()) {
     return upsertSupabaseJob(job);
   }
 
+  assertFileStoreAllowed();
   return queueWrite(async () => {
     const store = await readStore();
     store.jobs[job.id] = job;
@@ -78,6 +89,7 @@ export async function getJob(jobId: string) {
     return getSupabaseJob(jobId);
   }
 
+  assertFileStoreAllowed();
   const store = await readStore();
   return store.jobs[jobId];
 }
@@ -88,6 +100,7 @@ export async function findJobByClientRequestId(email: string, clientRequestId: s
     return findSupabaseJobByClientRequestId(email, clientRequestId);
   }
 
+  assertFileStoreAllowed();
   const store = await readStore();
   return Object.values(store.jobs).find(
     (job) => job.email === email && job.clientRequestId === clientRequestId,
@@ -115,6 +128,7 @@ export async function updateJob(jobId: string, updater: (job: MemoryJob) => Memo
     return upsertSupabaseJob(updated);
   }
 
+  assertFileStoreAllowed();
   return queueWrite(async () => {
     const store = await readStore();
     const existing = store.jobs[jobId];

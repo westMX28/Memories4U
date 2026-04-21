@@ -40,13 +40,6 @@ This app now owns the API boundary for the first product slice. Make and Cloudin
   - `delivery`: delivery presence plus provider/recipient/reference fields when present
   - `history`: explicitly `current_state_only`; exposes only timestamps and references available on the canonical order without inventing an event timeline
 
-`GET /api/memories/:jobId/legacy-state`
-
-- Requires internal auth via `Authorization: Bearer $MEMORIES_INTERNAL_API_SECRET` or `x-memories-internal-secret`.
-- Returns the legacy flat job payload that the remaining Make compatibility scenarios consume while the app stays the canonical store.
-- Mirrors the stable fields the old Google Sheets row body exposed, including `jobId`, `accessToken`, `email`, `deliveryEmail`, `previewAssetUrl`, `finalAssetUrl`, and source image URLs.
-- Returns `{}` when the job is absent so the legacy read webhook can stay non-breaking while Google Sheets is removed.
-
 `POST /api/memories/:jobId/unlock`
 
 - Marks the job unlocked after payment confirmation.
@@ -69,6 +62,7 @@ This app now owns the API boundary for the first product slice. Make and Cloudin
 
 - Requires internal auth.
 - Records delivery confirmation and marks the job as `delivered`.
+- The native Supabase `Checkout` scenario writes the delivered lifecycle directly to Supabase instead of calling this endpoint. This route remains the app-owned internal mutation boundary for any flows that still post delivery updates through the application.
 
 `POST /api/integrations/make/job-update`
 
@@ -92,7 +86,7 @@ This app now owns the API boundary for the first product slice. Make and Cloudin
 - Supabase is the canonical job store when `MEMORIES_SUPABASE_URL` and `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` are configured.
 - The app-owned write path persists the current customer/API contract into `orders`, mirrors lifecycle state into `generation_jobs`, mirrors preview/final media into `generated_assets`, and appends lifecycle snapshots into `event_log`.
 - The first-pass schema is documented in `docs/supabase-schema.sql`.
-- `MEMORIES_DATA_FILE` remains the local development fallback when Supabase is not configured.
+- `MEMORIES_DATA_FILE` is only used when `MEMORIES_ALLOW_LOCAL_FILE_STORE=1` is set explicitly for local development or tests.
 - Stripe is only used for payment initiation and confirmation. The application state still changes through the existing job lifecycle and unlock logic.
 - `MEMORIES_MAKE_WRITE_WEBHOOK_URL` is the preferred worker handoff endpoint for unlock-triggered generation. The app falls back to `MEMORIES_MAKE_WEBHOOK_URL` only when the write-specific endpoint is not configured. Unlock dispatches `{ action: "generate", jobId, status, accessToken, email, customerName, storyPrompt, sourceImage1Url, sourceImage2Url, paymentReference, paymentProvider, createdAt, updatedAt }`.
 - Make acknowledgement responses are not treated as canonical row bodies. A `200` or `204` response is enough as long as the scenario later writes lifecycle updates back through `/api/integrations/make/job-update`.
@@ -115,7 +109,7 @@ See `.env.example` for the expected variables.
 - `MEMORIES_MAKE_API_KEY` carries any shared secret required by that handoff webhook.
 - `MEMORIES_MAX_SOURCE_IMAGE_BYTES` caps direct-upload size for the v1 staging path.
 - `MEMORIES_MAKE_API_BASE_URL`, `MEMORIES_MAKE_ORGANIZATION_ID`, and `MEMORIES_MAKE_TEAM_ID` enable direct Make management validation from the repo.
-- `MEMORIES_DATA_FILE` is now a local development fallback only.
+- `MEMORIES_DATA_FILE` is now an explicit local-only fallback gated by `MEMORIES_ALLOW_LOCAL_FILE_STORE=1`.
 - `MEMORIES_CLOUDINARY_CLOUD_NAME`, `MEMORIES_CLOUDINARY_API_KEY`, and `MEMORIES_CLOUDINARY_API_SECRET` are required for server-side source-image staging.
 - `MEMORIES_CLOUDINARY_UPLOAD_FOLDER` optionally overrides the Cloudinary folder prefix for staged source images.
 
@@ -123,7 +117,8 @@ See `.env.example` for the expected variables.
 
 - Use `src/lib/memories/make-management.ts` for direct organization, team, and scenario access.
 - Use `npm run make:validate` for a disposable end-to-end access check that creates, patches, and deletes temporary Make assets.
-- Use `npm run make:migrate-supabase` to back up and rewrite the live `Checkout`, `Preview Loop`, and retired `Memories Store Write` scenarios away from Google Sheets and onto the app-owned canonical state surface.
+- Use `npm run make:migrate-supabase` to back up and rewrite the live `Checkout`, `Preview Loop`, and retired `Memories Store Write` scenarios onto the Supabase-backed shape.
+- After the full migration, both `Checkout` and `Preview Loop` read canonical post-payment state directly from Supabase instead of the app-owned compatibility route.
 - The validation script loads repo `.env*` files through Next's env loader, but production-style automation still needs the Make management variables injected as secrets instead of committed to the repo.
 
 ## Supabase validation
@@ -141,7 +136,7 @@ Before pointing production traffic at the Supabase-backed canonical store, the l
 
 - apply `docs/supabase-schema.sql` to the target Supabase project
 - inject `MEMORIES_SUPABASE_URL` and `MEMORIES_SUPABASE_SERVICE_ROLE_KEY` into the runtime
-- keep `MEMORIES_DATA_FILE` only for local fallback; do not rely on it in production once cutover starts
+- keep `MEMORIES_DATA_FILE` only for explicitly enabled local fallback; do not rely on it in production
 - confirm the Make scenario only performs generation work and calls the app callbacks instead of treating its own rows as source of truth
 - validate that canonical `status`, asset URLs, timestamps, and source-image MIME types still satisfy the existing app contract
 - coordinate any row-shape changes with the CTO - Technical Manager and Frontend Agent before rollout
