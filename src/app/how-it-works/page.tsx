@@ -15,7 +15,7 @@ const steps = [
     step: '02',
     icon: Eye,
     title: 'Confirm the price',
-    outcome: '$299. You see it all before paying. No surprises.',
+    outcome: '1,99 €. You see it all before paying. No surprises.',
   },
   {
     step: '03',
@@ -156,7 +156,7 @@ export default function HowItWorksPage() {
                 <h3 className="font-display text-lg leading-tight text-slate-900">Price upfront.</h3>
               </div>
               <p className="text-sm leading-relaxed text-slate-700">
-                You see $299 before you decide. No hidden fees. No surprises at checkout. Just honesty.
+                You see 1,99 € before you decide. No hidden fees. No surprises at checkout. Just honesty.
               </p>
             </Card>
 
